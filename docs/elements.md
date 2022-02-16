@@ -1,0 +1,8 @@
+- importer class
+    - opens the data base
+    - reads the data
+    - converts it into a really crude, simple format
+- a data container
+    - initialized from the crude, simple format
+    - provides filtering and grouping methods
+    - 
