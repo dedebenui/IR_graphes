@@ -7,7 +7,7 @@ Le but de cette application est de créer des graphiques représentant l'évolut
 - Prendre le relais des graphes de monitoring
 - Être facile à utiliser et à configurer
     - Mémoire des derniers réglages
-    - Simplement cliquer un bouton devrait suffir pour une utilisation normale
+    - Simplement cliquer sur un bouton devrait suffir pour une utilisation normale quotidienne
     - Le dossier contenant les nouveaux graphiques s'ouvre à la fin du processus
     - Créer des graphiques personnalisés devrait être facile également
 - Fonctionnalités essentielles
@@ -18,10 +18,24 @@ Le but de cette application est de créer des graphiques représentant l'évolut
         - Distribuer (créer un graphique par district / institution / ...)
 - Autres fonctionnalités désirées.
     - Personnalisation des noms de fichiers
-    - Être flexible sur la dispositions des graphiques
-        - Exposer la feuille de style pour une personnalisation maximale
-        - Options de combiner différentes données sur un même graphe, sur plusieurs graphes sur la même figure ou sur plusieurs figures
+    - Être flexible sur le look des graphiques
+        - Pouvoir changer les couleurs / marges / tailles de police / ...
+        - Options de combiner différentes données sur un même graphe, sur plusieurs graphe dans le même document ou dans plusieurs documents
     - Proposer différents formats d'images
+
+# Scénarios
+1. Utilisation quotidienne
+    - Ouvrir l'application
+    - Cliquer sur un bouton du genre "générer les graphes par défaut"
+    - Une barre de progression apparaît pendant la génération des graphes
+    - Une fois fini, un nouveau dossier contenant les derniers graphes s'ouvre
+2. Cas particulier : un Ems, une période donnée
+    - Ouvrir l'application
+    - Choisir l'EMS
+    - Choisir la date de début et de fin
+    - Cliquer sur "Générer"
+    - ...
+
 
 # Interrogations
 
