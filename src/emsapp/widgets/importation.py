@@ -8,6 +8,7 @@ import sys
 from emsapp.config import Config
 from emsapp.widgets.common import ValuesSelector, AcceptCancel
 from emsapp import const
+from emsapp.i18n import _, ngettext
 
 
 class FileSelector(QtWidgets.QWidget):
@@ -45,6 +46,16 @@ class TableSelector(ValuesSelector):
         super().__init__("Table", values)
         self.sig_selection_changed.connect(self.table_changed)
 
+    def update_values(self, values: list[str]):
+        super().update_values(values)
+        Config().dump()
+        if not self.valid:
+            self.tool_tip_txt = _(
+                "No table found in {path}. Please ensure tables are defined in this file."
+            ).format(path=Config().data.db_path)
+        else:
+            self.tool_tip_txt = ""
+
     def table_changed(self, new_table: str):
         Config().data.table_name = new_table
 
@@ -52,6 +63,7 @@ class TableSelector(ValuesSelector):
 class ColumnSelector(QtWidgets.QWidget):
     selectors: list[ValuesSelector]
     did_change: bool
+    valid: bool = False
 
     sig_column_changed = QtCore.pyqtSignal(str, str)
 
@@ -73,9 +85,13 @@ class ColumnSelector(QtWidgets.QWidget):
 
     def column_changed_callback(self, selector: ValuesSelector):
         def column_changed(new_name: str):
-            col_key = selector.label.text()
-            setattr(Config().data, "col_" + col_key, new_name)
-            self.sig_column_changed.emit(col_key, new_name)
+            if selector.valid:
+                col_key = selector.label.text()
+                setattr(Config().data, "col_" + col_key, new_name)
+                self.sig_column_changed.emit(col_key, new_name)
+                self.valid = True
+            else:
+                self.valid = False
 
         return column_changed
 
@@ -96,17 +112,17 @@ class ImportWindow(QtWidgets.QDialog):
         self.file_selector = FileSelector(default_path=default_path)
         self.table_selector = TableSelector()
         self.column_selector = ColumnSelector()
-        finish_buttons = AcceptCancel()
+        self.finish_buttons = AcceptCancel()
 
         self.file_selector.sig_path_changed.connect(self.file_changed)
         self.table_selector.sig_selection_changed.connect(self.table_changed)
         self.column_selector.sig_column_changed.connect(self.columns_changed)
-        finish_buttons.sig_clicked.connect(self.finish_import)
+        self.finish_buttons.sig_clicked.connect(self.finish_import)
 
         layout.addWidget(self.file_selector)
         layout.addWidget(self.table_selector)
         layout.addWidget(self.column_selector)
-        layout.addWidget(finish_buttons)
+        layout.addWidget(self.finish_buttons)
 
         self.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         self.setWindowFlag(QtCore.Qt.WindowType.WindowCloseButtonHint, False)
@@ -120,14 +136,24 @@ class ImportWindow(QtWidgets.QDialog):
         else:
             self.importer = None
             tables = []
+        self.finish_buttons.ok_button.setDisabled(self.importer is None)
         self.table_selector.update_values(tables)
+        self.update_ok_button()
 
     def table_changed(self):
         if self.importer:
             self.column_selector.update_headers(self.importer.headers())
+        self.update_ok_button()
 
     def columns_changed(self, col_key: str, new_name: str):
         print("Column changed", col_key, new_name)
+        self.update_ok_button()
+
+    def update_ok_button(self):
+        valid = (
+            self.importer is not None and self.table_selector.valid and self.column_selector.valid
+        )
+        self.finish_buttons.ok_button.setDisabled(not valid)
 
     def finish_import(self, accept: bool):
         self.did_accept = accept
@@ -161,6 +187,7 @@ def main():
                 import_win.exec_()
                 if import_win.did_accept:
                     Config().commit()
+            self.activateWindow()
             Config().dump()
 
     app = QtWidgets.QApplication(sys.argv)

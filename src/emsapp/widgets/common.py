@@ -1,16 +1,38 @@
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
+
+from emsapp.i18n import _
 
 
-class ValuesSelector(QtWidgets.QWidget):
+class QWidgetWithHelp(QtWidgets.QWidget):
+    show_tool_tip: bool = False
+    __tttxt:str = ""
+
+    @property
+    def tool_tip_txt(self)->str:
+        return self.__tttxt
+    
+    @tool_tip_txt.setter
+    def tool_tip_txt(self, txt:str):
+        self.__tttxt = txt
+        self.setMouseTracking(bool(txt))
+
+    def mouseMoveEvent(self, e: QtGui.QMouseEvent) -> None:
+        super().mouseMoveEvent(e)
+        if self.__tttxt:
+            p = self.mapToGlobal(e.pos())
+            QtWidgets.QToolTip.showText(p, self.__tttxt)
+
+
+class ValuesSelector(QWidgetWithHelp):
     sig_selection_changed = QtCore.pyqtSignal(str)
+    valid: bool = False
 
     def __init__(self, label: str, values: list[str] = None):
         super().__init__()
-        self.label = label
         values = values or []
         layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
-        self.label = QtWidgets.QLabel(label, self)
+        self.label = QtWidgets.QLabel(_(label), self)
         self.box = QtWidgets.QComboBox(self)
         layout.addWidget(self.label)
         layout.addWidget(self.box)
@@ -40,11 +62,12 @@ class ValuesSelector(QtWidgets.QWidget):
         self.box.blockSignals(True)
         self.box.clear()
         self.box.insertItems(0, values)
-        self.box.setDisabled(not bool(values))
+        self.valid = bool(values)
+        self.box.setDisabled(not self.valid)
         self.box.setCurrentIndex(new_index)
         self.box.blockSignals(False)
 
-        if must_emit:       
+        if must_emit:
             self.sig_selection_changed.emit(self.value)
 
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-14 13:36+0100\n"
+"POT-Creation-Date: 2022-02-17 10:47+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -17,4 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
+
+#: src/emsapp/const.py:3
+msgid "date_start"
+msgstr "Date de début"
+
+#: src/emsapp/const.py:3
+msgid "date_end"
+msgstr "Date de fin"
+
+#: src/emsapp/const.py:3
+msgid "role"
+msgstr "Rôle"
+
+#: src/emsapp/const.py:3
+msgid "institution"
+msgstr "Nom de l'institution"
+
+#: src/emsapp/const.py:3
+msgid "location"
+msgstr "Localité"
 

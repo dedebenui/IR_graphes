@@ -13,4 +13,3 @@ class ConfigHolder:
 
 class Config:
     history:dict[str, Config] = {}
-
