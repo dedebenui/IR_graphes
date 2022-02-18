@@ -3,11 +3,11 @@ from contextlib import contextmanager
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterator
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, PrivateAttr
 
 import collections.abc
 
@@ -18,26 +18,6 @@ logger = get_logger()
 
 class ConfigurationValueError(ValueError):
     pass
-
-
-class Config:
-    __current: RootConfig = None
-
-    def __new__(cls) -> RootConfig:
-        if cls.__current is None:
-            cls.reload()
-        return cls.__current
-
-    @classmethod
-    def reload(cls, path: os.PathLike = None):
-        """
-        This is where the configuration is loaded.
-        Paths are searched for a valid config in this order :
-            - provided path
-            - packaged default config
-        """
-        d = default_config_dict()
-        cls.__current = RootConfig(**d)
 
 
 class DataConfig(BaseModel):
@@ -61,8 +41,14 @@ class DataConfig(BaseModel):
         ]
 
 
+class PluginConfig(BaseModel):
+    data_loader: list[str]
+
+
+
 class RootConfig(BaseModel):
     data: DataConfig
+    plugins: PluginConfig
     _commit_flag: bool = PrivateAttr(True)
 
     @contextmanager
@@ -82,6 +68,26 @@ class RootConfig(BaseModel):
 
     def dump(self):
         print(self.json(indent=2))
+
+
+class Config:
+    __current: RootConfig = None
+
+    def __new__(cls) -> RootConfig:
+        if cls.__current is None:
+            cls.reload()
+        return cls.__current
+
+    @classmethod
+    def reload(cls, path: os.PathLike = None):
+        """
+        This is where the configuration is loaded.
+        Paths are searched for a valid config in this order :
+            - provided path
+            - packaged default config
+        """
+        d = default_config_dict()
+        cls.__current = RootConfig(**d)
 
 
 def default_config_dict() -> dict[str, Any]:

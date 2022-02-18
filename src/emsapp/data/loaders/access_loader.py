@@ -1,11 +1,9 @@
 from pathlib import Path
 
 import pyodbc
-from emsapp.config import Config
-from emsapp.data_flow.importation import Importer
 
 
-class AccessImporter(Importer, ext=".accdb"):
+class AccessDataLoader:
     class Cursor:
         def __init__(_self, path):
             _self.conn = pyodbc.connect(
@@ -34,8 +32,8 @@ class AccessImporter(Importer, ext=".accdb"):
                     continue
                 self.all_tables[table] = headers
 
-    def import_data(self) -> tuple[list[str], list[list]]:
-        table_name = Config().data.table_name
+    def import_data(self, config) -> tuple[list[str], list[list]]:
+        table_name = config.table_name
         if table_name in self.all_tables:
             with self.Cursor(self.path) as cursor:
                 cursor.execute(f"select * from {table_name}")
@@ -44,9 +42,13 @@ class AccessImporter(Importer, ext=".accdb"):
                 return headers, list(self.rows)
         return [], []
 
-    def headers(self) -> list[str]:
-        table_name = Config().data.table_name
+    def headers(self, config) -> list[str]:
+        table_name = config.table_name
         return self.all_tables.get(table_name, [])
 
-    def tables(self) -> list[str]:
+    def tables(self, config) -> list[str]:
         return list(self.all_tables)
+
+
+def register():
+    return ".accdb", AccessDataLoader

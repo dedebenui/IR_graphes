@@ -1,9 +1,9 @@
-from emsapp.data_flow.importation import AccessImporter, Entries, Importer
+from emsapp.data.loading import AccessImporter, Entries, DataLoaderFactory
 from datetime import datetime
 
 
 def test_access():
-    importer = Importer.create("./testing/testing_data/LocalEMIR.accdb")
+    importer = DataLoaderFactory.create("./testing/testing_data/LocalEMIR.accdb")
     data = importer.to_raw()
     assert data.headers[0] == "id"
     assert data.headers[-1] == "typetest"
@@ -11,6 +11,6 @@ def test_access():
 
 
 def test_entries():
-    importer = Importer.create("./testing/testing_data/LocalEMIR.accdb")
+    importer = DataLoaderFactory.create("./testing/testing_data/LocalEMIR.accdb")
     entries = Entries(importer.to_raw())
     assert entries.l[0].location == "Villars-sous-Mont"

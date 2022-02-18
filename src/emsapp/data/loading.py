@@ -1,41 +1,18 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import  Type, Union
+from typing import Protocol, Type, Union
 
 from emsapp import const
-from emsapp.config import Config, ConfigurationValueError
+from emsapp.config import Config, ConfigurationValueError, DataConfig
 from emsapp.logging import get_logger
 
 logger = get_logger()
 
 
-class Importer(ABC):
-    _registered: dict[str, Type[Importer]] = {}
-
-    def __init_subclass__(cls, ext: Union[str, tuple[str]]):
-        if isinstance(ext, str):
-            ext = (ext,)
-        for e in ext:
-            Importer._registered[e] = cls
-
-    @classmethod
-    def create(cls, path: Path) -> Importer:
-        ext = path.suffix.lower()
-        return cls._registered[ext](path)
-
-    @classmethod
-    def all_extensions(cls) -> list[str]:
-        return list(cls._registered)
-
-    @classmethod
-    def valid(cls, path: Path) -> bool:
-        return path.suffix.lower() in cls._registered
-
-    @abstractmethod
+class DataLoader(Protocol):
     def __init__(self, path: Path):
         """creates an importer from a path to a file
 
@@ -46,9 +23,14 @@ class Importer(ABC):
         """
         ...
 
-    @abstractmethod
-    def import_data(self) -> tuple[list[str], list[list]]:
+    def import_data(self, config:DataConfig) -> tuple[list[str], list[list]]:
         """imports the whole dataset
+
+        Parameters
+        ----------
+        config: DataConfig
+            current data configuration
+            
 
         Returns
         -------
@@ -59,18 +41,38 @@ class Importer(ABC):
         """
         ...
 
-    @abstractmethod
-    def headers(self) -> list[str]:
+    def headers(self, config:DataConfig) -> list[str]:
         """Returns a list of the column names"""
         ...
 
-    @abstractmethod
-    def tables(self) -> list[str]:
+    def tables(self, config:DataConfig) -> list[str]:
         """returns a list of available tables"""
         ...
 
-    def to_raw(self) -> RawData:
-        return RawData(*self.import_data())
+
+class DataLoaderFactory:
+    _registered: dict[str, Type[DataLoader]] = {}
+
+    @classmethod
+    def register(cls, specs: tuple[Union[str, tuple[str]], Type[DataLoader]]):
+        ext, new_cls = specs
+        if isinstance(ext, str):
+            ext = (ext,)
+        for e in ext:
+            cls._registered[e] = new_cls
+
+    @classmethod
+    def create(cls, path: Path) -> DataLoader:
+        ext = path.suffix.lower()
+        return cls._registered[ext](path)
+
+    @classmethod
+    def all_extensions(cls) -> list[str]:
+        return list(cls._registered)
+
+    @classmethod
+    def valid(cls, path: Path) -> bool:
+        return path.suffix.lower() in cls._registered
 
 
 @dataclass

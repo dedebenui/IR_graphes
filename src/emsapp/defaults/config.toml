@@ -7,3 +7,10 @@ col_date_end = "dfinisol"
 col_role = "role"
 col_institution = "instit_nom"
 col_location = "instit_loc"
+
+
+[plugins]
+data_loader = [
+    "emsapp.data.loaders.access_loader",
+    "emsapp.data.loaders.excel_loader",
+]

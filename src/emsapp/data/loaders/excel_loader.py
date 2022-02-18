@@ -1,11 +1,9 @@
 from pathlib import Path
 
 import openpyxl
-from emsapp.config import Config
-from emsapp.data_flow.importation import Importer
 
 
-class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):
+class ExcelDataLoader:
     wb: openpyxl.Workbook
 
     def __init__(self, path: Path):
@@ -17,16 +15,20 @@ class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):
                 self.table_ws_map[name] = ws.title
                 self.all_tables[name] = [col.name for col in ws.tables[name].tableColumns]
 
-    def tables(self) -> list[str]:
+    def tables(self, config) -> list[str]:
         return list(self.all_tables)
 
-    def headers(self) -> list[str]:
-        table_name = Config().data.table_name
+    def headers(self, config) -> list[str]:
+        table_name = config.table_name
         return self.all_tables.get(table_name, [])
 
-    def import_data(self) -> tuple[list[str], list[list]]:
-        table_name = Config().data.table_name
+    def import_data(self, config) -> tuple[list[str], list[list]]:
+        table_name = config.table_name
         if table_name not in self.all_tables:
             return [], []
         data = [[cell.value for cell in row] for row in self.wb[self.table_ws_map[table_name]][1:]]
         return self.all_tables[table_name], data
+
+
+def register():
+    return (".xlsx", ".xlsm"), ExcelDataLoader

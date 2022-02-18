@@ -1,5 +1,5 @@
 import re
-from emsapp.data_flow.importation import RawData, Importer
+from emsapp.data.loading import RawData, DataLoader, DataLoaderFactory
 import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 from pathlib import Path
@@ -33,9 +33,7 @@ class FileSelector(QtWidgets.QWidget):
         layout.addWidget(self.file_path_label)
 
     def choose_path(self) -> Path:
-        filter = (
-            f"{_('database files')} ({' '.join(f'*{ext}' for ext in Importer.all_extensions())})"
-        )
+        filter = f"{_('database files')} ({' '.join(f'*{ext}' for ext in DataLoaderFactory.all_extensions())})"
         out = QtWidgets.QFileDialog.getOpenFileName(
             self, "Choose a database file", str(self.file_path.parent), filter
         )[0]
@@ -107,7 +105,7 @@ class ColumnSelector(QtWidgets.QWidget):
 
 class ImportWindow(QtWidgets.QDialog):
     did_accept: bool
-    importer: Importer = None
+    importer: DataLoader = None
 
     def __init__(self, default_path: os.PathLike = None):
         super().__init__()
@@ -138,9 +136,9 @@ class ImportWindow(QtWidgets.QDialog):
             self.file_selector.choose_path()
 
     def file_changed(self, new_path: Path):
-        if Importer.valid(new_path):
-            self.importer = Importer.create(new_path)
-            tables = self.importer.tables()
+        if DataLoaderFactory.valid(new_path):
+            self.importer = DataLoaderFactory.create(new_path)
+            tables = self.importer.tables(Config().data)
         else:
             self.importer = None
             tables = []
@@ -150,7 +148,7 @@ class ImportWindow(QtWidgets.QDialog):
 
     def table_changed(self):
         if self.importer:
-            self.column_selector.update_headers(self.importer.headers())
+            self.column_selector.update_headers(self.importer.headers(Config().data))
         self.update_ok_button()
 
     def columns_changed(self, col_key: str, new_name: str):
@@ -196,7 +194,7 @@ def main():
 
             self.setCentralWidget(self.button)
 
-        def open_db(self) -> Importer:
+        def open_db(self) -> DataLoader:
             with Config().hold():
                 import_win = ImportWindow()
                 import_win.exec_()
