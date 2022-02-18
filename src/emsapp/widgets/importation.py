@@ -1,5 +1,5 @@
 import re
-from emsapp.data import RawData, Importer
+from emsapp.data_flow.importation import RawData, Importer
 import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 from pathlib import Path
@@ -50,7 +50,7 @@ class TableSelector(ValuesSelector):
         super().__init__("Table", values, Config().data.table_name)
         self.sig_selection_changed.connect(self.table_changed)
 
-    def update_values(self, values: list[str], selection:str=None):
+    def update_values(self, values: list[str], selection: str = None):
         super().update_values(values, selection)
         Config().dump()
         if not self.valid:

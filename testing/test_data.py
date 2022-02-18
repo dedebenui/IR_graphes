@@ -1,4 +1,4 @@
-from emsapp.data import AccessImporter, Entries, Importer
+from emsapp.data_flow.importation import AccessImporter, Entries, Importer
 from datetime import datetime
 
 
@@ -9,10 +9,8 @@ def test_access():
     assert data.headers[-1] == "typetest"
     assert isinstance(data.rows[0][1], datetime)
 
+
 def test_entries():
     importer = Importer.create("./testing/testing_data/LocalEMIR.accdb")
     entries = Entries(importer.to_raw())
-    assert entries.l[0].location == 'Villars-sous-Mont'
-    
-
-
+    assert entries.l[0].location == "Villars-sous-Mont"

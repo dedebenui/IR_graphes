@@ -2,7 +2,7 @@ from pathlib import Path
 
 import openpyxl
 from emsapp.config import Config
-from emsapp.data import Importer
+from emsapp.data_flow.importation import Importer
 
 
 class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):

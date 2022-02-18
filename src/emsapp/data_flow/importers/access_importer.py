@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pyodbc
 from emsapp.config import Config
-from emsapp.data import Importer
+from emsapp.data_flow.importation import Importer
 
 
 class AccessImporter(Importer, ext=".accdb"):
