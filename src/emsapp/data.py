@@ -15,7 +15,9 @@ import pyodbc
 
 from emsapp import const
 from emsapp.config import Config, ConfigurationValueError
-from emsapp.errors import handle_warning
+from emsapp.logging import get_logger
+
+logger = get_logger()
 
 
 class Importer(ABC):
@@ -79,10 +81,6 @@ class Importer(ABC):
 
 
 class AccessImporter(Importer, ext=".accdb"):
-    def __init__(self, path: Path):
-        self.rows = []
-        self.path = path
-
     class Cursor:
         def __init__(_self, path):
             _self.conn = pyodbc.connect(
@@ -94,35 +92,39 @@ class AccessImporter(Importer, ext=".accdb"):
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             self.conn.close()
+            if exc_type is pyodbc.ProgrammingError:
+                return True
+
+    def __init__(self, path: Path):
+        self.rows = []
+        self.path = path
+        self.all_tables: dict[str, list[str]] = {}
+        with self.Cursor(self.path) as cursor:
+            tables = [row.table_name for row in cursor.tables()]
+            for table in tables:
+                try:
+                    cursor.execute(f"select * from {table}")
+                    headers = [column[0] for column in cursor.description]
+                except pyodbc.ProgrammingError:
+                    continue
+                self.all_tables[table] = headers
 
     def import_data(self) -> tuple[list[str], list[list]]:
         table_name = Config().data.table_name
-        if table_name:
+        if table_name in self.all_tables:
             with self.Cursor(self.path) as cursor:
-                try:
-                    cursor.execute(f"select * from {table_name}")
-                    self.rows = cursor.fetchall()
-                    headers = [column[0] for column in cursor.description]
-                    return headers, list(self.rows)
-                except pyodbc.ProgrammingError:
-                    pass
+                cursor.execute(f"select * from {table_name}")
+                self.rows = cursor.fetchall()
+                headers = [column[0] for column in cursor.description]
+                return headers, list(self.rows)
         return [], []
 
     def headers(self) -> list[str]:
         table_name = Config().data.table_name
-        if table_name:
-            with self.Cursor(self.path) as cursor:
-                try:
-                    cursor.execute(f"select * from {table_name}")
-                    headers = [column[0] for column in cursor.description]
-                    return headers
-                except pyodbc.ProgrammingError:
-                    pass
-        return []
+        return self.all_tables.get(table_name, [])
 
     def tables(self) -> list[str]:
-        with self.Cursor(self.path) as cursor:
-            return [row.table_name for row in cursor.tables()]
+        return list(self.all_tables)
 
 
 class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):
@@ -130,8 +132,8 @@ class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):
 
     def __init__(self, path: Path):
         self.wb = openpyxl.load_workbook(str(path), data_only=True)
-        self.all_tables:dict[str, list[str]] = {}
-        self.table_ws_map:dict[str, str] = {}
+        self.all_tables: dict[str, list[str]] = {}
+        self.table_ws_map: dict[str, str] = {}
         for ws in self.wb:
             for name in ws.tables:
                 self.table_ws_map[name] = ws.title
@@ -143,11 +145,11 @@ class ExcelImporter(Importer, ext=(".xlsx", ".xlsm")):
     def headers(self) -> list[str]:
         table_name = Config().data.table_name
         return self.all_tables.get(table_name, [])
-    
+
     def import_data(self) -> tuple[list[str], list[list]]:
         table_name = Config().data.table_name
         if table_name not in self.all_tables:
-            return [],[]
+            return [], []
         data = [[cell.value for cell in row] for row in self.wb[self.table_ws_map[table_name]][1:]]
         return self.all_tables[table_name], data
 
@@ -203,7 +205,7 @@ class Entries:
             try:
                 entry = Entry(**{k: row[v] for k, v in indices.items()})
             except ValueError as e:
-                handle_warning("invalid entry {row!r} : {error}".format(row=row, error=e))
+                logger.warning("invalid entry {row!r} : {error}".format(row=row, error=e))
                 continue
 
             self.l.append(entry)

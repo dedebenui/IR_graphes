@@ -9,6 +9,9 @@ from emsapp.config import Config
 from emsapp.widgets.common import ValuesSelector, AcceptCancel
 from emsapp import const
 from emsapp.i18n import _, ngettext
+from emsapp.logging import get_logger
+
+logger = get_logger()
 
 
 class FileSelector(QtWidgets.QWidget):
@@ -20,7 +23,7 @@ class FileSelector(QtWidgets.QWidget):
         layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
 
-        self.file_path = default_path or Config().data.db_path.resolve()
+        self.file_path = default_path or Config().data.db_path
         self.file_path_label = QtWidgets.QLabel(str(self.file_path))
         self.choose_path_button = QtWidgets.QPushButton("select_path")
         self.choose_path_button.clicked.connect(self.choose_path)
@@ -30,29 +33,30 @@ class FileSelector(QtWidgets.QWidget):
         layout.addWidget(self.file_path_label)
 
     def choose_path(self) -> Path:
-        filter = ";;".join(f"{ext} files (*{ext})" for ext in Importer.all_extensions())
+        filter = (
+            f"{_('database files')} ({' '.join(f'*{ext}' for ext in Importer.all_extensions())})"
+        )
         out = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Choose a databse file", str(self.file_path.parent), filter
+            self, "Choose a database file", str(self.file_path.parent), filter
         )[0]
         if out:
-            self.file_path = Path(out)
+            self.file_path = Config().data.db_path = Path(out)
             self.file_path_label.setText(str(self.file_path))
             self.sig_path_changed.emit(self.file_path)
-            Config().data.db_path = self.file_path
 
 
 class TableSelector(ValuesSelector):
     def __init__(self, values: list[str] = None):
-        super().__init__("Table", values)
+        super().__init__("Table", values, Config().data.table_name)
         self.sig_selection_changed.connect(self.table_changed)
 
-    def update_values(self, values: list[str]):
-        super().update_values(values)
+    def update_values(self, values: list[str], selection:str=None):
+        super().update_values(values, selection)
         Config().dump()
         if not self.valid:
             self.tool_tip_txt = _(
                 "No table found in {path}. Please ensure tables are defined in this file."
-            ).format(path=Config().data.db_path)
+            ).format(path=Config().data.db_path.name)
         else:
             self.tool_tip_txt = ""
 
@@ -73,7 +77,10 @@ class ColumnSelector(QtWidgets.QWidget):
         headers = headers or []
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        self.selectors = [ValuesSelector(name, headers) for name in const.ENTRY_FIELDS]
+        self.selectors = [
+            ValuesSelector(name, headers, col_name)
+            for name, col_name in zip(const.ENTRY_FIELDS, Config().data.columns)
+        ]
         self.did_change = False
         for selector in self.selectors:
             layout.addWidget(selector)
@@ -86,9 +93,8 @@ class ColumnSelector(QtWidgets.QWidget):
     def column_changed_callback(self, selector: ValuesSelector):
         def column_changed(new_name: str):
             if selector.valid:
-                col_key = selector.label.text()
-                setattr(Config().data, "col_" + col_key, new_name)
-                self.sig_column_changed.emit(col_key, new_name)
+                setattr(Config().data, "col_" + selector.name, new_name)
+                self.sig_column_changed.emit(selector.name, new_name)
                 self.valid = True
             else:
                 self.valid = False
@@ -127,10 +133,12 @@ class ImportWindow(QtWidgets.QDialog):
         self.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         self.setWindowFlag(QtCore.Qt.WindowType.WindowCloseButtonHint, False)
 
-        self.file_changed()
+        self.file_changed(Config().data.db_path)
+        if self.importer is None:
+            self.file_selector.choose_path()
 
-    def file_changed(self, new_path: Path = None):
-        if new_path and Importer.valid(new_path):
+    def file_changed(self, new_path: Path):
+        if Importer.valid(new_path):
             self.importer = Importer.create(new_path)
             tables = self.importer.tables()
         else:
@@ -146,7 +154,7 @@ class ImportWindow(QtWidgets.QDialog):
         self.update_ok_button()
 
     def columns_changed(self, col_key: str, new_name: str):
-        print("Column changed", col_key, new_name)
+        logger.debug(f"Column changed : {col_key} = {new_name}")
         self.update_ok_button()
 
     def update_ok_button(self):
@@ -159,9 +167,16 @@ class ImportWindow(QtWidgets.QDialog):
         self.did_accept = accept
         self.close()
 
-    # def showEvent(self, a0: QtGui.QShowEvent):
-    #     super().showEvent(a0)
-    #     self.selector.choose_path()
+
+def configure_db(parent: QtWidgets.QWidget = None):
+    with Config().hold():
+        import_win = ImportWindow()
+        import_win.exec_()
+        if import_win.did_accept:
+            Config().commit()
+    if parent:
+        parent.activateWindow()
+    Config().dump()
 
 
 def main():

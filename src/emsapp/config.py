@@ -11,7 +11,9 @@ from pydantic import BaseModel, Field, PrivateAttr
 
 import collections.abc
 
-from emsapp.errors import handle_warning
+from emsapp.logging import get_logger
+
+logger = get_logger()
 
 
 class ConfigurationValueError(ValueError):
@@ -48,27 +50,20 @@ class DataConfig(BaseModel):
     col_institution: str
     col_location: str
 
-    # TODO
-    @classmethod
-    def from_file(cls, path: os.PathLike = None):
-        """creates a DataConfig object from a toml file
-
-        Parameters
-        ----------
-        path : os.PathLike, optional
-            path to the config. parameters specified in this file will override the default config, by default None
-        """
-        cfg = cls.default()
-        try:
-            with open(path, "rb") as file:
-                d = tomli.load(file)
-        except Exception as e:
-            print(f"could not open {path}")
+    @property
+    def columns(self) -> list[str]:
+        return [
+            self.col_date_start,
+            self.col_date_end,
+            self.col_role,
+            self.col_institution,
+            self.col_location,
+        ]
 
 
 class RootConfig(BaseModel):
     data: DataConfig
-    _commit_flag:bool = PrivateAttr(True)
+    _commit_flag: bool = PrivateAttr(True)
 
     @contextmanager
     def hold(self):
@@ -81,7 +76,7 @@ class RootConfig(BaseModel):
 
     def commit(self):
         if self._commit_flag:
-            handle_warning("you can only commit when holding")
+            logger.warning("you can only commit when holding")
         else:
             self._commit_flag = True
 

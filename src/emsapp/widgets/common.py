@@ -5,14 +5,14 @@ from emsapp.i18n import _
 
 class QWidgetWithHelp(QtWidgets.QWidget):
     show_tool_tip: bool = False
-    __tttxt:str = ""
+    __tttxt: str = ""
 
     @property
-    def tool_tip_txt(self)->str:
+    def tool_tip_txt(self) -> str:
         return self.__tttxt
-    
+
     @tool_tip_txt.setter
-    def tool_tip_txt(self, txt:str):
+    def tool_tip_txt(self, txt: str):
         self.__tttxt = txt
         self.setMouseTracking(bool(txt))
 
@@ -27,8 +27,9 @@ class ValuesSelector(QWidgetWithHelp):
     sig_selection_changed = QtCore.pyqtSignal(str)
     valid: bool = False
 
-    def __init__(self, label: str, values: list[str] = None):
+    def __init__(self, label: str, values: list[str] = None, selection: str = None):
         super().__init__()
+        self.name = label
         values = values or []
         layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
@@ -37,21 +38,23 @@ class ValuesSelector(QWidgetWithHelp):
         layout.addWidget(self.label)
         layout.addWidget(self.box)
         self.box.currentTextChanged.connect(self.sig_selection_changed.emit)
-        self.update_values(values)
+        self.update_values(values, selection)
 
     @property
     def value(self) -> str:
         return self.box.currentText()
 
-    def update_values(self, values: list[str]):
+    def update_values(self, values: list[str], selection: str = None):
         """update the possible values in the dropdown box
 
         Parameters
         ----------
         values : list[str]
             list of possible values. Will override any existing ones
+        selection : str, optional
+            if given, selects this value
         """
-        selected = self.box.currentText()
+        selected = selection or self.box.currentText()
         if selected in values:
             new_index = values.index(selected)
             must_emit = False
