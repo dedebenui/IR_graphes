@@ -19,15 +19,16 @@ class ExcelDataLoader:
         return list(self.all_tables)
 
     def headers(self, config) -> list[str]:
-        table_name = config.table_name
-        return self.all_tables.get(table_name, [])
+        return self.all_tables.get(config.table_name, [])
 
-    def import_data(self, config) -> tuple[list[str], list[list]]:
-        table_name = config.table_name
-        if table_name not in self.all_tables:
+    def load_data(self, config) -> tuple[list[str], list[list]]:
+        if config.table_name not in self.all_tables:
             return [], []
-        data = [[cell.value for cell in row] for row in self.wb[self.table_ws_map[table_name]][1:]]
-        return self.all_tables[table_name], data
+        data = [
+            [cell.value for cell in row]
+            for row in self.wb[self.table_ws_map[config.table_name]][1:]
+        ]
+        return self.all_tables[config.table_name], data
 
 
 def register():

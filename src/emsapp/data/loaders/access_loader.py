@@ -32,7 +32,7 @@ class AccessDataLoader:
                     continue
                 self.all_tables[table] = headers
 
-    def import_data(self, config) -> tuple[list[str], list[list]]:
+    def load_data(self, config) -> tuple[list[str], list[list]]:
         table_name = config.table_name
         if table_name in self.all_tables:
             with self.Cursor(self.path) as cursor:

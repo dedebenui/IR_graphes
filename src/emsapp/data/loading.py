@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+import os
 from pathlib import Path
 from typing import Protocol, Type, Union
 
@@ -23,7 +24,7 @@ class DataLoader(Protocol):
         """
         ...
 
-    def import_data(self, config:DataConfig) -> tuple[list[str], list[list]]:
+    def load_data(self, config:DataConfig) -> tuple[list[str], list[list]]:
         """imports the whole dataset
 
         Parameters
@@ -62,7 +63,8 @@ class DataLoaderFactory:
             cls._registered[e] = new_cls
 
     @classmethod
-    def create(cls, path: Path) -> DataLoader:
+    def create(cls, path: os.PathLike) -> DataLoader:
+        path = Path(path)
         ext = path.suffix.lower()
         return cls._registered[ext](path)
 

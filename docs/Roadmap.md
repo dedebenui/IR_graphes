@@ -14,10 +14,7 @@
 - [x] show message when no available table
 - [x] redo access importer to cache stuff like in excel
 - [x] implement basic logging
-- [] define a plotter abstract class
-- [] define a data container system (one set vs many, ...)
-- [] define an interface to couple each data set with a plotter
-- [] design a configuration system to help implement concrete plotter classes
+- [~] define the data flow
 - [] build the main interface with no functionnality first 
 - [] create preview widget
 
