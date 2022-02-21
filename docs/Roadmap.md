@@ -10,11 +10,11 @@
 - be configurable
 
 # Todo in order
-- [x] finish excel importer
-- [x] show message when no available table
-- [x] redo access importer to cache stuff like in excel
-- [x] implement basic logging
-- [~] define the data flow
+- implement data flow for current plot setups
+    - 
+- implement some nice GUI stuff
+    - Plot Preview
+    - Sysematic 
 - [] build the main interface with no functionnality first 
 - [] create preview widget
 

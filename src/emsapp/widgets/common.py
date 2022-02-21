@@ -1,3 +1,4 @@
+from typing import Optional
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from emsapp.i18n import _
@@ -94,3 +95,41 @@ class AcceptCancel(QtWidgets.QWidget):
 
         layout.addWidget(self.cancel_button)
         layout.addWidget(self.ok_button)
+        self.cancel_button.setAutoDefault(False)
+        self.cancel_button.setDefault(False)
+        self.ok_button.setAutoDefault(True)
+        self.ok_button.setDefault(True)
+
+
+class UserInput(QtWidgets.QDialog):
+    value: Optional[str] = None
+
+    def __init__(self, msg: str, parent=None):
+        super().__init__(parent)
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QtWidgets.QLabel(msg)
+        self.line_edit = QtWidgets.QLineEdit()
+        self.line_edit.setText(self.value)
+        finish_button = AcceptCancel()
+        finish_button.sig_clicked.connect(self.finish)
+
+        layout.addWidget(label)
+        layout.addWidget(self.line_edit)
+        layout.addWidget(finish_button)
+
+    def finish(self, accept: bool):
+        if accept:
+            self.value = self.line_edit.text()
+        else:
+            self.value = None
+        self.close()
+
+
+def get_user_input(msg: str, parent=None) -> Optional[str]:
+    input_win = UserInput(msg)
+    input_win.exec_()
+    if parent:
+        parent.activateWindow()
+    return input_win.value

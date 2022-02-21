@@ -2,11 +2,15 @@
 db_path = ""
 table_name = "ci"
 
+excel_start_year = 1900
+
 col_date_start = "dtest"
 col_date_end = "dfinisol"
 col_role = "role"
 col_institution = "instit_nom"
 col_location = "instit_loc"
+
+date_formats = ["%x", "%d.%m.%Y", "%d/%m/%Y"]
 
 
 [plugins]

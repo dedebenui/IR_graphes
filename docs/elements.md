@@ -27,3 +27,13 @@
 
 
 ## GUI
+
+- Plot Preview
+- Run Default
+- Run custom
+- Change
+    - Filter
+    - Splitter
+    - Transformer
+    - Grouper
+    

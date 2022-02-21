@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu(_("&File"))
         open_action = file_menu.addAction(_("&Open..."))
-        open_action.setShortcut(_("Ctrl+O"))
+        open_action.setShortcut("Ctrl+O")
         open_action.setStatusTip(_("Open a database"))
         open_action.triggered.connect(configure_db)
 

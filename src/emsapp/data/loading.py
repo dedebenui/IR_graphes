@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 import datetime
 import os
 from pathlib import Path
 from typing import Protocol, Type, Union
 
-from emsapp import const
 from emsapp.config import Config, ConfigurationValueError, DataConfig
 from emsapp.data import RawData
 from emsapp.logging import get_logger
+from emsapp.i18n import _, ngettext
 
 logger = get_logger()
 
@@ -78,7 +78,6 @@ class DataLoaderFactory:
         return path.suffix.lower() in cls._registered
 
 
-
 @dataclass
 class Entry:
     date_start: datetime.datetime
@@ -88,27 +87,30 @@ class Entry:
     location: str
 
     def __post_init__(self):
-        if self.date_start is None:
-            raise ValueError("No start date")
-        if self.date_end is None:
-            raise ValueError("No end date")
+        if not isinstance(self.date_start, datetime.datetime):
+            self.date_start = parse_date(self.date_start)
+
+        if not isinstance(self.date_end, datetime.datetime):
+            self.date_end = parse_date(self.date_end)
+
+    @classmethod
+    def fields(cls) -> list[str]:
+        return sorted(fields(cls))
+
+    @property
+    def district(self) -> str:
+        return Config().data
 
 
 class Entries:
     l: list[Entry]
+    id: str
 
-    def __init__(self, data: RawData):
+    def __init__(self, data: RawData, id="root"):
+        self.id = id
         indices = {}
-        for key, param in zip(
-            const.ENTRY_FIELDS,
-            [
-                Config().data.col_date_start,
-                Config().data.col_date_end,
-                Config().data.col_role,
-                Config().data.col_institution,
-                Config().data.col_location,
-            ],
-        ):
+        for key in Entry.fields():
+            param = getattr(Config().data, f"col_{key}")
             try:
                 i = data.headers.index(param)
             except ValueError as e:
@@ -144,10 +146,34 @@ def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime
         parsed datetime
     """
 
+    if not isinstance(s, (int, str, datetime.datetime, datetime.date)):
+        raise ValueError(_("{0!r} cannot be interpreted as a date").format(s))
+
     if isinstance(s, datetime.datetime):
         return s
     if isinstance(s, datetime.date):
         return datetime.datetime.combine(s, datetime.time(0))
     if isinstance(s, int):
         if s > 40177 and s < 47482:
-            return datetime.datetime(1904, 1, 1) + datetime.timedelta(s)
+            return datetime.datetime(Config().data.excel_start_date, 1, 1) + datetime.timedelta(
+                s - 1
+            )
+
+    s = s.strip()
+
+    try:
+        return datetime.datetime.fromisoformat(s)
+    except ValueError:
+        pass
+
+    for fmt in Config().data.date_formats:
+        try:
+            return datetime.datetime.strptime(s, fmt)
+        except ValueError:
+            pass
+    raise ValueError(_("{0!r} cannot be interpreted as a date").format(s))
+
+
+def load_data(loader: DataLoader) -> Entries:
+    data = RawData(*loader.load_data(Config().data))
+    return Entries(data, "root")

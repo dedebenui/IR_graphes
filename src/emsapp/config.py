@@ -1,19 +1,25 @@
 from __future__ import annotations
+from collections import defaultdict
 from contextlib import contextmanager
+import json
+from optparse import Option
 
 import os
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr
 
 import collections.abc
+from emsapp.i18n import _
 
 from emsapp.logging import get_logger
+from emsapp.widgets.common import get_user_input
 
 logger = get_logger()
+T = TypeVar("T")
 
 
 class ConfigurationValueError(ValueError):
@@ -24,11 +30,15 @@ class DataConfig(BaseModel):
     db_path: Path
     table_name: str
 
+    excel_start_year: Literal[1900, 1904]
+
     col_date_start: str
     col_date_end: str
     col_role: str
     col_institution: str
     col_location: str
+
+    date_formats: list[str]
 
     @property
     def columns(self) -> list[str]:
@@ -45,10 +55,95 @@ class PluginConfig(BaseModel):
     data_loader: list[str]
 
 
+class UserData:
+    """
+    The goal of this class is to store information entered by the user that should never change.
+    For example, in which district is located which town.
+    """
+
+    d: dict[str, dict[str, str]]
+
+    def __init__(self):
+        self.d = defaultdict(dict)
+        try:
+            with open(pkg_resources.resource_filename("emsapp", "defaults/user_data.json")) as file:
+                self.d.update(json.load(file))
+        except Exception:
+            logger.error("could not open user data. Resetting with empty file.", exc_info=True)
+
+    def get(self, value_descr: str, key: str, validator: Callable[[str], T] = str) -> Optional[T]:
+        """get a user-provided piece of data. If the data has never been provided before, the user
+        is asked to provide it. Otherwise it is recalled from the last time the user provided it.
+
+        Parameters
+        ----------
+        value_descr : str
+            description of the kind of value the user is supposed to enter. Can be thought of
+            as a domain.
+        key : str
+            key to the value
+        validator : Callable[[str], T], optional
+            Should take a string and return the desired data parsed from the str
+            If this function raises a ValueError, the user is given the chance
+            to input the data until it is valid or until they cancel, by default str
+
+        Returns
+        -------
+        Optional[T]
+            the desired data or None if the data is not available and the user cancels.
+
+        Example
+        -------
+        district = UserData().get("district", "Fribourg") # "Sarine"
+        """
+        if value_descr in self.d and key in self.d[value_descr]:
+            raw_val = self.d[value_descr][key]
+            try:
+                return validator(raw_val)
+            except ValueError:
+                logger.warning(
+                    f"Could not parse already stored value for {value_descr}:{key} = {raw_val!r}",
+                    exc_info=True,
+                )
+                pass
+        return self.ask_user(value_descr, key, validator)
+
+    def update(self, value_descr: str, key: str, raw_value: str):
+        self.d[value_descr][key] = raw_value
+        with open(
+            pkg_resources.resource_filename("emsapp", "defaults/user_data.json"), "w"
+        ) as file:
+            json.dump(self.d, file, indent=4)
+
+    def ask_user(
+        self, value_descr: str, key: str, validator: Callable[[str], T] = str
+    ) -> Optional[T]:
+        msg = _("Please enter a {value_descr} corresponding to {key}").format(
+            value_descr=value_descr, key=key
+        )
+        if validator is not str:
+            msg += f"\n{validator.__doc__}"
+        error_msg = ""
+        while True:
+            raw_val = get_user_input(f"{msg}\n{error_msg}")
+            logger.debug(f"UserData input : {raw_val = }")
+            if raw_val is None:
+                return raw_val
+            try:
+                val = validator(raw_val)
+            except ValueError as e:
+                error_msg = str(e)
+                logger.info(f"invalid value {raw_val} for {value_descr}:{key}", exc_info=True)
+                continue
+            break
+        self.update(value_descr, key, raw_val)
+        return val
+
 
 class RootConfig(BaseModel):
     data: DataConfig
     plugins: PluginConfig
+    _user_data: UserData = PrivateAttr(default_factory=UserData)
     _commit_flag: bool = PrivateAttr(True)
 
     @contextmanager
@@ -68,6 +163,10 @@ class RootConfig(BaseModel):
 
     def dump(self):
         print(self.json(indent=2))
+
+    @property
+    def user_data(self) -> UserData:
+        return self._user_data
 
 
 class Config:

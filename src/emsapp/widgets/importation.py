@@ -1,5 +1,5 @@
 import re
-from emsapp.data.loading import RawData, DataLoader, DataLoaderFactory
+from emsapp.data.loading import Entry, RawData, DataLoader, DataLoaderFactory
 import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 from pathlib import Path
@@ -76,8 +76,8 @@ class ColumnSelector(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
         self.selectors = [
-            ValuesSelector(name, headers, col_name)
-            for name, col_name in zip(const.ENTRY_FIELDS, Config().data.columns)
+            ValuesSelector(key, headers, getattr(Config().data, f"col_{key}"))
+            for key in Entry.fields()
         ]
         self.did_change = False
         for selector in self.selectors:
