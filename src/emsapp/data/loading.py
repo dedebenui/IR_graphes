@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+import datetime
 import os
 from pathlib import Path
 from typing import Protocol, Type, Union
 
 from emsapp import const
 from emsapp.config import Config, ConfigurationValueError, DataConfig
+from emsapp.data import RawData
 from emsapp.logging import get_logger
 
 logger = get_logger()
@@ -24,14 +25,14 @@ class DataLoader(Protocol):
         """
         ...
 
-    def load_data(self, config:DataConfig) -> tuple[list[str], list[list]]:
+    def load_data(self, config: DataConfig) -> tuple[list[str], list[list]]:
         """imports the whole dataset
 
         Parameters
         ----------
         config: DataConfig
             current data configuration
-            
+
 
         Returns
         -------
@@ -42,11 +43,11 @@ class DataLoader(Protocol):
         """
         ...
 
-    def headers(self, config:DataConfig) -> list[str]:
+    def headers(self, config: DataConfig) -> list[str]:
         """Returns a list of the column names"""
         ...
 
-    def tables(self, config:DataConfig) -> list[str]:
+    def tables(self, config: DataConfig) -> list[str]:
         """returns a list of available tables"""
         ...
 
@@ -77,16 +78,11 @@ class DataLoaderFactory:
         return path.suffix.lower() in cls._registered
 
 
-@dataclass
-class RawData:
-    headers: list[str]
-    rows: list[list]
-
 
 @dataclass
 class Entry:
-    date_start: datetime
-    date_end: datetime
+    date_start: datetime.datetime
+    date_end: datetime.datetime
     role: str
     institution: str
     location: str
@@ -132,3 +128,26 @@ class Entries:
                 continue
 
             self.l.append(entry)
+
+
+def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime.datetime:
+    """Returns a datetime object, parsed from a variety of different sources
+
+    Parameters
+    ----------
+    s : Union[int, str, datetime.datetime, datetime.date, datetime.time]
+        input
+
+    Returns
+    -------
+    datetime.datetime
+        parsed datetime
+    """
+
+    if isinstance(s, datetime.datetime):
+        return s
+    if isinstance(s, datetime.date):
+        return datetime.datetime.combine(s, datetime.time(0))
+    if isinstance(s, int):
+        if s > 40177 and s < 47482:
+            return datetime.datetime(1904, 1, 1) + datetime.timedelta(s)
