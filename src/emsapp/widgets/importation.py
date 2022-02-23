@@ -65,7 +65,6 @@ class TableSelector(ValuesSelector):
 class ColumnSelector(QtWidgets.QWidget):
     selectors: list[ValuesSelector]
     did_change: bool
-    valid: bool = False
 
     sig_column_changed = QtCore.pyqtSignal(str, str)
 
@@ -86,18 +85,19 @@ class ColumnSelector(QtWidgets.QWidget):
 
     def update_headers(self, headers: list[str]):
         for selector in self.selectors:
-            selector.update_values(headers)
+            selector.update_values(headers, getattr(Config().data, f"col_{selector.name}"))
 
     def column_changed_callback(self, selector: ValuesSelector):
         def column_changed(new_name: str):
             if selector.valid:
                 setattr(Config().data, "col_" + selector.name, new_name)
                 self.sig_column_changed.emit(selector.name, new_name)
-                self.valid = True
-            else:
-                self.valid = False
 
         return column_changed
+    
+    @property
+    def valid(self)->bool:
+        return all(s.valid for s in self.selectors)
 
     def current_selection(self) -> list[str]:
         return [selector.value for selector in self.selectors]
@@ -105,7 +105,7 @@ class ColumnSelector(QtWidgets.QWidget):
 
 class ImportWindow(QtWidgets.QDialog):
     did_accept: bool
-    importer: DataLoader = None
+    data_loader: DataLoader = None
 
     def __init__(self, default_path: os.PathLike = None):
         super().__init__()
@@ -132,23 +132,23 @@ class ImportWindow(QtWidgets.QDialog):
         self.setWindowFlag(QtCore.Qt.WindowType.WindowCloseButtonHint, False)
 
         self.file_changed(Config().data.db_path)
-        if self.importer is None:
+        if self.data_loader is None:
             self.file_selector.choose_path()
 
     def file_changed(self, new_path: Path):
         if DataLoaderFactory.valid(new_path):
-            self.importer = DataLoaderFactory.create(new_path)
-            tables = self.importer.tables(Config().data)
+            self.data_loader = DataLoaderFactory.create(new_path)
+            tables = self.data_loader.tables(Config().data)
         else:
-            self.importer = None
+            self.data_loader = None
             tables = []
-        self.finish_buttons.ok_button.setDisabled(self.importer is None)
-        self.table_selector.update_values(tables)
-        self.update_ok_button()
+        self.finish_buttons.ok_button.setDisabled(self.data_loader is None)
+        self.table_selector.update_values(tables, Config().data.table_name)
+        self.table_changed()
 
     def table_changed(self):
-        if self.importer:
-            self.column_selector.update_headers(self.importer.headers(Config().data))
+        if self.data_loader:
+            self.column_selector.update_headers(self.data_loader.headers(Config().data))
         self.update_ok_button()
 
     def columns_changed(self, col_key: str, new_name: str):
@@ -157,7 +157,9 @@ class ImportWindow(QtWidgets.QDialog):
 
     def update_ok_button(self):
         valid = (
-            self.importer is not None and self.table_selector.valid and self.column_selector.valid
+            self.data_loader is not None
+            and self.table_selector.valid
+            and self.column_selector.valid
         )
         self.finish_buttons.ok_button.setDisabled(not valid)
 
@@ -166,7 +168,7 @@ class ImportWindow(QtWidgets.QDialog):
         self.close()
 
 
-def configure_db(parent: QtWidgets.QWidget = None):
+def configure_db(parent: QtWidgets.QWidget = None) -> DataLoader:
     with Config().hold():
         import_win = ImportWindow()
         import_win.exec_()
@@ -175,6 +177,8 @@ def configure_db(parent: QtWidgets.QWidget = None):
     if parent:
         parent.activateWindow()
     Config().dump()
+    if import_win.did_accept:
+        return import_win.data_loader
 
 
 def main():

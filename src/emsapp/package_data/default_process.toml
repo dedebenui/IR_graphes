@@ -1,0 +1,47 @@
+# Staff Process
+[staff]
+title = "Soignants"
+
+[staff.filter]
+type = "include"
+column = "role"
+value = "Soignant"
+
+[staff.splitter]
+type = "value"
+column = "institution"
+
+[staff.transformer.periods]
+type = "periods"
+
+[staff.transformer.new]
+type = "new"
+
+[staff.transformer.cumulative]
+type = "cumulative"
+
+[staff.grouper]
+type = "value"
+
+# Resident Process
+[resident.filter]
+type = "include"
+column = "role"
+value = "Bénéficiaire"
+
+[resident.splitter]
+type = "value"
+column = "institution"
+
+[resident.transformer.periods]
+type = "periods"
+
+[resident.transformer.new]
+type = "new"
+
+[resident.transformer.cumulative]
+type = "cumulative"
+
+[resident.grouper]
+type = "value"
+column = "institution"

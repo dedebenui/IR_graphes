@@ -1,10 +1,22 @@
 from typing import Optional
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal
+from PyQt5.QtWidgets import (
+    QWidget,
+    QToolTip,
+    QComboBox,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QDialog, QCompleter
+)
 
 from emsapp.i18n import _
 
 
-class QWidgetWithHelp(QtWidgets.QWidget):
+class QWidgetWithHelp(QWidget):
     show_tool_tip: bool = False
     __tttxt: str = ""
 
@@ -17,33 +29,86 @@ class QWidgetWithHelp(QtWidgets.QWidget):
         self.__tttxt = txt
         self.setMouseTracking(bool(txt))
 
-    def mouseMoveEvent(self, e: QtGui.QMouseEvent) -> None:
+    def mouseMoveEvent(self, e: QMouseEvent) -> None:
         super().mouseMoveEvent(e)
         if self.__tttxt:
             p = self.mapToGlobal(e.pos())
-            QtWidgets.QToolTip.showText(p, self.__tttxt)
+            QToolTip.showText(p, self.__tttxt)
 
+class ExtendedComboBox(QComboBox):
+    def __init__(self, parent=None):
+        super(ExtendedComboBox, self).__init__(parent)
+
+        self.setEditable(True)
+
+        # add a filter model to filter matching items
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+
+        # add a completer, which uses the filter model
+        self.completer = QCompleter(self.pFilterModel, self)
+        # always show all (filtered) completions
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+
+        # connect signals
+        self.lineEdit().textEdited.connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
+    # on selection of an item from the completer, select the corresponding item from combobox
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+    # on model change, update the models of the filter and completer as well
+    def setModel(self, model):
+        super(ExtendedComboBox, self).setModel(model)
+        self.pFilterModel.setSourceModel(model)
+        self.completer.setModel(self.pFilterModel)
+
+    # on model column change, update the model column of the filter and completer as well
+    def setModelColumn(self, column):
+        self.completer.setCompletionColumn(column)
+        self.pFilterModel.setFilterKeyColumn(column)
+        super(ExtendedComboBox, self).setModelColumn(column)
 
 class ValuesSelector(QWidgetWithHelp):
-    sig_selection_changed = QtCore.pyqtSignal(str)
+    values: list[str]
+    sig_selection_changed = pyqtSignal(str)
     valid: bool = False
 
-    def __init__(self, label: str, values: list[str] = None, selection: str = None):
+    def __init__(
+        self,
+        label: str,
+        values: list[str] = None,
+        selection: str = None,
+        ComboBoxClass: type[QComboBox] = QComboBox,
+    ):
         super().__init__()
         self.name = label
-        values = values or []
-        layout = QtWidgets.QHBoxLayout()
+        self.values = values or []
+        layout = QHBoxLayout()
         self.setLayout(layout)
-        self.label = QtWidgets.QLabel(_(label), self)
-        self.box = QtWidgets.QComboBox(self)
+        self.label = QLabel(_(label), self)
+        self.box = ComboBoxClass(self)
         layout.addWidget(self.label)
         layout.addWidget(self.box)
         self.box.currentTextChanged.connect(self.sig_selection_changed.emit)
-        self.update_values(values, selection)
+        self.update_values(self.values, selection)
+        self.setMaximumHeight(35)
+
+
 
     @property
     def value(self) -> str:
         return self.box.currentText()
+
+    @property
+    def index(self) -> str:
+        return self.box.currentIndex()
 
     def update_values(self, values: list[str], selection: str = None):
         """update the possible values in the dropdown box
@@ -56,8 +121,9 @@ class ValuesSelector(QWidgetWithHelp):
             if given, selects this value
         """
         selected = selection or self.box.currentText()
-        if selected in values:
-            new_index = values.index(selected)
+        self.values = values
+        if selected in self.values:
+            new_index = self.values.index(selected)
             must_emit = False
         else:
             new_index = 0
@@ -65,8 +131,7 @@ class ValuesSelector(QWidgetWithHelp):
 
         self.box.blockSignals(True)
         self.box.clear()
-        self.box.insertItems(0, values)
-        self.valid = bool(values)
+        self.box.insertItems(0, self.values)
         self.box.setDisabled(not self.valid)
         self.box.setCurrentIndex(new_index)
         self.box.blockSignals(False)
@@ -74,21 +139,25 @@ class ValuesSelector(QWidgetWithHelp):
         if must_emit:
             self.sig_selection_changed.emit(self.value)
 
+    @property
+    def valid(self) -> bool:
+        return bool(self.values)
 
-class AcceptCancel(QtWidgets.QWidget):
 
-    sig_clicked = QtCore.pyqtSignal(bool)
+class AcceptCancel(QWidget):
+
+    sig_clicked = pyqtSignal(bool)
 
     def __init__(self, horizontal=True):
         super().__init__()
         if horizontal:
-            layout = QtWidgets.QHBoxLayout()
+            layout = QHBoxLayout()
         else:
-            layout = QtWidgets.QVBoxLayout()
+            layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.ok_button = QtWidgets.QPushButton("ok")
-        self.cancel_button = QtWidgets.QPushButton("cancel")
+        self.ok_button = QPushButton("ok")
+        self.cancel_button = QPushButton("cancel")
 
         self.ok_button.clicked.connect(lambda: self.sig_clicked.emit(True))
         self.cancel_button.clicked.connect(lambda: self.sig_clicked.emit(False))
@@ -101,16 +170,16 @@ class AcceptCancel(QtWidgets.QWidget):
         self.ok_button.setDefault(True)
 
 
-class UserInput(QtWidgets.QDialog):
+class UserInput(QDialog):
     value: Optional[str] = None
 
     def __init__(self, msg: str, parent=None):
         super().__init__(parent)
-        layout = QtWidgets.QVBoxLayout()
+        layout = QVBoxLayout()
         self.setLayout(layout)
 
-        label = QtWidgets.QLabel(msg)
-        self.line_edit = QtWidgets.QLineEdit()
+        label = QLabel(msg)
+        self.line_edit = QLineEdit()
         self.line_edit.setText(self.value)
         finish_button = AcceptCancel()
         finish_button.sig_clicked.connect(self.finish)

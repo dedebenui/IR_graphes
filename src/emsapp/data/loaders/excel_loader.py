@@ -26,7 +26,7 @@ class ExcelDataLoader:
             return [], []
         data = [
             [cell.value for cell in row]
-            for row in self.wb[self.table_ws_map[config.table_name]][1:]
+            for row in list(self.wb[self.table_ws_map[config.table_name]])[1:]
         ]
         return self.all_tables[config.table_name], data
 

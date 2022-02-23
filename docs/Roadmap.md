@@ -9,14 +9,17 @@
 - export plots in png or pdfs
 - be configurable
 
-# Todo in order
-- implement data flow for current plot setups
-    - 
-- implement some nice GUI stuff
-    - Plot Preview
-    - Sysematic 
-- [] build the main interface with no functionnality first 
-- [] create preview widget
+# TODO
+- Fix bug below. Perhaps it requires a new structure for the import window.
+- implement a lot of fail-safes:
+    - detect problem when choosing columns
+        - column doesn't contain correct datatype
+    - add warnings for empty data after filtering
+
+- add config options to Transformers
+- add flexibility to instit_type filtering
+- revamp process description syntax
+
 
 
 # Bugs

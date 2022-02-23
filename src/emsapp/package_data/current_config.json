@@ -1,0 +1,24 @@
+{
+    "data": {
+        "db_path": "X:\\03_IR\\06_EMIR\\Suivi situations EMIR.accdb",
+        "table_name": "ci",
+        "excel_start_year": 1900,
+        "col_date_start": "dtest",
+        "col_date_end": "dfinisol",
+        "col_role": "role",
+        "col_institution": "instit_fullid",
+        "col_institution_type": "instit_type",
+        "col_location": "instit_loc",
+        "date_formats": [
+            "%x",
+            "%d.%m.%Y",
+            "%d/%m/%Y"
+        ]
+    },
+    "plugins": {
+        "data_loader": [
+            "emsapp.data.loaders.access_loader",
+            "emsapp.data.loaders.excel_loader"
+        ]
+    }
+}

@@ -2,7 +2,8 @@ import gettext
 from typing import TYPE_CHECKING
 import pkg_resources
 
-import emsapp.const
+def N_(s:str)->str:
+    return s
 
 if TYPE_CHECKING:
 

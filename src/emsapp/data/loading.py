@@ -4,12 +4,13 @@ from dataclasses import dataclass, fields
 import datetime
 import os
 from pathlib import Path
-from typing import Protocol, Type, Union
+from typing import Iterator, Optional, Protocol, Type, Union
 
 from emsapp.config import Config, ConfigurationValueError, DataConfig
 from emsapp.data import RawData
+from emsapp.data.validators import district_validator
 from emsapp.logging import get_logger
-from emsapp.i18n import _, ngettext
+from emsapp.i18n import _, ngettext, N_
 
 logger = get_logger()
 
@@ -84,6 +85,7 @@ class Entry:
     date_end: datetime.datetime
     role: str
     institution: str
+    institution_type: str
     location: str
 
     def __post_init__(self):
@@ -95,41 +97,29 @@ class Entry:
 
     @classmethod
     def fields(cls) -> list[str]:
-        return sorted(fields(cls))
+        return [f.name for f in fields(cls)]
 
     @property
-    def district(self) -> str:
-        return Config().data
+    def district(self) -> Optional[str]:
+        """district corresponding to the location. May be None if data is unavailable"""
+        return Config().user_data.get(N_("district"), self.location, district_validator)
 
 
 class Entries:
     l: list[Entry]
     id: str
+    specs: dict[str, str]
 
-    def __init__(self, data: RawData, id="root"):
+    def __init__(self, l: list[Entry], id="root", specs=None):
         self.id = id
-        indices = {}
-        for key in Entry.fields():
-            param = getattr(Config().data, f"col_{key}")
-            try:
-                i = data.headers.index(param)
-            except ValueError as e:
-                raise ConfigurationValueError(
-                    "Column name {col_name!r} not found in table {table_name!r}".format(
-                        col_name=param, table_name=Config().data.table_name
-                    )
-                ) from e
-            indices[key] = i
+        self.l = l
+        self.specs = specs or {}
 
-        self.l = []
-        for row in data.rows:
-            try:
-                entry = Entry(**{k: row[v] for k, v in indices.items()})
-            except ValueError as e:
-                logger.warning("invalid entry {row!r} : {error}".format(row=row, error=e))
-                continue
+    def __iter__(self) -> Iterator[Entry]:
+        yield from self.l
 
-            self.l.append(entry)
+    def __getitem__(self, index: int) -> Entry:
+        return self.l[index]
 
 
 def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime.datetime:
@@ -174,6 +164,31 @@ def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime
     raise ValueError(_("{0!r} cannot be interpreted as a date").format(s))
 
 
-def load_data(loader: DataLoader) -> Entries:
+def load_data(loader: DataLoader=None) -> Entries:
+    loader = loader or DataLoaderFactory.create(Config().data.db_path)
     data = RawData(*loader.load_data(Config().data))
-    return Entries(data, "root")
+    indices = {}
+    for key in Entry.fields():
+        param = getattr(Config().data, f"col_{key}")
+        try:
+            i = data.headers.index(param)
+        except ValueError as e:
+            raise ConfigurationValueError(
+                "Column name {col_name!r} not found in table {table_name!r}".format(
+                    col_name=param, table_name=Config().data.table_name
+                )
+            ) from e
+        indices[key] = i
+
+    l = []
+    for row in data.rows:
+        try:
+            entry = Entry(**{k: row[v] for k, v in indices.items()})
+            if (t:=entry.institution_type) and t.lower() != "ems":
+                continue
+        except ValueError as e:
+            logger.warning("invalid entry {row!r} : {error}".format(row=row, error=e))
+            continue
+
+        l.append(entry)
+    return Entries(l, "root")

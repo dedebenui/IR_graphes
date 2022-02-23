@@ -7,6 +7,7 @@ ENTRY_FIELDS = [
     N_("date_end"),
     N_("role"),
     N_("institution"),
+    N_("institution_type"),
     N_("location"),
 ]
 DISTRICTS = [

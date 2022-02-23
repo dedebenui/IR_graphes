@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-17 10:47+0100\n"
+"POT-Creation-Date: 2022-02-22 08:48+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -18,23 +18,89 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/const.py:3
+#: src/emsapp/config.py:137
+msgid "Please enter a {value_descr} corresponding to {key}"
+msgstr "Entrez un/une {value_descr} corresponant/e à {key}"
+
+#: src/emsapp/const.py:6
 msgid "date_start"
 msgstr "Date de début"
 
-#: src/emsapp/const.py:3
+#: src/emsapp/const.py:7
 msgid "date_end"
 msgstr "Date de fin"
 
-#: src/emsapp/const.py:3
+#: src/emsapp/const.py:8
 msgid "role"
 msgstr "Rôle"
 
-#: src/emsapp/const.py:3
+#: src/emsapp/const.py:9
 msgid "institution"
 msgstr "Nom de l'institution"
 
-#: src/emsapp/const.py:3
+#: src/emsapp/const.py:10
+#, fuzzy
+msgid "institution_type"
+msgstr "Nom de l'institution"
+
+#: src/emsapp/const.py:11
 msgid "location"
 msgstr "Localité"
+
+#: src/emsapp/const.py:14
+#, fuzzy
+msgid "Broye"
+msgstr "Rôle"
+
+#: src/emsapp/const.py:15
+msgid "Glâne"
+msgstr "Glâne"
+
+#: src/emsapp/const.py:16
+msgid "Gruyère"
+msgstr "Gruyère"
+
+#: src/emsapp/const.py:17
+msgid "Lac"
+msgstr "Lac"
+
+#: src/emsapp/const.py:18
+msgid "Sarine"
+msgstr "Sarine"
+
+#: src/emsapp/const.py:19
+msgid "Singine"
+msgstr "Singine"
+
+#: src/emsapp/const.py:20
+msgid "Veveyse"
+msgstr "Veveyse"
+
+#: src/emsapp/data/loading.py:105
+msgid "district"
+msgstr "District"
+
+#: src/emsapp/data/loading.py:140 src/emsapp/data/loading.py:164
+msgid "{0!r} cannot be interpreted as a date"
+msgstr "impossible d'interpréter {0!r} en tant que date"
+
+#: src/emsapp/data/validators.py:7
+msgid "{s} does not appear in {district_list!r}"
+msgstr "{s} n'apparaît pas dans {district_list!r}"
+
+#: src/emsapp/widgets/importation.py:55
+msgid "No table found in {path}. Please ensure tables are defined in this file."
+msgstr "Aucune table / aucun tableau trouvé dans {path}. Assurez-vous qu'au moins un tableau soit défini dans ce fichier."
+
+#: src/emsapp/widgets/main_window.py:20
+msgid "&File"
+msgstr "&Fichier"
+
+#: src/emsapp/widgets/main_window.py:21
+msgid "&Open..."
+msgstr "&Ouvrir..."
+
+#: src/emsapp/widgets/main_window.py:23
+msgid "Open a database"
+msgstr "Ouvrir une base de donnée"
 

@@ -28,7 +28,7 @@ class AccessDataLoader:
                 try:
                     cursor.execute(f"select * from {table}")
                     headers = [column[0] for column in cursor.description]
-                except pyodbc.ProgrammingError:
+                except (pyodbc.ProgrammingError, pyodbc.Error):
                     continue
                 self.all_tables[table] = headers
 
