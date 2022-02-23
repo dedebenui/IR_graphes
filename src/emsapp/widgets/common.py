@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Type
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
     QLineEdit,
-    QDialog, QCompleter
+    QDialog,
+    QCompleter,
 )
 
 from emsapp.i18n import _
@@ -35,6 +36,7 @@ class QWidgetWithHelp(QWidget):
             p = self.mapToGlobal(e.pos())
             QToolTip.showText(p, self.__tttxt)
 
+
 class ExtendedComboBox(QComboBox):
     def __init__(self, parent=None):
         super(ExtendedComboBox, self).__init__(parent)
@@ -55,6 +57,7 @@ class ExtendedComboBox(QComboBox):
         # connect signals
         self.lineEdit().textEdited.connect(self.pFilterModel.setFilterFixedString)
         self.completer.activated.connect(self.on_completer_activated)
+        self.setMinimumHeight(35)
 
     # on selection of an item from the completer, select the corresponding item from combobox
     def on_completer_activated(self, text):
@@ -74,6 +77,7 @@ class ExtendedComboBox(QComboBox):
         self.completer.setCompletionColumn(column)
         self.pFilterModel.setFilterKeyColumn(column)
         super(ExtendedComboBox, self).setModelColumn(column)
+
 
 class ValuesSelector(QWidgetWithHelp):
     values: list[str]
@@ -98,9 +102,7 @@ class ValuesSelector(QWidgetWithHelp):
         layout.addWidget(self.box)
         self.box.currentTextChanged.connect(self.sig_selection_changed.emit)
         self.update_values(self.values, selection)
-        self.setMaximumHeight(35)
-
-
+        self.setMaximumHeight(40)
 
     @property
     def value(self) -> str:

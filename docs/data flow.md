@@ -7,10 +7,10 @@
 
 # Process
     1. Receives one Entries obj
-    2. Applies a filter to it -> one Entreis obj
-    3. Applies a Splitter to it -> list of Entries obj
+    2. Applies filters to it -> one Entreis obj
+    3. Applies Splitters to it -> list of Entries obj
     4. Applies the same set of Rules to each Entries obj -> list of FinalData
-    5. Applies the Grouper -> list of DataSet
+    5. Applies Groupers -> list of DataSet
 
 # Filter
     1. Receives one Entries obj
@@ -23,7 +23,7 @@
 # Transformer
     1. Receives one Entries obj
     2. Computes one FinalData obj
-    3. Outputs one FinalData obj identified by both the Splitter and the Transformer id
+    3. Outputs one FinalData obj identified by both the Splitter and the Transformer ids
 
 # Grouper
     1. Receives a list of FinalData

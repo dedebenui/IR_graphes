@@ -10,7 +10,7 @@
 - be configurable
 
 # TODO
-- Fix bug below. Perhaps it requires a new structure for the import window.
+- revamp process description syntax
 - implement a lot of fail-safes:
     - detect problem when choosing columns
         - column doesn't contain correct datatype
@@ -18,7 +18,6 @@
 
 - add config options to Transformers
 - add flexibility to instit_type filtering
-- revamp process description syntax
 
 
 

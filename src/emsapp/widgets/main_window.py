@@ -1,21 +1,15 @@
-import time
-import matplotlib
-from matplotlib import pyplot as plt
 from PyQt5 import QtCore, QtWidgets
-from py import process
 
 from emsapp.config import Config
 from emsapp.data import DataSet
-from emsapp.data.loading import DataLoader, Entries, load_data
+from emsapp.data.loading import Entries, load_data
 from emsapp.data.process import current_processes
-from emsapp.i18n import _, ngettext
+from emsapp.i18n import _
 from emsapp.logging import get_logger
-from emsapp.plotting.plotter import Plotter
 from emsapp.widgets.importation import configure_db
 from emsapp.widgets.preview import PlotPreview
 from emsapp.widgets.common import ExtendedComboBox, ValuesSelector
 
-matplotlib.use("Qt5Agg")
 
 logger = get_logger()
 

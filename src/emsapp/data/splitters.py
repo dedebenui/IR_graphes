@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from emsapp.config import SplitterConfig
 
 from emsapp.data.loading import Entries, Entry
 
@@ -32,10 +33,10 @@ class ColumnSplitter(Splitter):
         return list(out.values())
 
 
-def create_splitter(type=None, column=None):
-    if not type:
-        return NullSplitter()
-    if type == "value" and column:
-        return ColumnSplitter(column)
+def create_splitter(conf:SplitterConfig):
+    if conf.type == "value":
+        return ColumnSplitter(conf.column)
+    elif conf.type == "date":
+        raise NotImplementedError()
 
     raise ValueError("Invalid splitter specifications")

@@ -19,3 +19,6 @@ DISTRICTS = [
     N_("Singine"),
     N_("Veveyse"),
 ]
+
+ALL_COLUMNS = ENTRY_FIELDS + ["district"]
+

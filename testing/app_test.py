@@ -29,7 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def ask_random(self):
         key = "".join(random.choice(string.ascii_letters) for _ in range(2))
-        print(Config().user_data.get(key, validate_test))
+        print(Config().user_data.get("disctrict", key, validate_test))
 
 
 def validate_test(s: str) -> str:

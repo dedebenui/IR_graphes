@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import collections.abc
+from ctypes import Union
+from dataclasses import dataclass
 import json
 import os
 from collections import defaultdict
@@ -10,7 +12,8 @@ from typing import Any, Callable, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, validator
+from emsapp.const import column_validator
 
 from emsapp.i18n import _
 from emsapp.logging import get_logger
@@ -55,18 +58,69 @@ class PluginConfig(BaseModel):
     data_loader: list[str]
 
 
-class ProcessConfig(BaseModel):
-    filter: dict[str, Any] = Field(default_factory=dict)
-    splitter: dict[str, Any] = Field(default_factory=dict)
-    transformer: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    grouper: dict[str, Any] = Field(default_factory=dict)
+def value_validator(s: Union[str, list[str]]) -> list[str]:
+    if isinstance(s, str):
+        s = [s]
+    return s
+
+
+class FilterConfig(BaseModel):
+    name: str
+    type: Literal["include", "exclude", "date_after", "date_before"]
+    column: str
+    values: list[str]
+
+    _validate_column = validator("column", allow_reuse=True)(column_validator)
+    _validate_value = validator("value", allow_reuse=True)(value_validator)
+
+
+class SplitterConfig(BaseModel):
+    name: str
+    type: Literal["value", "date"]
+    column: str
+
+    _validate_column = validator("column", allow_reuse=True)(column_validator)
+
+
+class TransformerConfig(BaseModel):
+    name: str
+    type: str
+
+
+class GrouperConfig(BaseModel):
+    name: str
+    splitter: list[str]
+    transformer: list[str]
+
+    _validate_splitter = validator("splitter", allow_reuse=True)(value_validator)
+    _validate_transformer = validator("transformer", allow_reuse=True)(value_validator)
+
+
+@dataclass
+class ProcessConfig:
+    name: str
+    filters: dict[str, FilterConfig]
+    splitters: dict[str, SplitterConfig]
+    transformers: dict[str, TransformerConfig]
+    groupers: dict[str, GrouperConfig]
 
     @classmethod
-    def defaults(cls) -> dict[str, ProcessConfig]:
-        with open(
-            pkg_resources.resource_filename("emsapp", "package_data/default_process.toml"), "rb"
-        ) as file:
-            return {k: cls(**v) for k, v in tomli.load(file).items()}
+    def default(cls) -> ProcessConfig:
+        return cls.from_file(
+            pkg_resources.resource_filename("emsapp", "package_data/default_process.toml")
+        )
+
+    @classmethod
+    def from_file(cls, path: os.PathLike) -> ProcessConfig:
+        with open(path, "rb") as file:
+            root = tomli.load(file)
+
+        flt = {n: FilterConfig(name=n, **d) for n, d in root.get("filter", {}).items()}
+        spl = {n: SplitterConfig(name=n, **d) for n, d in root.get("splitter", {}).items()}
+        trs = {n: TransformerConfig(name=n, **d) for n, d in root.get("transformer", {}).items()}
+        grp = {n: GrouperConfig(name=n, **d) for n, d in root.get("grouper", {}).items()}
+        name = root.get("name", Path(path).stem)
+        return cls(name, flt, spl, trs, grp)
 
 
 class UserData:
@@ -87,7 +141,9 @@ class UserData:
         except Exception:
             logger.error("could not open user data. Resetting with empty file.", exc_info=True)
 
-    def get(self, value_descr: str, key: str, validator: Callable[[str], T] = str) -> Optional[T]:
+    def get(
+        self, value_descr: str, key: str, validator: Callable[[str], T] = str, help_text: str = None
+    ) -> Optional[T]:
         """get a user-provided piece of data. If the data has never been provided before, the user
         is asked to provide it. Otherwise it is recalled from the last time the user provided it.
 
@@ -102,6 +158,9 @@ class UserData:
             Should take a string and return the desired data parsed from the str
             If this function raises a ValueError, the user is given the chance
             to input the data until it is valid or until they cancel, by default str
+        help_text : str, optional
+            string displayed to help the user know what kind of value to enter. If not provided,
+            the docstring of the validator, is specified, is displayed, by default None
 
         Returns
         -------
@@ -115,7 +174,7 @@ class UserData:
         val = self.get_no_ask(value_descr, key, validator)
         if val:
             return val
-        return self.ask_user(value_descr, key, validator)
+        return self.ask_user(value_descr, key, validator, help_text)
 
     def get_no_ask(
         self, value_descr: str, key: str, validator: Callable[[str], T] = str
@@ -139,12 +198,14 @@ class UserData:
             json.dump(self.d, file, indent=4)
 
     def ask_user(
-        self, value_descr: str, key: str, validator: Callable[[str], T] = str
+        self, value_descr: str, key: str, validator: Callable[[str], T] = str, help_text: str = None
     ) -> Optional[T]:
         msg = _("Please enter a {value_descr} corresponding to {key}").format(
             value_descr=value_descr, key=key
         )
-        if validator is not str and validator.__doc__ is not None:
+        if help_text:
+            msg += "\n" + help_text
+        elif validator is not str and validator.__doc__:
             msg += f"\n{validator.__doc__}"
         error_msg = ""
         while True:
@@ -156,7 +217,10 @@ class UserData:
                 val = validator(raw_val)
             except ValueError as e:
                 error_msg = str(e)
-                logger.info(f"invalid value {raw_val} for {value_descr}:{key}", exc_info=True)
+                logger.debug(
+                    f"invalid value {raw_val} entered by user for {value_descr}:{key}",
+                    exc_info=True,
+                )
                 continue
             break
         self.update(value_descr, key, raw_val)
@@ -166,7 +230,7 @@ class UserData:
 class RootConfig(BaseModel):
     data: DataConfig
     plugins: PluginConfig
-    _processes: dict[str, ProcessConfig] = PrivateAttr(default_factory=ProcessConfig.defaults)
+    _process: ProcessConfig = PrivateAttr(default_factory=ProcessConfig.default)
     _user_data: UserData = PrivateAttr(default_factory=UserData)
     _commit_flag: bool = PrivateAttr(True)
 
@@ -201,8 +265,8 @@ class RootConfig(BaseModel):
         return self._user_data
 
     @property
-    def processes(self) -> dict[str, ProcessConfig]:
-        return self._processes
+    def process(self) -> ProcessConfig:
+        return self._process
 
 
 class Config:

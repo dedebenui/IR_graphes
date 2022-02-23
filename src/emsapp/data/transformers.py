@@ -3,6 +3,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 import numpy as np
+from emsapp.config import TransformerConfig
 
 from emsapp.data import DataType, FinalData
 from emsapp.data.loading import Entries, Entry
@@ -95,9 +96,9 @@ class PeriodTransformer(Transformer):
                 entry_list.append(entry)
                 curr_end = entry.date_start + dur
             else:
+                periods.append(entry_list)
                 x += [start, curr_end]
                 y += [len(entry_list)] * 2
-                periods.append(entry_list)
                 start = entry.date_start
                 curr_end = start + dur
                 entry_list = [entry]
@@ -114,12 +115,12 @@ class PeriodTransformer(Transformer):
         )
 
 
-def create_transformer(type: str):
-    if type == "periods":
+def create_transformer(conf:TransformerConfig):
+    if conf.type == "periods":
         return PeriodTransformer()
-    elif type == "new":
+    elif conf.type == "new":
         return NewTransformer()
-    elif type == "cumulative":
+    elif conf.type == "cumulative":
         return CumulativeTransformer()
 
     raise ValueError("Invalid transformer specifications")

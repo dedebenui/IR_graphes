@@ -1,47 +1,45 @@
-# Staff Process
-[staff]
-title = "Soignants"
+# FILTRES ---------------------------------------------------------------------
 
-[staff.filter]
+[filter.ems_only] # Conserve uniquement les entrées concernant les EMS
 type = "include"
-column = "role"
-value = "Soignant"
+column = "institution_type"
+value = "ems"
 
-[staff.splitter]
+[filter.no_other_staff] # Rejète les entrées concernant les Collaborateurs autre
+type = "exclude"
+column = "role"
+value = "Collaborateur autre"
+
+[filter.recent_only] # Rejète les entrées trop vieilles
+type = "date_after"
+column = "date_start"
+value = "2021-10-01"
+
+# SÉPARATEURS -----------------------------------------------------------------
+
+[splitter.instit] # Sépare les entrées en fonction de l'institution
 type = "value"
 column = "institution"
 
-[staff.transformer.periods]
-type = "periods"
+[splitter.role] # Sépare les entrées en fonction du rôle 
+type = "value"
+column = "role"
 
-[staff.transformer.new]
+# TRANSFORMATEURS -------------------------------------------------------------
+
+[transformer.new] # Identifie les nouveaux cas
 type = "new"
 
-[staff.transformer.cumulative]
+[transformer.cumulative] # Identifie combien de personnes sont en isolement chaque jour
 type = "cumulative"
 
-[staff.grouper]
-type = "value"
-
-# Resident Process
-[resident.filter]
-type = "include"
-column = "role"
-value = "Bénéficiaire"
-
-[resident.splitter]
-type = "value"
-column = "institution"
-
-[resident.transformer.periods]
+[transformer.periods] # Identifies les périodes de flambée potentielles
 type = "periods"
 
-[resident.transformer.new]
-type = "new"
+# GROUPEURS -------------------------------------------------------------------
 
-[resident.transformer.cumulative]
-type = "cumulative"
+[grouper.each_instit] # Crée un graphe par institution et rôle
+splitter = ["instit", "role"]
 
-[resident.grouper]
-type = "value"
-column = "institution"
+[grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
+transformer = "periods"
