@@ -2,6 +2,7 @@ build
 dist
 playground.py
 .vscode/
+testing/testing_data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
