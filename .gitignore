@@ -1,6 +1,7 @@
 build
 dist
 playground.py
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
