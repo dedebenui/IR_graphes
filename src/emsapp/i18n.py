@@ -1,3 +1,4 @@
+import sys
 import gettext
 from typing import TYPE_CHECKING
 import pkg_resources
@@ -13,9 +14,20 @@ if TYPE_CHECKING:
     def ngettext(msg: str, num: int) -> str:
         return msg
 else:
-    trans = gettext.translation(
-        "messages", pkg_resources.resource_filename("emsapp", "locale"), ["fr"]
-    )
-    _ = trans.gettext
-    ngettext = trans.ngettext
+    if sys.platform == "win32":
+        import ctypes
+        import locale
+        windll = ctypes.windll.kernel32
+        lang = [locale.windows_locale[windll.GetUserDefaultUILanguage()]]
+    else:
+        lang = None
+    try:
+        trans = gettext.translation(
+            "messages", pkg_resources.resource_filename("emsapp", "locale"), lang
+        )
+        _ = trans.gettext
+        ngettext = trans.ngettext
+    except FileNotFoundError:
+        _ = gettext.gettext
+        ngettext = gettext.ngettext
 
