@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -8,9 +9,29 @@ from emsapp.config import TransformerConfig
 from emsapp.data import DataType, FinalData
 from emsapp.data.loading import Entries, Entry
 from emsapp.i18n import _
+from emsapp.validators import register_valid
 
 
 class Transformer(ABC):
+    name: str
+    _registered: dict[str, type[Transformer]] = {}
+
+    @classmethod
+    def register(cls, name, new_cls):
+        Transformer._registered[name] = new_cls
+        register_valid("transformer_type", name)
+
+    @classmethod
+    def create(cls, conf: TransformerConfig) -> Transformer:
+        cls = Transformer._registered.get(conf.type)
+        if cls:
+            return cls(conf)
+
+        raise ValueError(_("Invalid transformer specifications : {conf!r}").format(conf=conf))
+
+    def __init__(self, conf: TransformerConfig):
+        self.name = conf.name
+
     @abstractmethod
     def __call__(self, entries: Entries) -> FinalData:
         ...
@@ -35,13 +56,12 @@ class NewTransformer(Transformer):
 
         x = [min_date + timedelta(d) for d in range((max_date - min_date).days + 1)]
         y = [cases[d] for d in x]
+
+        report = entries.report.copy()
+        report.transformer[self.name] = self.name
+
         return FinalData(
-            np.array(x),
-            np.array(y),
-            DataType.BAR,
-            id="new:" + entries.id,
-            description=_("New cases"),
-            specs=entries.specs,
+            np.array(x), np.array(y), DataType.BAR, description=_("New cases"), report=report
         )
 
 
@@ -65,13 +85,16 @@ class CumulativeTransformer(Transformer):
 
         x = [min_date + timedelta(d) for d in range((max_date - min_date).days + 1)]
         y = [cases[d] for d in x]
+
+        report = entries.report.copy()
+        report.transformer[self.name] = self.name
+
         return FinalData(
             np.array(x),
             np.array(y),
             DataType.LINE,
-            id="cumulative:" + entries.id,
             description=_("People in confinment"),
-            specs=entries.specs,
+            report=report,
         )
 
 
@@ -105,22 +128,19 @@ class PeriodTransformer(Transformer):
         periods.append(entry_list)
         x += [start, curr_end]
         y += [len(entry_list)] * 2
+
+        report = entries.report.copy()
+        report.transformer[self.name] = self.name
+
         return FinalData(
             np.array(x),
             np.array(y),
             DataType.PERIOD,
-            id="period:" + entries.id,
             description=_("Period in question"),
-            specs=entries.specs,
+            report=report,
         )
 
 
-def create_transformer(conf:TransformerConfig):
-    if conf.type == "periods":
-        return PeriodTransformer()
-    elif conf.type == "new":
-        return NewTransformer()
-    elif conf.type == "cumulative":
-        return CumulativeTransformer()
-
-    raise ValueError("Invalid transformer specifications")
+Transformer.register("new", NewTransformer)
+Transformer.register("cumulative", CumulativeTransformer)
+Transformer.register("periods", PeriodTransformer)

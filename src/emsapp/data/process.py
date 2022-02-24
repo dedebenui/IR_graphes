@@ -1,40 +1,42 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from emsapp.config import Config
 from emsapp.data import DataSet, Entries
-from emsapp.data.filters import Filter, create_filter
-from emsapp.data.groupers import Grouper, create_grouper
-from emsapp.data.splitters import Splitter, create_splitter
-from emsapp.data.transformers import Transformer, create_transformer
+from emsapp.data.filters import Filter
+from emsapp.data.groupers import Grouper
+from emsapp.data.splitters import Splitter
+from emsapp.data.transformers import Transformer
 
 
 @dataclass
 class Process:
-    filters: Filter
-    splitters: Splitter
-    transformers: dict[str, Transformer]
-    grouper: Grouper
+    filters: list[Filter]
+    splitters: list[Splitter]
+    transformers: list[Transformer]
+    groupers: list[Grouper]
+
+    @classmethod
+    def from_config(cls) -> Process:
+        p_conf = Config().process
+
+        filters = [Filter.create(conf) for conf in p_conf.filters.values()]
+        splitters = [Splitter.create(conf) for conf in p_conf.splitters.values()]
+        transformers = [Transformer.create(conf) for conf in p_conf.transformers.values()]
+        groupers = [Grouper.create(conf) for conf in p_conf.groupers.values()]
+
+        return Process(filters, splitters, transformers, groupers)
 
     def __call__(self, raw_entries: Entries) -> list[DataSet]:
-        filtered_entries = Entries([e for e in raw_entries if all(f(e) for f in self.filters)], "filtered")
-        splitted = self.splitter(filtered_entries)
-        final_data = [
-            trans(entries) for entries in splitted for trans in self.transformers.values()
-        ]
-        return self.grouper(final_data)
-
-
-def current_processes() -> dict[str, Process]:
-    d: dict[str, Process] = {}
-
-    p_conf = Config().process
-
-    for p_name, config in Config().process.items():
-        d[p_name] = Process(
-            create_filter(**config.filter),
-            create_splitter(**config.splitter),
-            {k: create_transformer(**v) for k, v in config.transformer.items()},
-            create_grouper(**config.grouper),
+        filtered_entries = Entries(
+            [e for e in raw_entries if all(f(e) for f in self.filters)], raw_entries.report.copy()
         )
+        entries_lists = [filtered_entries]
+        for splitter in self.splitters:
+            entries_lists = [
+                new_entries for entries in entries_lists for new_entries in splitter(entries)
+            ]
 
-    return d
+        final_data = [trans(entries) for entries in entries_lists for trans in self.transformers]
+        return [data_set for grouper in self.groupers for data_set in grouper(final_data)]

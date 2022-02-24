@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Protocol, Union
 
 from emsapp.config import Config, ConfigurationValueError, DataConfig
-from emsapp.data import Entries, Entry, RawData
+from emsapp.data import DataReport, Entries, Entry, RawData
 from emsapp.logging import get_logger
 from emsapp.i18n import _
 
@@ -96,11 +96,9 @@ def load_data(loader: DataLoader = None) -> Entries:
     for row in data.rows:
         try:
             entry = Entry(**{k: row[v] for k, v in indices.items()})
-            if (t := entry.institution_type) and t.lower() != "ems":
-                continue
         except ValueError as e:
-            logger.warning("invalid entry {row!r} : {error}".format(row=row, error=e))
+            logger.warning(_("invalid entry : {error}").format(error=e))
             continue
 
         l.append(entry)
-    return Entries(l, "root")
+    return Entries(l)

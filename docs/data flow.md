@@ -7,7 +7,7 @@
 
 # Process
     1. Receives one Entries obj
-    2. Applies filters to it -> one Entreis obj
+    2. Applies filters to it -> one Entries obj
     3. Applies Splitters to it -> list of Entries obj
     4. Applies the same set of Rules to each Entries obj -> list of FinalData
     5. Applies Groupers -> list of DataSet

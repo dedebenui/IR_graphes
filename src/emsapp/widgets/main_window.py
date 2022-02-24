@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from emsapp.config import Config
 from emsapp.data import DataSet
 from emsapp.data.loading import Entries, load_data
-from emsapp.data.process import current_processes
+from emsapp.data.process import Process
 from emsapp.i18n import _
 from emsapp.logging import get_logger
 from emsapp.widgets.importation import configure_db
@@ -41,12 +41,12 @@ class MainWindow(QtWidgets.QMainWindow):
         layout.addWidget(self.data_selector)
         layout.addWidget(self.preview)
 
-        self.processes = current_processes()
+        self.process = Process.from_config()
 
         self.load_and_process()
 
     def load_new_database(self) -> Entries:
-        loader = configure_db(self)
+        configure_db(self)
         self.load_and_process()
 
     def load_and_process(self):
@@ -58,10 +58,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.info(_("couldn't load {path}").format(path=Config().data.db_path))
                 configure_db(self)
         self.processed_data = {}
-        for name, process in self.processes.items():
-            for ds in process(entries):
-                key = f"{name} - {ds.title}"
-                self.processed_data[key] = ds
+        for ds in self.process(entries):
+            self.processed_data[ds.title] = ds
 
         self.data_selector.update_values(sorted(self.processed_data))
 

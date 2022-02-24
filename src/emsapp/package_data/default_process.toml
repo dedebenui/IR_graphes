@@ -3,7 +3,7 @@
 [filter.ems_only] # Conserve uniquement les entrées concernant les EMS
 type = "include"
 column = "institution_type"
-value = "ems"
+value = "EMS"
 
 [filter.no_other_staff] # Rejète les entrées concernant les Collaborateurs autre
 type = "exclude"
@@ -41,5 +41,5 @@ type = "periods"
 [grouper.each_instit] # Crée un graphe par institution et rôle
 splitter = ["instit", "role"]
 
-[grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
-transformer = "periods"
+# [grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
+# transformer = "periods"

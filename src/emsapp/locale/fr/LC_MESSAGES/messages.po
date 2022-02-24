@@ -1,15 +1,15 @@
-# French translations for PROJECT.
-# Copyright (C) 2022 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# French translations for emsapp.
+# Copyright (C) 2022 Benoît Sierro
+# This file is distributed under the same license as the emsapp project.
+# BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-22 08:48+0100\n"
+"POT-Creation-Date: 2022-02-23 16:28+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>\n"
 "Language: fr\n"
 "Language-Team: fr <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -18,7 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:137
+#: src/emsapp/config.py:78
+msgid "at least one filter value must be specified"
+msgstr ""
+
+#: src/emsapp/config.py:138
+msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
+msgstr ""
+"séparateur {spl} référencé dans le goupeur {grp} mais absent du "
+"processus {prc}"
+
+#: src/emsapp/config.py:146
+msgid ""
+"transformer {trs} referenced in grouper {grp} doesn't exist in process "
+"{prc}"
+msgstr ""
+"transformeur {trs} référencé dans le groupeur {grp} mais absent du processus "
+"{prc}"
+
+#: src/emsapp/config.py:248
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr "Entrez un/une {value_descr} corresponant/e à {key}"
 
@@ -39,16 +57,14 @@ msgid "institution"
 msgstr "Nom de l'institution"
 
 #: src/emsapp/const.py:10
-#, fuzzy
 msgid "institution_type"
-msgstr "Nom de l'institution"
+msgstr "Type de l'institution"
 
 #: src/emsapp/const.py:11
 msgid "location"
 msgstr "Localité"
 
 #: src/emsapp/const.py:14
-#, fuzzy
 msgid "Broye"
 msgstr "Rôle"
 
@@ -76,31 +92,73 @@ msgstr "Singine"
 msgid "Veveyse"
 msgstr "Veveyse"
 
-#: src/emsapp/data/loading.py:105
-msgid "district"
-msgstr "District"
-
-#: src/emsapp/data/loading.py:140 src/emsapp/data/loading.py:164
-msgid "{0!r} cannot be interpreted as a date"
-msgstr "impossible d'interpréter {0!r} en tant que date"
-
-#: src/emsapp/data/validators.py:7
+#: src/emsapp/validators.py:12
 msgid "{s} does not appear in {district_list!r}"
 msgstr "{s} n'apparaît pas dans {district_list!r}"
 
+#: src/emsapp/data/__init__.py:76
+msgid "district"
+msgstr "District"
+
+#: src/emsapp/data/__init__.py:126 src/emsapp/data/__init__.py:150
+msgid "{0!r} cannot be interpreted as a date"
+msgstr "impossible d'interpréter {0!r} en tant que date"
+
+#: src/emsapp/data/filters.py:25
+msgid "Invalid filter specifications : {conf!r}"
+msgstr "Description de filtre invalide : {conf!r}"
+
+#: src/emsapp/data/groupers.py:25
+msgid "Invalid grouper specifications : {conf!r}"
+msgstr "Description de groupeur invalide : {conf!r}"
+
+#: src/emsapp/data/loading.py:100
+msgid "invalid entry {row!r} : {error}"
+msgstr "Entrée invalide {row!r} : {error}"
+
+#: src/emsapp/data/splitters.py:26
+msgid "Invalid splitter specifications : {conf!r}"
+msgstr "Description de séparateur invalide : {conf!r}"
+
+#: src/emsapp/data/transformers.py:30
+msgid "Invalid transformer specifications : {conf!r}"
+msgstr "Description de transformeur invalide : {conf!r}"
+
+#: src/emsapp/data/transformers.py:64
+msgid "New cases"
+msgstr "Nouveaux cas"
+
+#: src/emsapp/data/transformers.py:96
+msgid "People in confinment"
+msgstr "Personnes en isolement"
+
+#: src/emsapp/data/transformers.py:139
+msgid "Period in question"
+msgstr "Période touchée"
+
 #: src/emsapp/widgets/importation.py:55
 msgid "No table found in {path}. Please ensure tables are defined in this file."
-msgstr "Aucune table / aucun tableau trouvé dans {path}. Assurez-vous qu'au moins un tableau soit défini dans ce fichier."
+msgstr ""
+"Aucune table / aucun tableau trouvé dans {path}. Assurez-vous qu'au moins"
+" un tableau soit défini dans ce fichier."
 
-#: src/emsapp/widgets/main_window.py:20
+#: src/emsapp/widgets/main_window.py:29
 msgid "&File"
 msgstr "&Fichier"
 
-#: src/emsapp/widgets/main_window.py:21
+#: src/emsapp/widgets/main_window.py:30
 msgid "&Open..."
 msgstr "&Ouvrir..."
 
-#: src/emsapp/widgets/main_window.py:23
+#: src/emsapp/widgets/main_window.py:32
 msgid "Open a database"
 msgstr "Ouvrir une base de donnée"
+
+#: src/emsapp/widgets/main_window.py:37
+msgid "Select data to preview"
+msgstr "Sélectionner les donnée à prévisualiser"
+
+#: src/emsapp/widgets/main_window.py:58
+msgid "couldn't load {path}"
+msgstr "impossible de charger {path}"
 

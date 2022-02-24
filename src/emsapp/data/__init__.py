@@ -1,18 +1,22 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
 import datetime
 from enum import Enum
+from pydoc import describe
 from typing import Any, Iterator, Optional, Union
 from dataclasses import field
 import numpy as np
 
 from emsapp.config import Config
-from emsapp.data.validators import district_validator
+from emsapp.validators import district_validator
+from emsapp.i18n import _, N_
 
 
 class DataType(Enum):
-    LINE="line"
-    BAR="bar"
-    PERIOD="period"
+    LINE = "line"
+    BAR = "bar"
+    PERIOD = "period"
 
 
 @dataclass
@@ -24,13 +28,27 @@ class RawData:
 @dataclass
 class DataReport:
     """
-    data hangs to one of these as it is being transformed so that we
-    can trace its path throught the process
+    This is attached to Entries and FinalData objects to keep track of the processing
+    steps that happened to them.
+
+    Each step of the data processing leaves a trace by appending its name and
+    its corresponding value to the appropriate dict. For example, a splitter named "by district"
+    that splits by column "district" will add `report.splitter["by district"] = "Glâne"` to the
+    report for all entries whose district is Glâne. That way, a grouper can later easily find
+    data that should be grouped together according to the process specifications.
     """
-    filter:dict[str, str] = field(default_factory=dict)
-    splitter:dict[str, str] = field(default_factory=dict)
-    transformer:dict[str, str] = field(default_factory=dict)
-    grouper:dict[str, str] = field(default_factory=dict)
+
+    splitter: dict[str, str] = field(default_factory=dict)
+    transformer: dict[str, str] = field(default_factory=dict)
+    grouper: dict[str, str] = field(default_factory=dict)
+
+    def copy(self) -> DataReport:
+        """returns a deep copy of self"""
+        spl = self.splitter.copy()
+        trs = self.transformer.copy()
+        grp = self.grouper.copy()
+        return DataReport(spl, trs, grp)
+
 
 @dataclass
 class Entry:
@@ -42,6 +60,14 @@ class Entry:
     location: str
 
     def __post_init__(self):
+        for f in self.fields():
+            if not getattr(self, f):
+                raise ValueError(
+                    _(
+                        "cannot finish initialisation, missing value for {f}. entry : {entry!r}"
+                    ).format(f=f, entry=self)
+                )
+
         if not isinstance(self.date_start, datetime.datetime):
             self.date_start = parse_date(self.date_start)
 
@@ -72,23 +98,23 @@ class Entries:
     def __getitem__(self, index: int) -> Entry:
         return self.l[index]
 
+
 @dataclass
 class FinalData:
-    x:np.ndarray
-    y:np.ndarray
-    data_type:DataType
-    report:DataReport
+    x: np.ndarray
+    y: np.ndarray
+    data_type: DataType
+    description: str
+    report: DataReport
 
 
 @dataclass
 class DataSet:
-    title:str
-    data:list[FinalData]
+    title: str
+    data: list[FinalData]
 
-    def __iter__(self)->Iterator[FinalData]:
+    def __iter__(self) -> Iterator[FinalData]:
         yield from self.data
-
-
 
 
 def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime.datetime:

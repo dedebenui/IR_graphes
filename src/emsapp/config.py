@@ -13,7 +13,7 @@ from typing import Any, Callable, Literal, Optional, TypeVar
 import pkg_resources
 import tomli
 from pydantic import BaseModel, Field, PrivateAttr, validator
-from emsapp.const import column_validator
+from emsapp.validators import column_validator, validate
 
 from emsapp.i18n import _
 from emsapp.logging import get_logger
@@ -58,42 +58,68 @@ class PluginConfig(BaseModel):
     data_loader: list[str]
 
 
-def value_validator(s: Union[str, list[str]]) -> list[str]:
-    if isinstance(s, str):
-        s = [s]
-    return s
-
-
-class FilterConfig(BaseModel):
+@dataclass(init=False)
+class FilterConfig:
     name: str
-    type: Literal["include", "exclude", "date_after", "date_before"]
+    type: str
     column: str
     values: list[str]
 
-    _validate_column = validator("column", allow_reuse=True)(column_validator)
-    _validate_value = validator("value", allow_reuse=True)(value_validator)
+    def __init__(
+        self, name: str, type: str, column: str, values: list[str] = None, value: str = None
+    ):
+        self.name = name
+        self.type = validate("filter_type", type)
+        self.column = column_validator(column)
+        if isinstance(values, str):
+            values = [values]
+        self.values = values or [value]
+        if not self.values:
+            raise ValueError(_("at least one filter value must be specified"))
+
+    @property
+    def value(self) -> str:
+        return self.values[0]
 
 
-class SplitterConfig(BaseModel):
+@dataclass(init=False)
+class SplitterConfig:
     name: str
-    type: Literal["value", "date"]
     column: str
+    type: str = "value"
 
-    _validate_column = validator("column", allow_reuse=True)(column_validator)
+    def __init__(self, name: str, type: str, column: str):
+        self.name = name
+        self.type = validate("splitter_type", type)
+        self.column = column_validator(column)
 
 
-class TransformerConfig(BaseModel):
+@dataclass(init=False)
+class TransformerConfig:
     name: str
     type: str
 
+    def __init__(self, name: str, type: str):
+        self.name = name
+        self.type = validate("transformer_type", type)
 
-class GrouperConfig(BaseModel):
+
+@dataclass(init=False)
+class GrouperConfig:
     name: str
     splitter: list[str]
     transformer: list[str]
+    type: str = "step_name"
 
-    _validate_splitter = validator("splitter", allow_reuse=True)(value_validator)
-    _validate_transformer = validator("transformer", allow_reuse=True)(value_validator)
+    def __init__(
+        self,
+        name: str,
+        splitter: Union[str, list[str]] = None,
+        transformer: Union[str, list[str]] = None,
+    ):
+        self.name = name
+        self.splitter = ([splitter] if isinstance(splitter, str) else splitter) or []
+        self.transformer = ([transformer] if isinstance(transformer, str) else transformer) or []
 
 
 @dataclass
@@ -103,6 +129,25 @@ class ProcessConfig:
     splitters: dict[str, SplitterConfig]
     transformers: dict[str, TransformerConfig]
     groupers: dict[str, GrouperConfig]
+
+    def __post_init__(self):
+        for grp, grouper in self.groupers.items():
+            for spl in grouper.transformer:
+                if spl not in self.transformers:
+                    raise ValueError(
+                        _(
+                            "splitter {spl} referenced in grouper "
+                            "{grp} doesn't exist in process {prc}"
+                        ).format(spl=spl, grp=grp, prc=self.name)
+                    )
+            for trs in grouper.transformer:
+                if trs not in self.transformers:
+                    raise ValueError(
+                        _(
+                            "transformer {trs} referenced in grouper "
+                            "{grp} doesn't exist in process {prc}"
+                        ).format(trs=trs, grp=grp, prc=self.name)
+                    )
 
     @classmethod
     def default(cls) -> ProcessConfig:

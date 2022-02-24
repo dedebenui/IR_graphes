@@ -1,60 +1,77 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Iterable
-from emsapp.config import Config, FilterConfig
-from emsapp.data.loading import Entries, Entry
+from emsapp.config import FilterConfig
+from emsapp.data import Entry, parse_date
+from emsapp.validators import register_valid
 from emsapp.i18n import _
-
-registered: dict[str, type[Filter]] = {}
 
 
 class Filter(ABC):
+    name:str
+    _registered: dict[str, type[Filter]] = {}
+
     @classmethod
-    def create(conf: FilterConfig) -> Filter:
-        cls = registered.get(conf.type)
+    def register(cls, name, new_cls):
+        Filter._registered[name] = new_cls
+        register_valid("filter_type", name)
+
+    @classmethod
+    def create(cls, conf: FilterConfig) -> Filter:
+        cls = Filter._registered.get(conf.type)
         if cls:
             return cls(conf)
 
         raise ValueError(_("Invalid filter specifications : {conf!r}").format(conf=conf))
 
-    @abstractmethod
     def __init__(self, conf: FilterConfig):
-        ...
+        self.name = conf.name
 
     @abstractmethod
     def __call__(self, entry: Entry) -> bool:
         ...
 
 
-class IncludeFilter(Filter):
+class NullFilter(Filter):
+    def __call__(self, entry: Entry) -> bool:
+        return True
+
+
+class ValueFilter(Filter):
     def __init__(self, conf: FilterConfig):
+        super().__init__(conf)
         self.col = conf.column
         self.val = set(conf.values)
-        if conf.column not in Entry.fields():
-            raise ValueError(f"Can only filter existing columns : {Entry.fields()!r}")
 
+
+class IncludeFilter(ValueFilter):
     def __call__(self, entry: Entry) -> bool:
         return getattr(entry, self.col) in self.val
 
 
-class ExcludeFilter(Filter):
-    def __init__(self, conf: FilterConfig):
-        self.col = conf.column
-        self.val = set(conf.values)
-        if conf.column not in Entry.fields():
-            raise ValueError(f"Can only filter existing columns : {Entry.fields()!r}")
-
+class ExcludeFilter(ValueFilter):
     def __call__(self, entry: Entry) -> bool:
         return getattr(entry, self.col) not in self.val
 
 
-class ExcludeFilter(Filter):
+class DateFilter(Filter):
     def __init__(self, conf: FilterConfig):
+        super().__init__(conf)
         self.col = conf.column
-        self.val = set(conf.values)
-        if conf.column not in Entry.fields():
-            raise ValueError(f"Can only filter existing columns : {Entry.fields()!r}")
+        self.val = parse_date(conf.value)
 
+
+class DateBeforeFilter(DateFilter):
     def __call__(self, entry: Entry) -> bool:
-        return getattr(entry, self.col) not in self.val
+        return getattr(entry, self.col) <= self.val
+
+
+class DateAfterFilter(DateFilter):
+    def __call__(self, entry: Entry) -> bool:
+        return getattr(entry, self.col) >= self.val
+
+
+Filter.register("include", IncludeFilter)
+Filter.register("exclude", ExcludeFilter)
+Filter.register("date_before", DateBeforeFilter)
+Filter.register("date_after", DateAfterFilter)
