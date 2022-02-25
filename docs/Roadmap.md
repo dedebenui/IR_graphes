@@ -10,8 +10,10 @@
 - be configurable
 
 # TODO
+- redesign plot procedure
 - create an actual testing data set
 - create tests for each stage
+- add check that each data set is not empty
 - design output interface
 - implement output interface
 - write documentation for process description
