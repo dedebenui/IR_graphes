@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-23 16:28+0100\n"
+"POT-Creation-Date: 2022-02-25 09:33+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>\n"
 "Language: fr\n"
@@ -18,25 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:78
-msgid "at least one filter value must be specified"
-msgstr ""
-
-#: src/emsapp/config.py:138
+#: src/emsapp/config.py:137
 msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
 msgstr ""
-"séparateur {spl} référencé dans le goupeur {grp} mais absent du "
-"processus {prc}"
+"séparateur {spl} référencé dans le goupeur {grp} mais absent du processus"
+" {prc}"
 
-#: src/emsapp/config.py:146
+#: src/emsapp/config.py:145
 msgid ""
 "transformer {trs} referenced in grouper {grp} doesn't exist in process "
 "{prc}"
 msgstr ""
-"transformeur {trs} référencé dans le groupeur {grp} mais absent du processus "
-"{prc}"
+"transformeur {trs} référencé dans le groupeur {grp} mais absent du "
+"processus {prc}"
 
-#: src/emsapp/config.py:248
+#: src/emsapp/config.py:247
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr "Entrez un/une {value_descr} corresponant/e à {key}"
 
@@ -92,15 +88,25 @@ msgstr "Singine"
 msgid "Veveyse"
 msgstr "Veveyse"
 
+#: src/emsapp/emsapp.py:17
+msgid "Modules imported"
+msgstr "Modules importés"
+
 #: src/emsapp/validators.py:12
 msgid "{s} does not appear in {district_list!r}"
 msgstr "{s} n'apparaît pas dans {district_list!r}"
 
-#: src/emsapp/data/__init__.py:76
+#: src/emsapp/data/__init__.py:63
+msgid "cannot finish initialisation, missing value for {f}. entry : {entry!r}"
+msgstr ""
+"impossible de finir l'initialisation, valeur manquante pour "
+"{f}. entry : {entry!r}"
+
+#: src/emsapp/data/__init__.py:81
 msgid "district"
 msgstr "District"
 
-#: src/emsapp/data/__init__.py:126 src/emsapp/data/__init__.py:150
+#: src/emsapp/data/__init__.py:132 src/emsapp/data/__init__.py:156
 msgid "{0!r} cannot be interpreted as a date"
 msgstr "impossible d'interpréter {0!r} en tant que date"
 
@@ -108,13 +114,13 @@ msgstr "impossible d'interpréter {0!r} en tant que date"
 msgid "Invalid filter specifications : {conf!r}"
 msgstr "Description de filtre invalide : {conf!r}"
 
-#: src/emsapp/data/groupers.py:25
+#: src/emsapp/data/groupers.py:26
 msgid "Invalid grouper specifications : {conf!r}"
 msgstr "Description de groupeur invalide : {conf!r}"
 
-#: src/emsapp/data/loading.py:100
-msgid "invalid entry {row!r} : {error}"
-msgstr "Entrée invalide {row!r} : {error}"
+#: src/emsapp/data/loading.py:103
+msgid "invalid entry : {error}"
+msgstr "Entrée invalide : {error}"
 
 #: src/emsapp/data/splitters.py:26
 msgid "Invalid splitter specifications : {conf!r}"
@@ -136,29 +142,76 @@ msgstr "Personnes en isolement"
 msgid "Period in question"
 msgstr "Période touchée"
 
-#: src/emsapp/widgets/importation.py:55
+#: src/emsapp/widgets/common.py:161
+msgid "Ok"
+msgstr "Ok"
+
+#: src/emsapp/widgets/common.py:162
+msgid "Cancel"
+msgstr "Annuler"
+
+#: src/emsapp/widgets/exception_hook.py:15
+msgid ""
+"Oops. An unexpected error occured:\n"
+"{0}"
+msgstr ""
+"Oups. Une erreur s'est produite :\n"
+"{0}"
+
+#: src/emsapp/widgets/importation.py:32
+msgid "Select path"
+msgstr "Choisir fichier"
+
+#: src/emsapp/widgets/importation.py:42
+msgid "Choose a database file"
+msgstr "Choisir une base de donnée"
+
+#: src/emsapp/widgets/importation.py:59
 msgid "No table found in {path}. Please ensure tables are defined in this file."
 msgstr ""
 "Aucune table / aucun tableau trouvé dans {path}. Assurez-vous qu'au moins"
 " un tableau soit défini dans ce fichier."
 
 #: src/emsapp/widgets/main_window.py:29
+msgid "opening database..."
+msgstr "ouverture de la base de donnée..."
+
+#: src/emsapp/widgets/main_window.py:36
 msgid "&File"
 msgstr "&Fichier"
 
-#: src/emsapp/widgets/main_window.py:30
+#: src/emsapp/widgets/main_window.py:37
 msgid "&Open..."
 msgstr "&Ouvrir..."
 
-#: src/emsapp/widgets/main_window.py:32
+#: src/emsapp/widgets/main_window.py:39
 msgid "Open a database"
 msgstr "Ouvrir une base de donnée"
 
-#: src/emsapp/widgets/main_window.py:37
+#: src/emsapp/widgets/main_window.py:42
+msgid "&Copy"
+msgstr "&Copier"
+
+#: src/emsapp/widgets/main_window.py:44
+msgid "Copy current plot to clip board"
+msgstr "Copier le graphe actuelle dans le presse-papier"
+
+#: src/emsapp/widgets/main_window.py:49
 msgid "Select data to preview"
 msgstr "Sélectionner les donnée à prévisualiser"
 
-#: src/emsapp/widgets/main_window.py:58
+#: src/emsapp/widgets/main_window.py:72
+msgid "data loaded"
+msgstr "données chargées"
+
+#: src/emsapp/widgets/main_window.py:75
 msgid "couldn't load {path}"
 msgstr "impossible de charger {path}"
+
+#: src/emsapp/widgets/main_window.py:80
+msgid "data processed"
+msgstr "données traitées"
+
+#~ msgid "at least one filter value must be specified"
+#~ msgstr "au moins une valeur de filtre doit être indiquée"
 

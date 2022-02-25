@@ -29,7 +29,7 @@ class FileSelector(QtWidgets.QWidget):
 
         self.file_path = default_path or Config().data.db_path
         self.file_path_label = QtWidgets.QLabel(str(self.file_path))
-        self.choose_path_button = QtWidgets.QPushButton("select_path")
+        self.choose_path_button = QtWidgets.QPushButton(_("Select path"))
         self.choose_path_button.clicked.connect(self.choose_path)
         self.choose_path_button.setMaximumWidth(120)
 
@@ -39,7 +39,7 @@ class FileSelector(QtWidgets.QWidget):
     def choose_path(self) -> Path:
         filter = f"{_('database files')} ({' '.join(f'*{ext}' for ext in DataLoaderFactory.all_extensions())})"
         out = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Choose a database file", str(self.file_path.parent), filter
+            self, _("Choose a database file"), str(self.file_path.parent), filter
         )[0]
         if out:
             self.file_path = Config().data.db_path = Path(out)

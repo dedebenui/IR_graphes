@@ -1,3 +1,4 @@
+from emsapp.i18n import _
 from emsapp.logging import get_logger
 import sys
 import traceback
@@ -11,7 +12,7 @@ def show_exception_box(log_msg):
     """
     if QtWidgets.QApplication.instance() is not None:
         errorbox = QtWidgets.QMessageBox()
-        errorbox.setText("Oops. An unexpected error occured:\n{0}".format(log_msg))
+        errorbox.setText(_("Oops. An unexpected error occured:\n{0}").format(log_msg))
         errorbox.exec_()
     else:
         logger.debug("No QApplication instance available.")

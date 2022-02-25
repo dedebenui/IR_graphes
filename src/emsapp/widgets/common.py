@@ -158,8 +158,8 @@ class AcceptCancel(QWidget):
             layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.ok_button = QPushButton("ok")
-        self.cancel_button = QPushButton("cancel")
+        self.ok_button = QPushButton(_("Ok"))
+        self.cancel_button = QPushButton(_("Cancel"))
 
         self.ok_button.clicked.connect(lambda: self.sig_clicked.emit(True))
         self.cancel_button.clicked.connect(lambda: self.sig_clicked.emit(False))
