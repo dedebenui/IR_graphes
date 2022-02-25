@@ -48,10 +48,13 @@ class MainWindow(QMainWindow):
         self.data_selector = ValuesSelector(
             _("Select data to preview"), ComboBoxClass=ExtendedComboBox
         )
+        
+
         self.data_selector.sig_selection_changed.connect(self.update_preview)
 
-        layout.addWidget(self.data_selector)
-        layout.addWidget(self.preview)
+        layout.addWidget(self.data_selector, 0, 0, 1, 4)
+        layout.addWidget(self.preview, 1, 0, 1, 4)
+
 
     def showEvent(self, a0: QShowEvent) -> None:
         super().showEvent(a0)

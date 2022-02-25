@@ -14,6 +14,10 @@ from emsapp.logging import get_logger
 logger = get_logger()
 
 
+class DataLoadingError(ValueError):
+    ...
+
+
 class FileSelector(QtWidgets.QWidget):
     file_path: Path
     sig_path_changed = QtCore.pyqtSignal(Path)
@@ -94,9 +98,9 @@ class ColumnSelector(QtWidgets.QWidget):
                 self.sig_column_changed.emit(selector.name, new_name)
 
         return column_changed
-    
+
     @property
-    def valid(self)->bool:
+    def valid(self) -> bool:
         return all(s.valid for s in self.selectors)
 
     def current_selection(self) -> list[str]:
@@ -136,10 +140,14 @@ class ImportWindow(QtWidgets.QDialog):
             self.file_selector.choose_path()
 
     def file_changed(self, new_path: Path):
+        tables = None
         if DataLoaderFactory.valid(new_path):
-            self.data_loader = DataLoaderFactory.create(new_path)
-            tables = self.data_loader.tables(Config().data)
-        else:
+            try:
+                self.data_loader = DataLoaderFactory.create(new_path)
+                tables = self.data_loader.tables(Config().data)
+            except Exception:
+                pass
+        if not tables:
             self.data_loader = None
             tables = []
         self.finish_buttons.ok_button.setDisabled(self.data_loader is None)

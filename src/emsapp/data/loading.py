@@ -77,7 +77,10 @@ class DataLoaderFactory:
 
 
 def load_data(loader: DataLoader = None) -> Entries:
-    loader = loader or DataLoaderFactory.create(Config().data.db_path)
+    try:
+        loader = loader or DataLoaderFactory.create(Config().data.db_path)
+    except Exception as e:
+        raise ValueError(e)
     data = RawData(*loader.load_data(Config().data))
     indices = {}
     for key in Entry.fields():

@@ -10,6 +10,7 @@ def main():
     splash.show()
     app.processEvents()
 
+    from emsapp.widgets import exception_hook
     from emsapp.widgets.main_window import MainWindow
     from emsapp.i18n import _
 

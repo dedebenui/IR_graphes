@@ -1,14 +1,14 @@
 {
     "data": {
-        "db_path": "C:\\Users\\sierrob\\Documents\\LocalEMIR.accdb",
-        "table_name": "ci",
+        "db_path": "Z:\\04_MONITORING_EMS\\EMIR Synth\u00e8se\\220131_EMS_Synth\u00e8se.xlsx",
+        "table_name": "ems",
         "excel_start_year": 1900,
-        "col_date_start": "dtest",
-        "col_date_end": "dfinisol",
+        "col_date_start": "Date_debut",
+        "col_date_end": "Date_fin",
         "col_role": "role",
-        "col_institution": "instit_fullid",
-        "col_institution_type": "instit_type",
-        "col_location": "instit_loc",
+        "col_institution": "instit_type",
+        "col_institution_type": "id",
+        "col_location": "id",
         "date_formats": [
             "%x",
             "%d.%m.%Y",
