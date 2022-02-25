@@ -1,6 +1,8 @@
 playground.py
 .vscode/
 testing/testing_data/
+*.exe
+*.cmd
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -13,6 +15,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+*.build/
 develop-eggs/
 dist/
 downloads/

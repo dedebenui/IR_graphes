@@ -14,7 +14,6 @@
 - create tests for each stage
 - design output interface
 - implement output interface
-- implement exception hook
 - write documentation for process description
 - add secondary column for data import
 - implement system to get desired language of plot
