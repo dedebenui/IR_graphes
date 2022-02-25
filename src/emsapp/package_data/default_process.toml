@@ -41,5 +41,6 @@ type = "periods"
 [grouper.each_instit] # Crée un graphe par institution et rôle
 splitter = ["instit", "role"]
 
-# [grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
-# transformer = "periods"
+[grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
+splitter = "role"
+transformer = "periods"

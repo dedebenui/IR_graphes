@@ -1,18 +1,26 @@
-from emsapp.widgets.main_window import MainWindow
-from PyQt5 import QtWidgets
-from emsapp.config import Config
+import pkg_resources
+from PyQt5 import QtWidgets, QtGui
 import sys
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    pixmap = QtGui.QPixmap(pkg_resources.resource_filename("emsapp", "package_data/covid19.jpg"))
+    splash = QtWidgets.QSplashScreen(pixmap)
+    splash.show()
+    app.processEvents()
+
+    from emsapp.widgets.main_window import MainWindow
+    from emsapp.i18n import _
+
+    splash.showMessage(_("Modules imported"))
+
     win = MainWindow()
+    win.sig_loading_event.connect(splash.showMessage)
     win.show()
-    try:
-        app.exec()
-    except Exception:
-        print(Config().json(indent=2))
-        raise
+    splash.finish(win)
+    sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

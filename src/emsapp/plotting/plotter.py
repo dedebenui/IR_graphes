@@ -1,3 +1,5 @@
+from collections import defaultdict
+import io
 import itertools
 from matplotlib import pyplot as plt
 from emsapp.data import DataType, DataSet, FinalData
@@ -5,6 +7,7 @@ from emsapp.data import DataType, DataSet, FinalData
 
 class Plotter:
     def __init__(self, ax: plt.Axes = None):
+        self.indices: dict[DataType, int] = defaultdict(int)
         if ax:
             self.ax = ax
             self.fig = self.ax.get_figure()
@@ -25,6 +28,11 @@ class Plotter:
             ]
         )
 
+    def as_bytes(self) -> bytes:
+        with io.BytesIO() as buffer:
+            self.fig.savefig(buffer, bbox_inches="tight", format="png", dpi=200)
+            return buffer.getvalue()
+
     def plot(self, data_set: DataSet):
         for data in data_set:
             if data.data_type == DataType.LINE:
@@ -33,6 +41,8 @@ class Plotter:
                 self.plot_bar(data)
             elif data.data_type == DataType.PERIOD:
                 self.plot_period(data)
+        self.ax.relim()
+        self.ax.autoscale()
 
     def plot_line(self, data: FinalData):
         """plots a line
@@ -62,11 +72,12 @@ class Plotter:
         data : FinalData
             data as returned by a Transformer
         """
-
+        h = 0.5 + self.indices[DataType.PERIOD] / 25
+        self.indices[DataType.PERIOD] += 1
         for start, end in zip(data.x[::2], data.x[1::2]):
             self.ax.plot(
                 [start, end],
-                [0.5, 0.5],
+                [h, h],
                 transform=self.ax.get_xaxis_transform(),
                 label=data.description,
                 c="k",

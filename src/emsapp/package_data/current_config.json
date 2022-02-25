@@ -1,6 +1,6 @@
 {
     "data": {
-        "db_path": "X:\\03_IR\\06_EMIR\\Suivi situations EMIR.accdb",
+        "db_path": "C:\\Users\\sierrob\\Documents\\LocalEMIR.accdb",
         "table_name": "ci",
         "excel_start_year": 1900,
         "col_date_start": "dtest",

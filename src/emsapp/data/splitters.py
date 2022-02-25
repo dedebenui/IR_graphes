@@ -49,7 +49,7 @@ class ColumnSplitter(Splitter):
             val = getattr(entry, self.col)
             if val not in out:
                 new_entries = Entries([], entries.report.copy())
-                new_entries.report.splitter[self.name] = val
+                new_entries.report.splitters[self.name] = val
                 out[val] = new_entries
             out[val].l.append(entry)
         return list(out.values())

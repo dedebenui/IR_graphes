@@ -38,16 +38,13 @@ class DataReport:
     data that should be grouped together according to the process specifications.
     """
 
-    splitter: dict[str, str] = field(default_factory=dict)
-    transformer: dict[str, str] = field(default_factory=dict)
-    grouper: dict[str, str] = field(default_factory=dict)
+    splitters: dict[str, str] = field(default_factory=dict)
+    transformer: str = None
 
     def copy(self) -> DataReport:
         """returns a deep copy of self"""
-        spl = self.splitter.copy()
-        trs = self.transformer.copy()
-        grp = self.grouper.copy()
-        return DataReport(spl, trs, grp)
+        spl = self.splitters.copy()
+        return DataReport(spl, self.transformer)
 
 
 @dataclass

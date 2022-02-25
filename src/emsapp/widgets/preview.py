@@ -22,15 +22,16 @@ class PlotPreview(QtWidgets.QWidget):
         super().__init__()
         self.setMinimumSize(500, 350)
         self.canvas = MplCanvas()
-        toolbar = NavigationToolbar2QT(self.canvas, self)
+        self.toolbar = NavigationToolbar2QT(self.canvas, self)
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        layout.addWidget(toolbar)
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
 
-    def plot(self, data_set:DataSet):
+    def plot(self, data_set: DataSet):
         self.canvas.ax.clear()
         plotter = Plotter(self.canvas.ax)
         plotter.plot(data_set)
         self.canvas.draw()
+        self.toolbar.update()

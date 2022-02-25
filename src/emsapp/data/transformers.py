@@ -58,7 +58,7 @@ class NewTransformer(Transformer):
         y = [cases[d] for d in x]
 
         report = entries.report.copy()
-        report.transformer[self.name] = self.name
+        report.transformer = self.name
 
         return FinalData(
             np.array(x), np.array(y), DataType.BAR, description=_("New cases"), report=report
@@ -87,7 +87,7 @@ class CumulativeTransformer(Transformer):
         y = [cases[d] for d in x]
 
         report = entries.report.copy()
-        report.transformer[self.name] = self.name
+        report.transformer = self.name
 
         return FinalData(
             np.array(x),
@@ -130,7 +130,7 @@ class PeriodTransformer(Transformer):
         y += [len(entry_list)] * 2
 
         report = entries.report.copy()
-        report.transformer[self.name] = self.name
+        report.transformer = self.name
 
         return FinalData(
             np.array(x),

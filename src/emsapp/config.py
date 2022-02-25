@@ -18,6 +18,7 @@ from emsapp.validators import column_validator, validate
 from emsapp.i18n import _
 from emsapp.logging import get_logger
 from emsapp.widgets.common import get_user_input
+from emsapp.utils import auto_repr, AutoList
 
 logger = get_logger()
 T = TypeVar("T")
@@ -58,12 +59,12 @@ class PluginConfig(BaseModel):
     data_loader: list[str]
 
 
-@dataclass(init=False)
+@auto_repr
 class FilterConfig:
     name: str
     type: str
     column: str
-    values: list[str]
+    values: list[str] = AutoList(str)
 
     def __init__(
         self, name: str, type: str, column: str, values: list[str] = None, value: str = None
@@ -71,18 +72,14 @@ class FilterConfig:
         self.name = name
         self.type = validate("filter_type", type)
         self.column = column_validator(column)
-        if isinstance(values, str):
-            values = [values]
-        self.values = values or [value]
-        if not self.values:
-            raise ValueError(_("at least one filter value must be specified"))
+        self.values = value or values
 
     @property
     def value(self) -> str:
         return self.values[0]
 
 
-@dataclass(init=False)
+@auto_repr
 class SplitterConfig:
     name: str
     column: str
@@ -94,7 +91,7 @@ class SplitterConfig:
         self.column = column_validator(column)
 
 
-@dataclass(init=False)
+@auto_repr
 class TransformerConfig:
     name: str
     type: str
@@ -104,22 +101,24 @@ class TransformerConfig:
         self.type = validate("transformer_type", type)
 
 
-@dataclass(init=False)
+@auto_repr
 class GrouperConfig:
     name: str
-    splitter: list[str]
-    transformer: list[str]
+    splitters: list[str] = AutoList(str)
+    transformers: Optional[list[str]] = AutoList(str, True)
     type: str = "step_name"
 
     def __init__(
         self,
         name: str,
-        splitter: Union[str, list[str]] = None,
-        transformer: Union[str, list[str]] = None,
+        splitter: str = None,
+        splitters: list[str] = None,
+        transformer: str = None,
+        transformers: list[str] = None,
     ):
         self.name = name
-        self.splitter = ([splitter] if isinstance(splitter, str) else splitter) or []
-        self.transformer = ([transformer] if isinstance(transformer, str) else transformer) or []
+        self.splitters = splitter or splitters
+        self.transformers = transformer or transformers
 
 
 @dataclass
@@ -132,15 +131,15 @@ class ProcessConfig:
 
     def __post_init__(self):
         for grp, grouper in self.groupers.items():
-            for spl in grouper.transformer:
-                if spl not in self.transformers:
+            for spl in grouper.splitters:
+                if spl not in self.splitters:
                     raise ValueError(
                         _(
                             "splitter {spl} referenced in grouper "
                             "{grp} doesn't exist in process {prc}"
                         ).format(spl=spl, grp=grp, prc=self.name)
                     )
-            for trs in grouper.transformer:
+            for trs in grouper.transformers or []:
                 if trs not in self.transformers:
                     raise ValueError(
                         _(
