@@ -68,11 +68,17 @@ class Plotter:
         self.fmt_xaxis()
 
     def fmt_xaxis(self):
-        locator = mdates.WeekdayLocator(byweekday=mdates.MONDAY)
+        start, end = self.ax.get_xlim()
+        duration = (mdates.num2date(end) - mdates.num2date(start)).days + 1
         formatter = DateFormatter()
-        self.ax.xaxis.set_major_locator(locator)
-        self.ax.xaxis.set_major_formatter(formatter)
-        self.ax.xaxis.set_minor_locator(mdates.DayLocator())
+        monday_loc = mdates.WeekdayLocator(byweekday=mdates.MONDAY)
+        if duration > 180:
+            self.ax.xaxis.set_major_locator(mdates.MonthLocator(bymonthday=(1, 15)))
+            self.ax.xaxis.set_major_formatter(formatter)
+        else:
+            self.ax.xaxis.set_major_locator(monday_loc)
+            self.ax.xaxis.set_major_formatter(formatter)
+            self.ax.xaxis.set_minor_locator(mdates.DayLocator())
         self.fig.autofmt_xdate()
 
     def plot_lines(self, data_list: list[FinalData]):
@@ -116,28 +122,52 @@ class Plotter:
             data as returned by a Transformer
         """
         if len(data_list) == 1:
-            data = data_list[0]
+            self.plot_unique_period(data_list[0])
+        else:
+            self.plot_many_periods(data_list)
+
+    def plot_many_periods(self, data_list):
+        labels = []
+        for i, data in enumerate(data_list):
+            labels.append(data.report.final_label)
             for start, end, ppl in zip(data.x[::2], data.x[1::2], data.y[::2]):
                 s = fmt_period(start, end, ppl)
-                (l,) = self.ax.plot(
-                    [start, end],
-                    [0.6, 0.6],
-                    transform=self.ax.get_xaxis_transform(),
-                    label=data.description,
-                    c="k",
-                )
-                self.ax.plot(
-                    [start, start], [0.55, 0.65], c="k", transform=self.ax.get_xaxis_transform()
-                )
-                self.ax.plot(
-                    [end, end], [0.55, 0.65], c="k", transform=self.ax.get_xaxis_transform()
-                )
-            self.legend_handles.append(l)
-            self.legend_labels.append(data.description)
+                self.ax.plot([start, end], [i, i], c="k")
+                self.ax.plot([start, start], [i - 0.1, i + 0.1], c="k")
+                self.ax.plot([end, end], [i - 0.1, i + 0.1], c="k")
+        self.ax.set_yticks(range(len(labels)))
+        self.ax.set_yticklabels(labels)
+
+    def plot_unique_period(self, data: FinalData):
+        tr = self.ax.get_xaxis_transform()
+        for start, end, ppl in zip(data.x[::2], data.x[1::2], data.y[::2]):
+            s = fmt_period(start, end, ppl)
+            (l,) = self.ax.plot(
+                [start, end],
+                [0.6, 0.6],
+                transform=tr,
+                label=data.description,
+                c="k",
+            )
+            self.ax.plot([start, start], [0.55, 0.65], c="k", transform=tr)
+            self.ax.plot([end, end], [0.55, 0.65], c="k", transform=tr)
+            self.ax.text(
+                end,
+                0.7,
+                s,
+                transform=tr,
+                ha="left",
+                va="bottom",
+                bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=1),
+                rotation=30,
+                clip_on=False,
+            )
+        self.legend_handles.append(l)
+        self.legend_labels.append(data.description)
 
 
 def fmt_period(start: datetime.datetime, end: datetime.datetime, people: int) -> str:
     num_days = (end - start).days + 1
     days = ngettext("{} day", "{} days", num_days).format(num_days)
     ppl = ngettext("{} person", "{} people", people).format(people)
-    return f"{start} - {end} ({days}, {ppl})"
+    return f"{_(DATE_OUTPUT_FMT).format(dt=start)} - {_(DATE_OUTPUT_FMT).format(dt=end)}\n({days}, {ppl})"

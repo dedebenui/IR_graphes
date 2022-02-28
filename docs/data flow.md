@@ -28,5 +28,6 @@
 # Grouper
     1. Receives a list of FinalData
     2. Groups it into a list of DataSet based on Splitter id, Transformer id and other criteria
-    3. Names each groups
-    4. Outputs them as a list of DataSet
+    3. Names each groups according to the splitter(s) used to discriminate them
+    4. Labels each FinalData according to the other splitters(s) 
+    5. Outputs them as a list of DataSet

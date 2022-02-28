@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-28 13:08+0100\n"
+"POT-Creation-Date: 2022-02-28 15:56+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>\n"
 "Language: fr\n"
@@ -100,17 +100,17 @@ msgstr "Chargement des données..."
 msgid "{s} does not appear in {district_list!r}"
 msgstr "{s} n'apparaît pas dans {district_list!r}"
 
-#: src/emsapp/data/__init__.py:63
+#: src/emsapp/data/__init__.py:64
 msgid "cannot finish initialisation, missing value for {f}. entry : {entry!r}"
 msgstr ""
 "impossible de finir l'initialisation, valeur manquante pour {f}. entry : "
 "{entry!r}"
 
-#: src/emsapp/data/__init__.py:81
+#: src/emsapp/data/__init__.py:82
 msgid "district"
 msgstr "District"
 
-#: src/emsapp/data/__init__.py:132 src/emsapp/data/__init__.py:156
+#: src/emsapp/data/__init__.py:133 src/emsapp/data/__init__.py:157
 msgid "{0!r} cannot be interpreted as a date"
 msgstr "impossible d'interpréter {0!r} en tant que date"
 
@@ -146,23 +146,23 @@ msgstr "Personnes en isolement"
 msgid "Period in question"
 msgstr "Période touchée"
 
-#: src/emsapp/plotting/plotter.py:141
+#: src/emsapp/plotting/plotter.py:171
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} jour"
 msgstr[1] "{} jours"
 
-#: src/emsapp/plotting/plotter.py:142
+#: src/emsapp/plotting/plotter.py:172
 msgid "{} person"
 msgid_plural "{} people"
 msgstr[0] "{} personne"
 msgstr[1] "{} personnes"
 
-#: src/emsapp/widgets/common.py:164
+#: src/emsapp/widgets/common.py:168
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:165
+#: src/emsapp/widgets/common.py:169
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -228,14 +228,15 @@ msgstr "&Langue"
 msgid "Change the current language to {lang}"
 msgstr "Changer la langue vers {lang}"
 
-#: src/emsapp/widgets/main_window.py:98
+#: src/emsapp/widgets/main_window.py:99
 msgid "data loaded"
 msgstr "données chargées"
 
-#: src/emsapp/widgets/main_window.py:101
+#: src/emsapp/widgets/main_window.py:102
 msgid "couldn't load {path}"
 msgstr "impossible de charger {path}"
 
-#: src/emsapp/widgets/main_window.py:106
+#: src/emsapp/widgets/main_window.py:107
 msgid "data processed"
 msgstr "données traitées"
+

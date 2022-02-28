@@ -40,11 +40,12 @@ class DataReport:
 
     splitters: dict[str, str] = field(default_factory=dict)
     transformer: str = None
+    final_label:str = ""
 
     def copy(self) -> DataReport:
         """returns a deep copy of self"""
         spl = self.splitters.copy()
-        return DataReport(spl, self.transformer)
+        return DataReport(spl, self.transformer, self.final_label)
 
 
 @dataclass

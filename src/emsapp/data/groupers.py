@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from emsapp.config import GrouperConfig
 
-from emsapp.data import DataReport, DataSet, FinalData, transformers
+from emsapp.data import DataReport, DataSet, FinalData
 from emsapp.i18n import _
 from emsapp.validators import register_valid
 
@@ -49,18 +49,37 @@ class StepNameGrouper(Grouper):
         for d in data:
             if self.transformers and d.report.transformer not in self.transformers:
                 continue
-            key = self.generate_key(d.report)
-            out[key].append(d)
+            key, label = self.key_and_label(d.report)
+            rep = d.report.copy()
+            rep.final_label = label
+            out[key].append(FinalData(d.x, d.y, d.data_type, d.description, rep))
 
         return [DataSet(k, v) for k, v in out.items()]
 
-    def generate_key(self, report: DataReport) -> str:
+    def key_and_label(self, report: DataReport) -> tuple[str, str]:
+        """returns a key identifying a group and a label that allows for distinction
+        within the group
+
+        Parameters
+        ----------
+        report : DataReport
+            data report obj
+
+        Returns
+        -------
+        str
+            key uniquely identifying a desired group
+        str
+            label attempting to identify individual FinalData obj within one group
+        """
 
         splitters = self.splitters or sorted(report.splitters)
-
         key = (self.name, *(report.splitters[k] for k in splitters))
+        key = ", ".join(key)
 
-        return ", ".join(key)
+        label = ", ".join(v for k, v in report.splitters.items() if k not in splitters)
+
+        return key, label
 
 
 Grouper.register("step_name", StepNameGrouper)

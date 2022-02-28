@@ -16,6 +16,9 @@ column = "date_start"
 value = "2021-10-01"
 
 # SÉPARATEURS -----------------------------------------------------------------
+[splitter.district] # Sépare les entrées en fonction du district
+type = "value"
+column = "district"
 
 [splitter.instit] # Sépare les entrées en fonction de l'institution
 type = "value"
@@ -38,9 +41,13 @@ type = "periods"
 
 # GROUPEURS -------------------------------------------------------------------
 
-[grouper.each_instit] # Crée un graphe par institution et rôle
+[grouper.institutions] # Crée un graphe par institution et rôle
 splitter = ["instit", "role"]
 
-[grouper.periods_only] # Crée un seul graphe pour toutes les périodes du canton
+[grouper.periodes] # Crée un seul graphe pour toutes les périodes du canton
 splitter = "role"
 transformer = "periods"
+
+[grouper.districts]
+splitter = "district"
+transformer = "cumulative"
