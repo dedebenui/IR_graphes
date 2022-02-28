@@ -1,4 +1,4 @@
-playground.py
+playground*.py
 .vscode/
 testing/testing_data/
 *.exe

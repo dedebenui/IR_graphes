@@ -1,17 +1,26 @@
-from collections import defaultdict
 import datetime
-from enum import Enum
 import io
 import itertools
+from collections import defaultdict
+from enum import Enum
+from emsapp.const import COLORS, DATE_OUTPUT_FMT
+
+from emsapp.data import DataSet, DataType, FinalData
+from emsapp.i18n import _, ngettext
 from matplotlib import pyplot as plt
-from emsapp.data import DataType, DataSet, FinalData
+import matplotlib.dates as mdates
 
 
-class PlotType(DataType):
+class PlotType(Enum):
     LINE = "line"
     BAR = "bar"
     PERIOD = "period"
     MIXED = "mixed"
+
+
+class DateFormatter:
+    def __call__(self, x, pos=0):
+        return _(DATE_OUTPUT_FMT).format(dt=mdates.num2date(x))
 
 
 class Plotter:
@@ -30,20 +39,7 @@ class Plotter:
             self.fig = self.ax.get_figure()
         else:
             self.fig, self.ax = plt.subplots()
-        self.color_cycle = itertools.cycle(
-            [
-                "#1f77b4",
-                "#ff7f0e",
-                "#2ca02c",
-                "#d62728",
-                "#9467bd",
-                "#8c564b",
-                "#e377c2",
-                "#7f7f7f",
-                "#bcbd22",
-                "#17becf",
-            ]
-        )
+        self.color_cycle = itertools.cycle(COLORS)
         self.title = data_set.title
         self.data = defaultdict(list)
         tpe = self.plot_type = PlotType.MIXED
@@ -69,7 +65,15 @@ class Plotter:
                 self.plot_periods(datas)
         self.ax.relim()
         self.ax.autoscale()
+        self.fmt_xaxis()
 
+    def fmt_xaxis(self):
+        locator = mdates.WeekdayLocator(byweekday=mdates.MONDAY)
+        formatter = DateFormatter()
+        self.ax.xaxis.set_major_locator(locator)
+        self.ax.xaxis.set_major_formatter(formatter)
+        self.ax.xaxis.set_minor_locator(mdates.DayLocator())
+        self.fig.autofmt_xdate()
 
     def plot_lines(self, data_list: list[FinalData]):
         """plots all available lines.
@@ -111,14 +115,29 @@ class Plotter:
         data : FinalData
             data as returned by a Transformer
         """
-        if len(data_list)==1:
+        if len(data_list) == 1:
             data = data_list[0]
-            for start, end in zip(data.x[::2], data.x[1::2]):
-                self.ax.plot(
+            for start, end, ppl in zip(data.x[::2], data.x[1::2], data.y[::2]):
+                s = fmt_period(start, end, ppl)
+                (l,) = self.ax.plot(
                     [start, end],
-                    [0.5, 0.5],
+                    [0.6, 0.6],
                     transform=self.ax.get_xaxis_transform(),
                     label=data.description,
                     c="k",
-                    marker="|",
                 )
+                self.ax.plot(
+                    [start, start], [0.55, 0.65], c="k", transform=self.ax.get_xaxis_transform()
+                )
+                self.ax.plot(
+                    [end, end], [0.55, 0.65], c="k", transform=self.ax.get_xaxis_transform()
+                )
+            self.legend_handles.append(l)
+            self.legend_labels.append(data.description)
+
+
+def fmt_period(start: datetime.datetime, end: datetime.datetime, people: int) -> str:
+    num_days = (end - start).days + 1
+    days = ngettext("{} day", "{} days", num_days).format(num_days)
+    ppl = ngettext("{} person", "{} people", people).format(people)
+    return f"{start} - {end} ({days}, {ppl})"

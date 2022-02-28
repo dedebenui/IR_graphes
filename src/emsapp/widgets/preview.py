@@ -18,6 +18,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class PlotPreview(QtWidgets.QWidget):
+    plotter:Plotter = None
     def __init__(self):
         super().__init__()
         self.setMinimumSize(500, 350)
@@ -31,7 +32,6 @@ class PlotPreview(QtWidgets.QWidget):
 
     def plot(self, data_set: DataSet):
         self.canvas.ax.clear()
-        plotter = Plotter(self.canvas.ax)
-        plotter.plot(data_set)
+        self.plotter = Plotter(data_set, self.canvas.ax)
         self.canvas.draw()
         self.toolbar.update()

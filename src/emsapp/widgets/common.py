@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
 )
 
 from emsapp.i18n import _
+from emsapp import i18n
 
 
 class QWidgetWithHelp(QWidget):
@@ -96,13 +97,14 @@ class ValuesSelector(QWidgetWithHelp):
         self.values = values or []
         layout = QHBoxLayout()
         self.setLayout(layout)
-        self.label = QLabel(_(label), self)
+        self.label = QLabel("", self)
         self.box = ComboBoxClass(self)
         layout.addWidget(self.label)
         layout.addWidget(self.box)
         self.box.currentTextChanged.connect(self.sig_selection_changed.emit)
         self.update_values(self.values, selection)
         self.setMaximumHeight(40)
+        i18n.register(self)
 
     @property
     def value(self) -> str:
@@ -140,10 +142,15 @@ class ValuesSelector(QWidgetWithHelp):
 
         if must_emit:
             self.sig_selection_changed.emit(self.value)
+    def update_text(self):
+        self.label.setText(_(self.name))
 
     @property
     def valid(self) -> bool:
         return bool(self.values)
+
+    def set_text(self, lbl:str):
+        self.label.setText(lbl)
 
 
 class AcceptCancel(QWidget):

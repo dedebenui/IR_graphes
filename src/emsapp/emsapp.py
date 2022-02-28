@@ -10,11 +10,12 @@ def main():
     splash.show()
     app.processEvents()
 
+    from emsapp import startup
     from emsapp.widgets import exception_hook
     from emsapp.widgets.main_window import MainWindow
     from emsapp.i18n import _
 
-    splash.showMessage(_("Modules imported"))
+    splash.showMessage(_("Loading data..."))
 
     win = MainWindow()
     win.sig_loading_event.connect(splash.showMessage)
