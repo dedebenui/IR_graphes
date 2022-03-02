@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtWidgets
 
 logger = get_logger(__name__)
 
+
 def show_exception_box(log_msg):
     """Checks if a QApplication instance is available and shows a messagebox with the exception message.
     If unavailable (non-console application), log an additional notice.
@@ -45,7 +46,9 @@ class UncaughtHook(QtCore.QObject):
                     "{0}: {1}".format(exc_type.__name__, exc_value),
                 ]
             )
-            logger.critical("Uncaught exception:\n {0}".format(log_msg), exc_info=exc_info)
+            logger.critical(
+                "Uncaught exception:\n {0}".format(log_msg), exc_info=exc_info
+            )
 
             # trigger message box show
             self._exception_caught.emit(log_msg)

@@ -13,7 +13,9 @@ class ExcelDataLoader:
         for ws in self.wb:
             for name in ws.tables:
                 self.table_ws_map[name] = ws.title
-                self.all_tables[name] = [col.name for col in ws.tables[name].tableColumns]
+                self.all_tables[name] = [
+                    col.name for col in ws.tables[name].tableColumns
+                ]
 
     def tables(self, config) -> list[str]:
         return list(self.all_tables)

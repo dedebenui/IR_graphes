@@ -23,20 +23,29 @@ class Process:
 
         filters = [Filter.create(conf) for conf in p_conf.filters.values()]
         splitters = [Splitter.create(conf) for conf in p_conf.splitters.values()]
-        transformers = [Transformer.create(conf) for conf in p_conf.transformers.values()]
+        transformers = [
+            Transformer.create(conf) for conf in p_conf.transformers.values()
+        ]
         groupers = [Grouper.create(conf) for conf in p_conf.groupers.values()]
 
         return Process(filters, splitters, transformers, groupers)
 
     def __call__(self, raw_entries: Entries) -> list[DataSet]:
         filtered_entries = Entries(
-            [e for e in raw_entries if all(f(e) for f in self.filters)], raw_entries.report.copy()
+            [e for e in raw_entries if all(f(e) for f in self.filters)],
+            raw_entries.report.copy(),
         )
         entries_lists = [filtered_entries]
         for splitter in self.splitters:
             entries_lists = [
-                new_entries for entries in entries_lists for new_entries in splitter(entries)
+                new_entries
+                for entries in entries_lists
+                for new_entries in splitter(entries)
             ]
 
-        final_data = [trans(entries) for entries in entries_lists for trans in self.transformers]
-        return [data_set for grouper in self.groupers for data_set in grouper(final_data)]
+        final_data = [
+            trans(entries) for entries in entries_lists for trans in self.transformers
+        ]
+        return [
+            data_set for grouper in self.groupers for data_set in grouper(final_data)
+        ]

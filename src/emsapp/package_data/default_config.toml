@@ -13,6 +13,9 @@ col_location = "instit_loc"
 
 date_formats = ["%x", "%d.%m.%Y", "%d/%m/%Y"]
 
+[plot]
+show_periods_info = true
+legend_loc = "top"
 
 [plugins]
 data_loader = [

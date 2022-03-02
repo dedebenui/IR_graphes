@@ -1,17 +1,19 @@
 def N_(msg: str) -> str:
     return msg
+
+
 COLORS = [
-                "#1f77b4",
-                "#ff7f0e",
-                "#2ca02c",
-                "#d62728",
-                "#9467bd",
-                "#8c564b",
-                "#e377c2",
-                "#7f7f7f",
-                "#bcbd22",
-                "#17becf",
-            ]
+    "#1f77b4",
+    "#ff7f0e",
+    "#2ca02c",
+    "#d62728",
+    "#9467bd",
+    "#8c564b",
+    "#e377c2",
+    "#7f7f7f",
+    "#bcbd22",
+    "#17becf",
+]
 
 ENTRY_FIELDS = [
     N_("date_start"),
@@ -30,6 +32,8 @@ DISTRICTS = [
     N_("Singine"),
     N_("Veveyse"),
 ]
+
+MSG_DURATION = 3000
 
 ALL_COLUMNS = ENTRY_FIELDS + ["district"]
 

@@ -23,7 +23,9 @@ class Grouper(ABC):
         if cls:
             return cls(conf)
 
-        raise ValueError(_("Invalid grouper specifications : {conf!r}").format(conf=conf))
+        raise ValueError(
+            _("Invalid grouper specifications : {conf!r}").format(conf=conf)
+        )
 
     def __init__(self, conf: GrouperConfig):
         self.name = conf.name

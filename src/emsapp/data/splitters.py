@@ -23,7 +23,9 @@ class Splitter(ABC):
         if cls:
             return cls(conf)
 
-        raise ValueError(_("Invalid splitter specifications : {conf!r}").format(conf=conf))
+        raise ValueError(
+            _("Invalid splitter specifications : {conf!r}").format(conf=conf)
+        )
 
     def __init__(self, conf: SplitterConfig):
         self.name = conf.name

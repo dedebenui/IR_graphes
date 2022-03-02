@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-28 15:56+0100\n"
+"POT-Creation-Date: 2022-03-02 14:54+0100\n"
 "PO-Revision-Date: 2022-02-28 12:47+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,81 +18,93 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:137
+#: src/emsapp/config.py:64
+msgid "top"
+msgstr "Oben"
+
+#: src/emsapp/config.py:65
+msgid "auto"
+msgstr "Automatisch"
+
+#: src/emsapp/config.py:66
+msgid "no"
+msgstr "Keine"
+
+#: src/emsapp/config.py:154
 msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
 msgstr ""
 
-#: src/emsapp/config.py:145
+#: src/emsapp/config.py:162
 msgid ""
 "transformer {trs} referenced in grouper {grp} doesn't exist in process "
 "{prc}"
 msgstr ""
 
-#: src/emsapp/config.py:247
+#: src/emsapp/config.py:284
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr ""
 
-#: src/emsapp/const.py:17
-msgid "date_start"
-msgstr ""
-
-#: src/emsapp/const.py:18
-msgid "date_end"
-msgstr ""
-
 #: src/emsapp/const.py:19
-msgid "role"
-msgstr ""
+msgid "date_start"
+msgstr "Anfangsdatum"
 
 #: src/emsapp/const.py:20
-msgid "institution"
-msgstr ""
+msgid "date_end"
+msgstr "Enddatum"
 
 #: src/emsapp/const.py:21
-msgid "institution_type"
-msgstr ""
+msgid "role"
+msgstr "Role"
 
 #: src/emsapp/const.py:22
-msgid "location"
-msgstr ""
+msgid "institution"
+msgstr "Institution"
 
-#: src/emsapp/const.py:25
+#: src/emsapp/const.py:23
+msgid "institution_type"
+msgstr "Institutionstyp"
+
+#: src/emsapp/const.py:24
+msgid "location"
+msgstr "Ort"
+
+#: src/emsapp/const.py:27
 msgid "Broye"
 msgstr ""
 
-#: src/emsapp/const.py:26
+#: src/emsapp/const.py:28
 msgid "Glâne"
 msgstr ""
 
-#: src/emsapp/const.py:27
+#: src/emsapp/const.py:29
 msgid "Gruyère"
 msgstr ""
 
-#: src/emsapp/const.py:28
-msgid "Lac"
-msgstr ""
-
-#: src/emsapp/const.py:29
-msgid "Sarine"
-msgstr ""
-
 #: src/emsapp/const.py:30
-msgid "Singine"
-msgstr ""
+msgid "Lac"
+msgstr "See"
 
 #: src/emsapp/const.py:31
+msgid "Sarine"
+msgstr "Saane"
+
+#: src/emsapp/const.py:32
+msgid "Singine"
+msgstr "Sense"
+
+#: src/emsapp/const.py:33
 msgid "Veveyse"
 msgstr ""
 
-#: src/emsapp/const.py:36
+#: src/emsapp/const.py:40
 msgid "{dt.day} {dt:%b} {dt.year}"
 msgstr "{dt.day}. {dt:%b} {dt.year}"
 
-#: src/emsapp/emsapp.py:18
+#: src/emsapp/emsapp.py:20
 msgid "Loading data..."
-msgstr ""
+msgstr "Laden..."
 
-#: src/emsapp/validators.py:12
+#: src/emsapp/validators.py:16
 msgid "{s} does not appear in {district_list!r}"
 msgstr ""
 
@@ -102,17 +114,17 @@ msgstr ""
 
 #: src/emsapp/data/__init__.py:82
 msgid "district"
-msgstr ""
+msgstr "Bezirk"
 
-#: src/emsapp/data/__init__.py:133 src/emsapp/data/__init__.py:157
+#: src/emsapp/data/__init__.py:135 src/emsapp/data/__init__.py:159
 msgid "{0!r} cannot be interpreted as a date"
 msgstr ""
 
-#: src/emsapp/data/filters.py:25
+#: src/emsapp/data/filters.py:26
 msgid "Invalid filter specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/groupers.py:26
+#: src/emsapp/data/groupers.py:27
 msgid "Invalid grouper specifications : {conf!r}"
 msgstr ""
 
@@ -120,47 +132,55 @@ msgstr ""
 msgid "invalid entry : {error}"
 msgstr ""
 
-#: src/emsapp/data/splitters.py:26
+#: src/emsapp/data/splitters.py:27
 msgid "Invalid splitter specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/transformers.py:30
+#: src/emsapp/data/transformers.py:31
 msgid "Invalid transformer specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/transformers.py:64
+#: src/emsapp/data/transformers.py:69
 msgid "New cases"
-msgstr ""
+msgstr "Neue Fälle"
 
-#: src/emsapp/data/transformers.py:96
+#: src/emsapp/data/transformers.py:102
 msgid "People in confinment"
 msgstr "Personen in Isolation"
 
-#: src/emsapp/data/transformers.py:139
+#: src/emsapp/data/transformers.py:145
 msgid "Period in question"
-msgstr ""
+msgstr "Betreffende Periode"
 
-#: src/emsapp/plotting/plotter.py:171
+#: src/emsapp/plotting/plotter.py:213
+msgid "{days} d."
+msgstr "{days} T."
+
+#: src/emsapp/plotting/plotter.py:214
+msgid "{ppl} p."
+msgstr "{ppl} p."
+
+#: src/emsapp/plotting/plotter.py:222
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] "Tag"
-msgstr[1] "Tage"
+msgstr[0] "{} Tag"
+msgstr[1] "{} Tage"
 
-#: src/emsapp/plotting/plotter.py:172
+#: src/emsapp/plotting/plotter.py:223
 msgid "{} person"
 msgid_plural "{} people"
-msgstr[0] "Person"
-msgstr[1] "Personen"
+msgstr[0] "{} Person"
+msgstr[1] "{} Personen"
 
-#: src/emsapp/widgets/common.py:168
+#: src/emsapp/widgets/common.py:196
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:169
+#: src/emsapp/widgets/common.py:197
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/emsapp/widgets/exception_hook.py:15
+#: src/emsapp/widgets/exception_hook.py:16
 msgid ""
 "Oops. An unexpected error occured:\n"
 "{0}"
@@ -168,65 +188,109 @@ msgstr ""
 
 #: src/emsapp/widgets/importation.py:32
 msgid "Select path"
-msgstr ""
+msgstr "Datei auswählen"
 
 #: src/emsapp/widgets/importation.py:42
 msgid "Choose a database file"
-msgstr ""
+msgstr "Wählen Sie eine Datei"
 
 #: src/emsapp/widgets/importation.py:59
 msgid "No table found in {path}. Please ensure tables are defined in this file."
-msgstr ""
+msgstr "Keine Tabelle gefunden. Stellen Sie sicher, dass mindenstens eine Tabelle definiert ist"
 
-#: src/emsapp/widgets/main_window.py:30
+#: src/emsapp/widgets/info_box.py:36 src/emsapp/widgets/info_box.py:59
+msgid "Copy"
+msgstr "Kopieren"
+
+#: src/emsapp/widgets/info_box.py:37
+msgid "ok"
+msgstr "Ok"
+
+#: src/emsapp/widgets/info_box.py:53
+msgid "Plot data"
+msgstr "Plot Datei"
+
+#: src/emsapp/widgets/info_box.py:58
+msgid "Copied !"
+msgstr "Kopiert !"
+
+#: src/emsapp/widgets/main_window.py:39
 msgid "opening database..."
-msgstr ""
-
-#: src/emsapp/widgets/main_window.py:56
-msgid "Select data to preview"
-msgstr ""
-
-#: src/emsapp/widgets/main_window.py:66
-msgid "&File"
-msgstr ""
-
-#: src/emsapp/widgets/main_window.py:68
-msgid "&Open..."
-msgstr ""
-
-#: src/emsapp/widgets/main_window.py:69
-msgid "Open a database"
-msgstr ""
+msgstr "Datenbank wird geoffnet"
 
 #: src/emsapp/widgets/main_window.py:71
-msgid "&Copy"
-msgstr ""
-
-#: src/emsapp/widgets/main_window.py:72
-msgid "Copy current plot to clip board"
-msgstr ""
+msgid "Select data to preview"
+msgstr "Bitte Wählen Sie Datei für die Vorschau aus"
 
 #: src/emsapp/widgets/main_window.py:74
+msgid "show_periods_info"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:75
+msgid "legend_loc"
+msgstr "Ort der Legende"
+
+#: src/emsapp/widgets/main_window.py:97
+msgid "&File"
+msgstr "&Datei"
+
+#: src/emsapp/widgets/main_window.py:98
+msgid "&Data"
+msgstr "&Datei"
+
+#: src/emsapp/widgets/main_window.py:100
+msgid "&Open..."
+msgstr "&Öffen"
+
+#: src/emsapp/widgets/main_window.py:101
+msgid "Open a database"
+msgstr "Datenbank öffnen"
+
+#: src/emsapp/widgets/main_window.py:103
+msgid "&Copy plot"
+msgstr "Plot &Kopieren"
+
+#: src/emsapp/widgets/main_window.py:104
+msgid "Copy current plot to clip board"
+msgstr "Aktuelle Zeichnung kopieren"
+
+#: src/emsapp/widgets/main_window.py:105
+msgid "&Show data"
+msgstr "&Daten anschauen"
+
+#: src/emsapp/widgets/main_window.py:106
+msgid "Show current data as text"
+msgstr "Aktuelle Daten als Text anschauen"
+
+#: src/emsapp/widgets/main_window.py:111
 msgid "&Options"
 msgstr "&Einstellungen"
 
-#: src/emsapp/widgets/main_window.py:75
+#: src/emsapp/widgets/main_window.py:112
 msgid "&Language"
 msgstr "&Sprache"
 
-#: src/emsapp/widgets/main_window.py:77
+#: src/emsapp/widgets/main_window.py:115
 msgid "Change the current language to {lang}"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:99
+#: src/emsapp/widgets/main_window.py:142
 msgid "data loaded"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:102
+#: src/emsapp/widgets/main_window.py:146
 msgid "couldn't load {path}"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:107
+#: src/emsapp/widgets/main_window.py:152
 msgid "data processed"
 msgstr ""
+
+#: src/emsapp/widgets/main_window.py:174
+msgid "Could not copy plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:179
+msgid "Plot copied !"
+msgstr "Zeichnung wurde kopiert!"
 

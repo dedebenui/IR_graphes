@@ -43,3 +43,10 @@ col_location : str
 date_formats : list[str]
     formats de dates à essayer si jamais les données ne sont pas déjà des dates. Les formats disponibles se trouvent sur https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
     Par exemple. "%d.%m.%Y" veut dire que programme va essayer d'interpréter le texte "02.09.2021" comme "2 septembre 2021". 
+
+# Plot
+show_periods_info : bool
+    afficher un text décrivant les périodes de flambée potentielle. N'a d'effet uniquement sur les graphes montrant ces périodes.
+
+legenc_loc : "top" ou "no"
+    où afficher la légend des graphiques

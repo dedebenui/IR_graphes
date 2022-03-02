@@ -18,7 +18,8 @@ class MplCanvas(FigureCanvasQTAgg):
 
 
 class PlotPreview(QtWidgets.QWidget):
-    plotter:Plotter = None
+    plotter: Plotter = None
+
     def __init__(self):
         super().__init__()
         self.setMinimumSize(500, 350)

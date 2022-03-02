@@ -1,21 +1,29 @@
 from collections import defaultdict
+from typing import Callable, TypeVar
 from emsapp.const import ALL_COLUMNS, DISTRICTS
 from emsapp.i18n import _
 
 valid_values: dict[str, dict[str]] = defaultdict(dict)
+T = TypeVar("T")
+
+Validator = Callable[[T], T]
 
 
 def district_validator(s: str) -> str:
     if s.title() in DISTRICTS:
         return s.title()
     raise ValueError(
-        _("{s} does not appear in {district_list!r}").format(s=s, district_list=DISTRICTS)
+        _("{s} does not appear in {district_list!r}").format(
+            s=s, district_list=DISTRICTS
+        )
     )
 
 
 def column_validator(s: str):
     if s not in ALL_COLUMNS:
-        raise ValueError(f"{s} is not a valid column. Possible values : {ALL_COLUMNS!r}")
+        raise ValueError(
+            f"{s} is not a valid column. Possible values : {ALL_COLUMNS!r}"
+        )
     return s
 
 

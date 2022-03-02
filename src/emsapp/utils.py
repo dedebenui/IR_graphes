@@ -5,7 +5,7 @@ import inspect
 
 class AutoList:
     """
-    Descriptor that guaranties to return a list, even if only one elemen it assigned
+    Descriptor that guaranties to return a list, even if only one element it assigned
 
     Example
     -------

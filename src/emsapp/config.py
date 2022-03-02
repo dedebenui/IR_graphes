@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections.abc
 from ctypes import Union
 from dataclasses import dataclass
+from enum import Enum
 import json
 import os
 from collections import defaultdict
@@ -12,10 +13,10 @@ from typing import Any, Callable, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, Field, PrivateAttr, validator
+from pydantic import BaseModel, PrivateAttr
 from emsapp.validators import column_validator, validate
 
-from emsapp.i18n import _
+from emsapp.i18n import N_, _
 from emsapp.logging import get_logger
 from emsapp.widgets.common import get_user_input
 from emsapp.utils import auto_repr, AutoList
@@ -59,6 +60,17 @@ class PluginConfig(BaseModel):
     data_loader: list[str]
 
 
+class LegendLoc(Enum):
+    ABOVE = N_("top")
+    AUTO = N_("auto")
+    NO_LEGEND = N_("no")
+
+
+class PlotConfig(BaseModel):
+    show_periods_info: bool
+    legend_loc: LegendLoc
+
+
 @auto_repr
 class FilterConfig:
     name: str
@@ -67,7 +79,12 @@ class FilterConfig:
     values: list[str] = AutoList(str)
 
     def __init__(
-        self, name: str, type: str, column: str, values: list[str] = None, value: str = None
+        self,
+        name: str,
+        type: str,
+        column: str,
+        values: list[str] = None,
+        value: str = None,
     ):
         self.name = name
         self.type = validate("filter_type", type)
@@ -151,7 +168,9 @@ class ProcessConfig:
     @classmethod
     def default(cls) -> ProcessConfig:
         return cls.from_file(
-            pkg_resources.resource_filename("emsapp", "package_data/default_process.toml")
+            pkg_resources.resource_filename(
+                "emsapp", "package_data/default_process.toml"
+            )
         )
 
     @classmethod
@@ -160,9 +179,16 @@ class ProcessConfig:
             root = tomli.load(file)
 
         flt = {n: FilterConfig(name=n, **d) for n, d in root.get("filter", {}).items()}
-        spl = {n: SplitterConfig(name=n, **d) for n, d in root.get("splitter", {}).items()}
-        trs = {n: TransformerConfig(name=n, **d) for n, d in root.get("transformer", {}).items()}
-        grp = {n: GrouperConfig(name=n, **d) for n, d in root.get("grouper", {}).items()}
+        spl = {
+            n: SplitterConfig(name=n, **d) for n, d in root.get("splitter", {}).items()
+        }
+        trs = {
+            n: TransformerConfig(name=n, **d)
+            for n, d in root.get("transformer", {}).items()
+        }
+        grp = {
+            n: GrouperConfig(name=n, **d) for n, d in root.get("grouper", {}).items()
+        }
         name = root.get("name", Path(path).stem)
         return cls(name, flt, spl, trs, grp)
 
@@ -183,10 +209,16 @@ class UserData:
             ) as file:
                 self.d.update(json.load(file))
         except Exception:
-            logger.error("could not open user data. Resetting with empty file.", exc_info=True)
+            logger.error(
+                "could not open user data. Resetting with empty file.", exc_info=True
+            )
 
     def get(
-        self, value_descr: str, key: str, validator: Callable[[str], T] = str, help_text: str = None
+        self,
+        value_descr: str,
+        key: str,
+        validator: Callable[[str], T] = str,
+        help_text: str = None,
     ) -> Optional[T]:
         """get a user-provided piece of data. If the data has never been provided before, the user
         is asked to provide it. Otherwise it is recalled from the last time the user provided it.
@@ -237,12 +269,17 @@ class UserData:
     def update(self, value_descr: str, key: str, raw_value: str):
         self.d[value_descr][key] = raw_value
         with open(
-            pkg_resources.resource_filename("emsapp", "package_data/user_data.json"), "w"
+            pkg_resources.resource_filename("emsapp", "package_data/user_data.json"),
+            "w",
         ) as file:
             json.dump(self.d, file, indent=4)
 
     def ask_user(
-        self, value_descr: str, key: str, validator: Callable[[str], T] = str, help_text: str = None
+        self,
+        value_descr: str,
+        key: str,
+        validator: Callable[[str], T] = str,
+        help_text: str = None,
     ) -> Optional[T]:
         msg = _("Please enter a {value_descr} corresponding to {key}").format(
             value_descr=value_descr, key=key
@@ -274,6 +311,7 @@ class UserData:
 class RootConfig(BaseModel):
     data: DataConfig
     plugins: PluginConfig
+    plot: PlotConfig
     _process: ProcessConfig = PrivateAttr(default_factory=ProcessConfig.default)
     _user_data: UserData = PrivateAttr(default_factory=UserData)
     _commit_flag: bool = PrivateAttr(True)
@@ -300,7 +338,10 @@ class RootConfig(BaseModel):
 
     def save(self):
         with open(
-            pkg_resources.resource_filename("emsapp", "package_data/current_config.json"), "w"
+            pkg_resources.resource_filename(
+                "emsapp", "package_data/current_config.json"
+            ),
+            "w",
         ) as file:
             file.write(self.json(indent=4))
 
@@ -336,7 +377,8 @@ class Config:
 
 def default_config_dict() -> dict[str, Any]:
     with open(
-        pkg_resources.resource_filename("emsapp", "package_data/default_config.toml"), "rb"
+        pkg_resources.resource_filename("emsapp", "package_data/default_config.toml"),
+        "rb",
     ) as file:
         return tomli.load(file)
 
@@ -344,7 +386,10 @@ def default_config_dict() -> dict[str, Any]:
 def current_config_dict() -> dict[str, Any]:
     try:
         with open(
-            pkg_resources.resource_filename("emsapp", "package_data/current_config.json"), "r"
+            pkg_resources.resource_filename(
+                "emsapp", "package_data/current_config.json"
+            ),
+            "r",
         ) as file:
             return json.load(file)
     except (FileNotFoundError, tomli.TOMLDecodeError):

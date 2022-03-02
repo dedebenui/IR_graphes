@@ -53,11 +53,12 @@ def set_lang(lang: Union[str, list[str]] = None):
         obj.update_text()
 
 
-
 def _(msg: str) -> str:
     return module_gettext(msg)
 
+
 def ngettext(msg_sing: str, msg_plur: str, num: int) -> str:
     return module_ngettext(msg_sing, msg_plur, num)
+
 
 set_lang()

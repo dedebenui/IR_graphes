@@ -8,4 +8,6 @@ import PyQt5
 load_all_plugins()
 matplotlib.set_loglevel("info")
 matplotlib.use("Qt5Agg")
-style.use(pkg_resources.resource_filename("emsapp", "package_data/default_style.mplstyle"))
+style.use(
+    pkg_resources.resource_filename("emsapp", "package_data/default_style.mplstyle")
+)

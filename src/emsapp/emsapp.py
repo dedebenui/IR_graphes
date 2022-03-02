@@ -5,7 +5,9 @@ import sys
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    pixmap = QtGui.QPixmap(pkg_resources.resource_filename("emsapp", "package_data/covid19.jpg"))
+    pixmap = QtGui.QPixmap(
+        pkg_resources.resource_filename("emsapp", "package_data/covid19.jpg")
+    )
     splash = QtWidgets.QSplashScreen(pixmap)
     splash.show()
     app.processEvents()

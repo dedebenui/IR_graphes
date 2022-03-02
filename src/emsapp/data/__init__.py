@@ -40,7 +40,7 @@ class DataReport:
 
     splitters: dict[str, str] = field(default_factory=dict)
     transformer: str = None
-    final_label:str = ""
+    final_label: str = ""
 
     def copy(self) -> DataReport:
         """returns a deep copy of self"""
@@ -115,7 +115,9 @@ class DataSet:
         yield from self.data
 
 
-def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime.datetime:
+def parse_date(
+    s: Union[int, str, datetime.datetime, datetime.date]
+) -> datetime.datetime:
     """Returns a datetime object, parsed from a variety of different sources
 
     Parameters
@@ -138,9 +140,9 @@ def parse_date(s: Union[int, str, datetime.datetime, datetime.date]) -> datetime
         return datetime.datetime.combine(s, datetime.time(0))
     if isinstance(s, int):
         if s > 40177 and s < 47482:
-            return datetime.datetime(Config().data.excel_start_date, 1, 1) + datetime.timedelta(
-                s - 1
-            )
+            return datetime.datetime(
+                Config().data.excel_start_date, 1, 1
+            ) + datetime.timedelta(s - 1)
 
     s = s.strip()
 

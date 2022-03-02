@@ -27,7 +27,9 @@ class Transformer(ABC):
         if cls:
             return cls(conf)
 
-        raise ValueError(_("Invalid transformer specifications : {conf!r}").format(conf=conf))
+        raise ValueError(
+            _("Invalid transformer specifications : {conf!r}").format(conf=conf)
+        )
 
     def __init__(self, conf: TransformerConfig):
         self.name = conf.name
@@ -61,7 +63,11 @@ class NewTransformer(Transformer):
         report.transformer = self.name
 
         return FinalData(
-            np.array(x), np.array(y), DataType.BAR, description=_("New cases"), report=report
+            np.array(x),
+            np.array(y),
+            DataType.BAR,
+            description=_("New cases"),
+            report=report,
         )
 
 

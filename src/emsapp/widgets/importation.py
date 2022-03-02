@@ -85,11 +85,15 @@ class ColumnSelector(QtWidgets.QWidget):
         self.did_change = False
         for selector in self.selectors:
             layout.addWidget(selector)
-            selector.sig_selection_changed.connect(self.column_changed_callback(selector))
+            selector.sig_selection_changed.connect(
+                self.column_changed_callback(selector)
+            )
 
     def update_headers(self, headers: list[str]):
         for selector in self.selectors:
-            selector.update_values(headers, getattr(Config().data, f"col_{selector.name}"))
+            selector.update_values(
+                headers, getattr(Config().data, f"col_{selector.name}")
+            )
 
     def column_changed_callback(self, selector: ValuesSelector):
         def column_changed(new_name: str):

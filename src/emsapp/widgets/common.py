@@ -1,21 +1,26 @@
-from typing import Optional, Type
-from PyQt5.QtGui import QMouseEvent
+from __future__ import annotations
+
+from typing import Iterable, Optional, TypeVar
+
+from emsapp import i18n
+from emsapp.i18n import _
 from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal
+from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import (
-    QWidget,
-    QToolTip,
     QComboBox,
-    QHBoxLayout,
-    QVBoxLayout,
-    QLabel,
-    QPushButton,
-    QLineEdit,
-    QDialog,
     QCompleter,
+    QDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QToolTip,
+    QVBoxLayout,
+    QWidget,
 )
 
-from emsapp.i18n import _
-from emsapp import i18n
+T = TypeVar("T")
 
 
 class QWidgetWithHelp(QWidget):
@@ -38,6 +43,32 @@ class QWidgetWithHelp(QWidget):
             QToolTip.showText(p, self.__tttxt)
 
 
+class TranslatableComboBox(QComboBox):
+    """
+    combobox that displays translated text, but adds a signal
+    to return the original, non translated value
+    """
+
+    currentRawTextChanged = pyqtSignal(str)
+
+    def __init__(self, values: Iterable[str]):
+        super().__init__()
+        self.raw_values = list(values)
+        self.currentIndexChanged.connect(
+            lambda i: self.currentRawTextChanged.emit(self.raw_values[i])
+        )
+        self.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        i18n.register(self)
+
+    def update_text(self):
+        selected = self.currentIndex()
+        self.blockSignals(True)
+        self.clear()
+        self.insertItems(0, [_(el) for el in self.raw_values])
+        self.setCurrentIndex(selected)
+        self.blockSignals(False)
+
+
 class ExtendedComboBox(QComboBox):
     def __init__(self, parent=None):
         super(ExtendedComboBox, self).__init__(parent)
@@ -58,7 +89,6 @@ class ExtendedComboBox(QComboBox):
         # connect signals
         self.lineEdit().textEdited.connect(self.pFilterModel.setFilterFixedString)
         self.completer.activated.connect(self.on_completer_activated)
-        self.setMinimumHeight(35)
 
     # on selection of an item from the completer, select the corresponding item from combobox
     def on_completer_activated(self, text):
@@ -95,15 +125,13 @@ class ValuesSelector(QWidgetWithHelp):
         super().__init__()
         self.name = label
         self.values = values or []
-        layout = QHBoxLayout()
+        layout = QFormLayout()
         self.setLayout(layout)
         self.label = QLabel("", self)
         self.box = ComboBoxClass(self)
-        layout.addWidget(self.label)
-        layout.addWidget(self.box)
+        layout.addRow(self.label, self.box)
         self.box.currentTextChanged.connect(self.sig_selection_changed.emit)
         self.update_values(self.values, selection)
-        self.setMaximumHeight(40)
         i18n.register(self)
 
     @property
@@ -142,6 +170,7 @@ class ValuesSelector(QWidgetWithHelp):
 
         if must_emit:
             self.sig_selection_changed.emit(self.value)
+
     def update_text(self):
         self.label.setText(_(self.name))
 
@@ -149,7 +178,7 @@ class ValuesSelector(QWidgetWithHelp):
     def valid(self) -> bool:
         return bool(self.values)
 
-    def set_text(self, lbl:str):
+    def set_text(self, lbl: str):
         self.label.setText(lbl)
 
 

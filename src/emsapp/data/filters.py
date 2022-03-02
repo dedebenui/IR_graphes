@@ -8,7 +8,7 @@ from emsapp.i18n import _
 
 
 class Filter(ABC):
-    name:str
+    name: str
     _registered: dict[str, type[Filter]] = {}
 
     @classmethod
@@ -22,7 +22,9 @@ class Filter(ABC):
         if cls:
             return cls(conf)
 
-        raise ValueError(_("Invalid filter specifications : {conf!r}").format(conf=conf))
+        raise ValueError(
+            _("Invalid filter specifications : {conf!r}").format(conf=conf)
+        )
 
     def __init__(self, conf: FilterConfig):
         self.name = conf.name
