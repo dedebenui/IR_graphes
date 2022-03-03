@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Generic, TypeVar, Union
 
-from numpy import dtype
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QCheckBox, QFormLayout, QLabel, QLineEdit, QWidget
@@ -32,13 +31,14 @@ class ConfigForm(QWidget):
             if isinstance(spec, QWidget):
                 layout.addRow(spec)
                 continue
-            self.tooltip = spec.tooltip or None
             qlabel = QLabel("")
+            control = create_control(spec, self.create_callback(spec.name))
+            layout.addRow(qlabel, control)
+            if spec.tooltip:
+                qlabel.setToolTip(_(spec.tooltip))
+                control.setToolTip(_(spec.tooltip))
             self.labels[spec.name] = qlabel
-            self.controls[spec.name] = create_control(
-                spec, self.create_callback(spec.name)
-            )
-            layout.addRow(qlabel, self.controls[spec.name])
+            self.controls[spec.name] = control
 
         i18n.register(self)
 
@@ -83,7 +83,7 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
             validator.setBottom(specs.min)
         control.setValidator(validator)
         control.setText(str(specs.default) or "")
-        control.textEdited.connect(lambda txt: callback(specs.dtype(txt)))
+        control.editingFinished.connect(lambda : callback(specs.dtype(control.text())))
     elif specs.dtype is bool:
         control = QCheckBox()
         control.setChecked(specs.default)

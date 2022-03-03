@@ -51,6 +51,9 @@ last_selected : str
 show_periods_info : bool
     afficher un text décrivant les périodes de flambée potentielle. N'a d'effet uniquement sur les graphes montrant ces périodes.
 
+show_today : bool
+    afficher une ligne rouge à la date d'aujourd'hui
+
 legenc_loc : "top" ou "no"
     où afficher la légend des graphiques
 

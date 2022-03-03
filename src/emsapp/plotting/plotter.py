@@ -81,6 +81,11 @@ class Plotter:
         self.legend(Config().plot.legend_loc)
         if self.plot_type is not PlotType.PERIOD:
             self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        if Config().plot.show_today:
+            today = datetime.date.today()
+            self.ax.axvline(
+                datetime.datetime(today.year, today.month, today.day), c="r", lw=2
+            )
         self.ax.relim()
         self.ax.autoscale()
         self.fmt_xaxis()

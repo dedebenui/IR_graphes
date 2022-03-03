@@ -17,6 +17,7 @@ last_selected = ""
 
 [plot]
 show_periods_info = true
+show_today = false
 legend_loc = "top"
 plot_height = 10.2
 plot_width = 24.3

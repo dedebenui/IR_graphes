@@ -76,6 +76,7 @@ class LegendLoc(Enum):
 
 class PlotConfig(BaseModel):
     show_periods_info: bool
+    show_today: bool
     legend_loc: LegendLoc
     plot_height: confloat(ge=PLOT_MIN_HEIGHT, le=PLOT_MAX_HEIGHT)
     plot_width: confloat(ge=PLOT_MIN_WIDTH, le=PLOT_MAX_WIDTH)

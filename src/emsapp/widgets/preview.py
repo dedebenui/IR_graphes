@@ -1,7 +1,7 @@
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from emsapp.config import Config
 from emsapp.data import DataSet
@@ -11,10 +11,14 @@ from emsapp.plotting.plotter import Plotter
 class MplCanvas(FigureCanvasQTAgg):
     fig: Figure
     ax: Axes
+    fig_size : QtCore.QSize
 
     def __init__(self, parent=None):
-        self.fig = Figure(figsize=Config().plot.figsize)
+        w, h =Config().plot.figsize
+        self.fig = Figure(figsize=(w, h))
+        dpi = self.fig.dpi
         self.ax = self.fig.add_subplot(111)
+        self.fig_size = QtCore.QSize(int(self.fig.dpi * w), int(self.fig.dpi * h))
         super().__init__(self.fig)
 
 
@@ -37,3 +41,20 @@ class PlotPreview(QtWidgets.QWidget):
         self.plotter = Plotter(data_set, self.canvas.ax)
         self.canvas.draw()
         self.toolbar.update()
+
+
+
+def main():
+    import emsapp.startup
+    from PyQt5.QtWidgets import QApplication
+    import sys
+    app = QApplication(sys.argv)
+    win = PlotPreview()
+    win.show()
+    print(win.canvas.fig.get_size_inches())
+    win.canvas.resize_fig(20, 10)
+    print(win.canvas.fig.get_size_inches())
+    app.exec()
+
+if __name__ == "__main__":
+    main()

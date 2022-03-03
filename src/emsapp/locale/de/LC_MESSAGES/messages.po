@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-02 17:05+0100\n"
+"POT-Creation-Date: 2022-03-03 13:04+0100\n"
 "PO-Revision-Date: 2022-02-28 12:47+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,29 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:70
+#: src/emsapp/config.py:72
 msgid "top"
 msgstr "Oben"
 
-#: src/emsapp/config.py:71
+#: src/emsapp/config.py:73
 msgid "auto"
 msgstr "Automatisch"
 
-#: src/emsapp/config.py:72
+#: src/emsapp/config.py:74
 msgid "no"
 msgstr "Keine"
 
-#: src/emsapp/config.py:166
+#: src/emsapp/config.py:169
 msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
 msgstr ""
 
-#: src/emsapp/config.py:174
+#: src/emsapp/config.py:177
 msgid ""
 "transformer {trs} referenced in grouper {grp} doesn't exist in process "
 "{prc}"
 msgstr ""
 
-#: src/emsapp/config.py:296
+#: src/emsapp/config.py:299
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr ""
 
@@ -100,11 +100,11 @@ msgstr ""
 msgid "{dt.day} {dt:%b} {dt.year}"
 msgstr "{dt.day}. {dt:%b} {dt.year}"
 
-#: src/emsapp/emsapp.py:20
+#: src/emsapp/emsapp.py:21
 msgid "Loading data..."
 msgstr "Laden..."
 
-#: src/emsapp/validators.py:16
+#: src/emsapp/validators.py:17
 msgid "{s} does not appear in {district_list!r}"
 msgstr ""
 
@@ -120,11 +120,11 @@ msgstr "Bezirk"
 msgid "{0!r} cannot be interpreted as a date"
 msgstr ""
 
-#: src/emsapp/data/filters.py:26
+#: src/emsapp/data/filters.py:27
 msgid "Invalid filter specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/groupers.py:27
+#: src/emsapp/data/groupers.py:28
 msgid "Invalid grouper specifications : {conf!r}"
 msgstr ""
 
@@ -136,187 +136,207 @@ msgstr ""
 msgid "Invalid splitter specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/transformers.py:31
+#: src/emsapp/data/transformers.py:32
 msgid "Invalid transformer specifications : {conf!r}"
 msgstr ""
 
-#: src/emsapp/data/transformers.py:69
+#: src/emsapp/data/transformers.py:70
 msgid "New cases"
 msgstr "Neue Fälle"
 
-#: src/emsapp/data/transformers.py:102
+#: src/emsapp/data/transformers.py:103
 msgid "People in confinment"
 msgstr "Personen in Isolation"
 
-#: src/emsapp/data/transformers.py:145
+#: src/emsapp/data/transformers.py:146
 msgid "Period in question"
 msgstr "Betreffende Periode"
 
-#: src/emsapp/plotting/plotter.py:215
+#: src/emsapp/plotting/plotter.py:221
 msgid "{days} d."
 msgstr "{days} T."
 
-#: src/emsapp/plotting/plotter.py:216
+#: src/emsapp/plotting/plotter.py:222
 msgid "{ppl} p."
 msgstr "{ppl} p."
 
-#: src/emsapp/plotting/plotter.py:224
+#: src/emsapp/plotting/plotter.py:230
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} Tag"
 msgstr[1] "{} Tage"
 
-#: src/emsapp/plotting/plotter.py:225
+#: src/emsapp/plotting/plotter.py:231
 msgid "{} person"
 msgid_plural "{} people"
 msgstr[0] "{} Person"
 msgstr[1] "{} Personen"
 
-#: src/emsapp/widgets/common.py:197
+#: src/emsapp/widgets/common.py:203
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:198
+#: src/emsapp/widgets/common.py:204
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/emsapp/widgets/exception_hook.py:16
+#: src/emsapp/widgets/exception_hook.py:18
 msgid ""
 "Oops. An unexpected error occured:\n"
 "{0}"
 msgstr ""
 
-#: src/emsapp/widgets/importation.py:32
+#: src/emsapp/widgets/importation.py:33
 msgid "Select path"
 msgstr "Datei auswählen"
 
-#: src/emsapp/widgets/importation.py:42
+#: src/emsapp/widgets/importation.py:43
 msgid "Choose a database file"
 msgstr "Wählen Sie eine Datei"
 
-#: src/emsapp/widgets/importation.py:59
+#: src/emsapp/widgets/importation.py:60
 msgid "No table found in {path}. Please ensure tables are defined in this file."
 msgstr ""
 "Keine Tabelle gefunden. Stellen Sie sicher, dass mindenstens eine Tabelle"
 " definiert ist"
 
-#: src/emsapp/widgets/info_box.py:36 src/emsapp/widgets/info_box.py:59
+#: src/emsapp/widgets/info_box.py:38 src/emsapp/widgets/info_box.py:61
 msgid "Copy"
 msgstr "Kopieren"
 
-#: src/emsapp/widgets/info_box.py:37
+#: src/emsapp/widgets/info_box.py:39
 msgid "ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/info_box.py:53
+#: src/emsapp/widgets/info_box.py:55
 msgid "Plot data"
 msgstr "Plot Datei"
 
-#: src/emsapp/widgets/info_box.py:58
+#: src/emsapp/widgets/info_box.py:60
 msgid "Copied !"
 msgstr "Kopiert !"
 
 #: src/emsapp/widgets/main_window.py:34
 msgid "show_periods_info"
-msgstr ""
+msgstr "Info über die Periode"
 
 #: src/emsapp/widgets/main_window.py:37
 msgid "Display duration and number of affected people on the plot"
-msgstr ""
+msgstr "Dauer und Zahl der betroffenen Leute einer Periode anzeigen"
 
 #: src/emsapp/widgets/main_window.py:40
+msgid "show_today"
+msgstr "Heute"
+
+#: src/emsapp/widgets/main_window.py:43
+msgid "Show a red line on today's date"
+msgstr "Heutiges Datum mit einer Roten Linie anzeigen"
+
+#: src/emsapp/widgets/main_window.py:46
 msgid "legend_loc"
 msgstr "Ort der Legende"
 
-#: src/emsapp/widgets/main_window.py:43
+#: src/emsapp/widgets/main_window.py:49
 msgid "Choose where to display the legend"
-msgstr ""
+msgstr "Wo muss die Legende angezeigt werden"
 
-#: src/emsapp/widgets/main_window.py:46
+#: src/emsapp/widgets/main_window.py:52
 msgid "plot_width"
 msgstr "Zeichnungbreit"
 
-#: src/emsapp/widgets/main_window.py:51
-msgid "Specify the width of the plot"
-msgstr ""
+#: src/emsapp/widgets/main_window.py:57
+msgid "Width of the plot when exported"
+msgstr "Breite der Zeichnung beim Kopieren"
 
-#: src/emsapp/widgets/main_window.py:55
+#: src/emsapp/widgets/main_window.py:61
 msgid "plot_height"
 msgstr "Zeichnunghöhe"
 
-#: src/emsapp/widgets/main_window.py:60
-msgid "Specify the height of the plot"
-msgstr ""
+#: src/emsapp/widgets/main_window.py:66
+msgid "Height of the plot when exported"
+msgstr "Höhe der Zeichnung beim Kopieren"
 
-#: src/emsapp/widgets/main_window.py:73
+#: src/emsapp/widgets/main_window.py:79
 msgid "opening database..."
 msgstr "Datenbank wird geoffnet"
 
-#: src/emsapp/widgets/main_window.py:106
+#: src/emsapp/widgets/main_window.py:115
 msgid "Select data to preview"
 msgstr "Bitte Wählen Sie Datei für die Vorschau aus"
 
-#: src/emsapp/widgets/main_window.py:129
+#: src/emsapp/widgets/main_window.py:142
 msgid "&File"
 msgstr "&Datei"
 
-#: src/emsapp/widgets/main_window.py:130
+#: src/emsapp/widgets/main_window.py:143
 msgid "&Data"
 msgstr "&Datei"
 
-#: src/emsapp/widgets/main_window.py:132
+#: src/emsapp/widgets/main_window.py:145
 msgid "&Open..."
 msgstr "&Öffen"
 
-#: src/emsapp/widgets/main_window.py:133
+#: src/emsapp/widgets/main_window.py:146
 msgid "Open a database"
 msgstr "Datenbank öffnen"
 
-#: src/emsapp/widgets/main_window.py:135
+#: src/emsapp/widgets/main_window.py:147
+msgid "Show &logs"
+msgstr "&Protokolle anzeigen"
+
+#: src/emsapp/widgets/main_window.py:148
+msgid "Open the logs to attempt to solve a problem"
+msgstr "Protokolle anzeigen, um ein Problem zu lösen"
+
+#: src/emsapp/widgets/main_window.py:150
 msgid "&Copy plot"
 msgstr "Plot &Kopieren"
 
-#: src/emsapp/widgets/main_window.py:136
+#: src/emsapp/widgets/main_window.py:151
 msgid "Copy current plot to clip board"
 msgstr "Aktuelle Zeichnung kopieren"
 
-#: src/emsapp/widgets/main_window.py:137
+#: src/emsapp/widgets/main_window.py:152
 msgid "&Show data"
 msgstr "&Daten anschauen"
 
-#: src/emsapp/widgets/main_window.py:138
+#: src/emsapp/widgets/main_window.py:153
 msgid "Show current data as text"
 msgstr "Aktuelle Daten als Text anschauen"
 
-#: src/emsapp/widgets/main_window.py:143
+#: src/emsapp/widgets/main_window.py:158
 msgid "&Options"
 msgstr "&Einstellungen"
 
-#: src/emsapp/widgets/main_window.py:144
+#: src/emsapp/widgets/main_window.py:159
 msgid "&Language"
 msgstr "&Sprache"
 
-#: src/emsapp/widgets/main_window.py:147
+#: src/emsapp/widgets/main_window.py:162
 msgid "Change the current language to {lang}"
-msgstr ""
+msgstr "Sprache ändern"
 
-#: src/emsapp/widgets/main_window.py:175
+#: src/emsapp/widgets/main_window.py:188
 msgid "data loaded"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:179
+#: src/emsapp/widgets/main_window.py:192
 msgid "couldn't load {path}"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:185
+#: src/emsapp/widgets/main_window.py:198
 msgid "data processed"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:207
+#: src/emsapp/widgets/main_window.py:226
 msgid "Could not copy plot"
-msgstr ""
+msgstr "Die Zeichnung konnte nichte kopiert werden"
 
-#: src/emsapp/widgets/main_window.py:212
+#: src/emsapp/widgets/main_window.py:231
 msgid "Plot copied !"
 msgstr "Zeichnung wurde kopiert!"
+
+#: src/emsapp/widgets/main_window.py:243
+msgid "Most recent logs"
+msgstr "Neue Protokolle"
 

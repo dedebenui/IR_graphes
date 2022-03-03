@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 import pkg_resources
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QTimer
 from PyQt5.QtGui import QImage, QShowEvent
 from PyQt5.QtWidgets import (
     QApplication,
@@ -37,6 +37,12 @@ config_specs = [
         tooltip=N_("Display duration and number of affected people on the plot"),
     ),
     ControlSpecs(
+        name=N_("show_today"),
+        dtype=bool,
+        default=Config().plot.show_today,
+        tooltip=N_("Show a red line on today's date"),
+    ),
+    ControlSpecs(
         name=N_("legend_loc"),
         dtype=LegendLoc,
         default=Config().plot.legend_loc,
@@ -48,7 +54,7 @@ config_specs = [
         min=PLOT_MIN_WIDTH,
         max=PLOT_MAX_WIDTH,
         default=Config().plot.plot_width,
-        tooltip=N_("Specify the width of the plot"),
+        tooltip=N_("Width of the plot when exported"),
         needs_refresh=False,
     ),
     ControlSpecs(
@@ -57,7 +63,7 @@ config_specs = [
         min=PLOT_MIN_WIDTH,
         max=PLOT_MAX_WIDTH,
         default=Config().plot.plot_height,
-        tooltip=N_("Specify the height of the plot"),
+        tooltip=N_("Height of the plot when exported"),
         needs_refresh=False,
     ),
 ]
@@ -79,6 +85,7 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
         self.config_specs = {c.name: c for c in config_specs}
 
+
         menu_bar = self.menuBar()
         self.m_file = menu_bar.addMenu("")
         self.a_open = self.m_file.addAction("")
@@ -88,13 +95,11 @@ class MainWindow(QMainWindow):
         self.a_logs = self.m_file.addAction("")
         self.a_logs.triggered.connect(self.show_logs)
 
-        self.m_data = menu_bar.addMenu("")
-        self.a_copy_plot = self.m_data.addAction("")
+        self.m_plot = menu_bar.addMenu("")
+        self.a_copy_plot = self.m_plot.addAction("")
         self.a_copy_plot.setShortcut("Ctrl+C")
-        self.a_copy_plot.triggered.connect(self.copy_plot)
 
-        self.a_show_data = self.m_data.addAction("")
-        self.a_show_data.triggered.connect(self.show_data)
+        self.a_show_data = self.m_plot.addAction("")
 
         self.m_option = menu_bar.addMenu("")
         self.m_lang = self.m_option.addMenu("")
@@ -108,9 +113,9 @@ class MainWindow(QMainWindow):
         self.data_selector = ValuesSelector(
             N_("Select data to preview"), ComboBoxClass=ExtendedComboBox
         )
-        self.p_config_options = ConfigForm(*self.config_specs.values())
         self.b_copy_plot = QPushButton()
         self.b_show_data = QPushButton()
+        self.p_config_options = ConfigForm(*self.config_specs.values())
 
         layout.addWidget(self.data_selector, 0, 0, 1, 1)
         layout.addWidget(self.preview, 1, 0, 2, 1)
@@ -119,6 +124,9 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.b_show_data, 2, 2, 1, 1)
         layout.setRowStretch(0, 0)
         layout.setRowStretch(1, 1)
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 0)
+        layout.setColumnStretch(2, 0)
         # self.resize(1000, 700)
 
         i18n.register(self)
@@ -129,12 +137,14 @@ class MainWindow(QMainWindow):
 
         self.data_selector.sig_selection_changed.connect(self.update_preview)
         self.p_config_options.sig_value_changed.connect(self.plot_config_changed)
+        self.a_copy_plot.triggered.connect(self.copy_plot)
+        self.a_show_data.triggered.connect(self.show_data)
         self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
         self.b_show_data.clicked.connect(self.a_show_data.trigger)
 
     def update_text(self):
         self.m_file.setTitle(_("&File"))
-        self.m_data.setTitle(_("&Data"))
+        self.m_plot.setTitle(_("&Plot"))
 
         self.a_open.setText(_("&Open..."))
         self.a_open.setToolTip(_("Open a database"))
@@ -147,7 +157,9 @@ class MainWindow(QMainWindow):
         self.a_show_data.setToolTip(_("Show current data as text"))
 
         self.b_copy_plot.setText(self.a_copy_plot.text())
+        self.b_copy_plot.setToolTip(self.a_copy_plot.toolTip())
         self.b_show_data.setText(self.a_show_data.text())
+        self.b_show_data.setToolTip(self.a_show_data.toolTip())
 
         self.m_option.setTitle(_("&Options"))
         self.m_lang.setTitle(_("&Language"))
