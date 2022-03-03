@@ -3,6 +3,9 @@ playground*.py
 testing/testing_data/
 *.exe
 *.cmd
+*.docx
+*.log.[0-9]
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

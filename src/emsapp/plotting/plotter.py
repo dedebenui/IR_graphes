@@ -43,7 +43,7 @@ class Plotter:
             self.ax = ax
             self.fig = self.ax.get_figure()
         else:
-            self.fig, self.ax = plt.subplots()
+            self.fig, self.ax = plt.subplots(figsize=Config().plot.figsize)
         self.color_cycle = itertools.cycle(COLORS)
         self.title = data_set.title
         self.data = defaultdict(list)
@@ -121,7 +121,7 @@ class Plotter:
             (l,) = self.ax.plot(data.x, data.y, color=next(self.color_cycle))
             self.legend_handles.append(l)
             if self.plot_type == PlotType.MIXED:
-                self.legend_labels.append(data.description)
+                self.legend_labels.append(_(data.description))
             else:
                 self.legend_labels.append(data.report.final_label)
 
@@ -145,7 +145,7 @@ class Plotter:
                 color=next(self.color_cycle),
             )
             self.legend_handles.append(cont.patches[0])
-            self.legend_labels.append(data.description)
+            self.legend_labels.append(_(data.description))
 
     def plot_periods(self, data_list: list[FinalData]):
         """plots some periods
@@ -193,7 +193,7 @@ class Plotter:
             for x, y, per in all_periods_s:
                 self.period_info(per, x, y)
         self.legend_handles.append(l)
-        self.legend_labels.append(data.description)
+        self.legend_labels.append(_(data.description))
 
     def period_info(self, s: str, x: datetime.datetime, y: float = 0.7):
         self.ax.text(

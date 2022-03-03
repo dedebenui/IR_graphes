@@ -20,5 +20,9 @@
             "emsapp.data.loaders.access_loader",
             "emsapp.data.loaders.excel_loader"
         ]
+    },
+    "plot": {
+        "show_periods_info": true,
+        "legend_loc": "top"
     }
 }

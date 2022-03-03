@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-02 14:54+0100\n"
+"POT-Creation-Date: 2022-03-02 17:05+0100\n"
 "PO-Revision-Date: 2022-02-28 12:47+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,29 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:64
+#: src/emsapp/config.py:70
 msgid "top"
 msgstr "Oben"
 
-#: src/emsapp/config.py:65
+#: src/emsapp/config.py:71
 msgid "auto"
 msgstr "Automatisch"
 
-#: src/emsapp/config.py:66
+#: src/emsapp/config.py:72
 msgid "no"
 msgstr "Keine"
 
-#: src/emsapp/config.py:154
+#: src/emsapp/config.py:166
 msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
 msgstr ""
 
-#: src/emsapp/config.py:162
+#: src/emsapp/config.py:174
 msgid ""
 "transformer {trs} referenced in grouper {grp} doesn't exist in process "
 "{prc}"
 msgstr ""
 
-#: src/emsapp/config.py:284
+#: src/emsapp/config.py:296
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr ""
 
@@ -96,7 +96,7 @@ msgstr "Sense"
 msgid "Veveyse"
 msgstr ""
 
-#: src/emsapp/const.py:40
+#: src/emsapp/const.py:44
 msgid "{dt.day} {dt:%b} {dt.year}"
 msgstr "{dt.day}. {dt:%b} {dt.year}"
 
@@ -152,31 +152,31 @@ msgstr "Personen in Isolation"
 msgid "Period in question"
 msgstr "Betreffende Periode"
 
-#: src/emsapp/plotting/plotter.py:213
+#: src/emsapp/plotting/plotter.py:215
 msgid "{days} d."
 msgstr "{days} T."
 
-#: src/emsapp/plotting/plotter.py:214
+#: src/emsapp/plotting/plotter.py:216
 msgid "{ppl} p."
 msgstr "{ppl} p."
 
-#: src/emsapp/plotting/plotter.py:222
+#: src/emsapp/plotting/plotter.py:224
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} Tag"
 msgstr[1] "{} Tage"
 
-#: src/emsapp/plotting/plotter.py:223
+#: src/emsapp/plotting/plotter.py:225
 msgid "{} person"
 msgid_plural "{} people"
 msgstr[0] "{} Person"
 msgstr[1] "{} Personen"
 
-#: src/emsapp/widgets/common.py:196
+#: src/emsapp/widgets/common.py:197
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:197
+#: src/emsapp/widgets/common.py:198
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -196,7 +196,9 @@ msgstr "Wählen Sie eine Datei"
 
 #: src/emsapp/widgets/importation.py:59
 msgid "No table found in {path}. Please ensure tables are defined in this file."
-msgstr "Keine Tabelle gefunden. Stellen Sie sicher, dass mindenstens eine Tabelle definiert ist"
+msgstr ""
+"Keine Tabelle gefunden. Stellen Sie sicher, dass mindenstens eine Tabelle"
+" definiert ist"
 
 #: src/emsapp/widgets/info_box.py:36 src/emsapp/widgets/info_box.py:59
 msgid "Copy"
@@ -214,83 +216,107 @@ msgstr "Plot Datei"
 msgid "Copied !"
 msgstr "Kopiert !"
 
-#: src/emsapp/widgets/main_window.py:39
-msgid "opening database..."
-msgstr "Datenbank wird geoffnet"
-
-#: src/emsapp/widgets/main_window.py:71
-msgid "Select data to preview"
-msgstr "Bitte Wählen Sie Datei für die Vorschau aus"
-
-#: src/emsapp/widgets/main_window.py:74
+#: src/emsapp/widgets/main_window.py:34
 msgid "show_periods_info"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:75
+#: src/emsapp/widgets/main_window.py:37
+msgid "Display duration and number of affected people on the plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:40
 msgid "legend_loc"
 msgstr "Ort der Legende"
 
-#: src/emsapp/widgets/main_window.py:97
+#: src/emsapp/widgets/main_window.py:43
+msgid "Choose where to display the legend"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:46
+msgid "plot_width"
+msgstr "Zeichnungbreit"
+
+#: src/emsapp/widgets/main_window.py:51
+msgid "Specify the width of the plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:55
+msgid "plot_height"
+msgstr "Zeichnunghöhe"
+
+#: src/emsapp/widgets/main_window.py:60
+msgid "Specify the height of the plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:73
+msgid "opening database..."
+msgstr "Datenbank wird geoffnet"
+
+#: src/emsapp/widgets/main_window.py:106
+msgid "Select data to preview"
+msgstr "Bitte Wählen Sie Datei für die Vorschau aus"
+
+#: src/emsapp/widgets/main_window.py:129
 msgid "&File"
 msgstr "&Datei"
 
-#: src/emsapp/widgets/main_window.py:98
+#: src/emsapp/widgets/main_window.py:130
 msgid "&Data"
 msgstr "&Datei"
 
-#: src/emsapp/widgets/main_window.py:100
+#: src/emsapp/widgets/main_window.py:132
 msgid "&Open..."
 msgstr "&Öffen"
 
-#: src/emsapp/widgets/main_window.py:101
+#: src/emsapp/widgets/main_window.py:133
 msgid "Open a database"
 msgstr "Datenbank öffnen"
 
-#: src/emsapp/widgets/main_window.py:103
+#: src/emsapp/widgets/main_window.py:135
 msgid "&Copy plot"
 msgstr "Plot &Kopieren"
 
-#: src/emsapp/widgets/main_window.py:104
+#: src/emsapp/widgets/main_window.py:136
 msgid "Copy current plot to clip board"
 msgstr "Aktuelle Zeichnung kopieren"
 
-#: src/emsapp/widgets/main_window.py:105
+#: src/emsapp/widgets/main_window.py:137
 msgid "&Show data"
 msgstr "&Daten anschauen"
 
-#: src/emsapp/widgets/main_window.py:106
+#: src/emsapp/widgets/main_window.py:138
 msgid "Show current data as text"
 msgstr "Aktuelle Daten als Text anschauen"
 
-#: src/emsapp/widgets/main_window.py:111
+#: src/emsapp/widgets/main_window.py:143
 msgid "&Options"
 msgstr "&Einstellungen"
 
-#: src/emsapp/widgets/main_window.py:112
+#: src/emsapp/widgets/main_window.py:144
 msgid "&Language"
 msgstr "&Sprache"
 
-#: src/emsapp/widgets/main_window.py:115
+#: src/emsapp/widgets/main_window.py:147
 msgid "Change the current language to {lang}"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:142
+#: src/emsapp/widgets/main_window.py:175
 msgid "data loaded"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:146
+#: src/emsapp/widgets/main_window.py:179
 msgid "couldn't load {path}"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:152
+#: src/emsapp/widgets/main_window.py:185
 msgid "data processed"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:174
+#: src/emsapp/widgets/main_window.py:207
 msgid "Could not copy plot"
 msgstr ""
 
-#: src/emsapp/widgets/main_window.py:179
+#: src/emsapp/widgets/main_window.py:212
 msgid "Plot copied !"
 msgstr "Zeichnung wurde kopiert!"
 

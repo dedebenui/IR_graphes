@@ -3,5 +3,3 @@ xtick.major.width: 1
 
 axes.spines.top: False
 axes.spines.right: False
-
-figure.figsize: 10, 4

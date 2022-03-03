@@ -13,7 +13,13 @@ from typing import Any, Callable, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, PrivateAttr, confloat
+from emsapp.const import (
+    PLOT_MAX_HEIGHT,
+    PLOT_MAX_WIDTH,
+    PLOT_MIN_HEIGHT,
+    PLOT_MIN_WIDTH,
+)
 from emsapp.validators import column_validator, validate
 
 from emsapp.i18n import N_, _
@@ -44,6 +50,8 @@ class DataConfig(BaseModel):
 
     date_formats: list[str]
 
+    last_selected:str
+
     @property
     def columns(self) -> list[str]:
         return [
@@ -69,6 +77,12 @@ class LegendLoc(Enum):
 class PlotConfig(BaseModel):
     show_periods_info: bool
     legend_loc: LegendLoc
+    plot_height: confloat(ge=PLOT_MIN_HEIGHT, le=PLOT_MAX_HEIGHT)
+    plot_width: confloat(ge=PLOT_MIN_WIDTH, le=PLOT_MAX_WIDTH)
+
+    @property
+    def figsize(self) -> tuple[float, float]:
+        return self.plot_width / 2.54, self.plot_height / 2.54
 
 
 @auto_repr

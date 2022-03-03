@@ -1,16 +1,14 @@
 import logging
+from logging.handlers import RotatingFileHandler
+import pkg_resources
 
-try:
-    logging.basicConfig(filename="emsapp.log", encoding="utf-8", level=logging.DEBUG)
-except PermissionError:
-    import os
-
-    logging.basicConfig(
-        filename=os.path.join(os.path.expanduser("~"), "emsapp.log"),
-        encoding="utf-8",
-        level=logging.DEBUG,
-    )
+LOG_FILE = pkg_resources.resource_filename("emsapp", "logs/emsapp.log")
+ROT_FILE_HANDLER = RotatingFileHandler(LOG_FILE, maxBytes=512000, backupCount=5, encoding="utf-8")
 
 
 def get_logger(name=None):
-    return logging.getLogger(name)
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    if ROT_FILE_HANDLER not in logger.handlers:
+        logger.addHandler(ROT_FILE_HANDLER)
+    return logger

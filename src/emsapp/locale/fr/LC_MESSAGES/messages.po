@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-02 14:54+0100\n"
+"POT-Creation-Date: 2022-03-02 17:05+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>\n"
 "Language: fr\n"
@@ -18,25 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: src/emsapp/config.py:64
+#: src/emsapp/config.py:70
 msgid "top"
 msgstr "En haut"
 
-#: src/emsapp/config.py:65
+#: src/emsapp/config.py:71
 msgid "auto"
 msgstr ""
 
-#: src/emsapp/config.py:66
+#: src/emsapp/config.py:72
 msgid "no"
 msgstr "Aucune"
 
-#: src/emsapp/config.py:154
+#: src/emsapp/config.py:166
 msgid "splitter {spl} referenced in grouper {grp} doesn't exist in process {prc}"
 msgstr ""
 "séparateur {spl} référencé dans le goupeur {grp} mais absent du processus"
 " {prc}"
 
-#: src/emsapp/config.py:162
+#: src/emsapp/config.py:174
 msgid ""
 "transformer {trs} referenced in grouper {grp} doesn't exist in process "
 "{prc}"
@@ -44,7 +44,7 @@ msgstr ""
 "transformeur {trs} référencé dans le groupeur {grp} mais absent du "
 "processus {prc}"
 
-#: src/emsapp/config.py:284
+#: src/emsapp/config.py:296
 msgid "Please enter a {value_descr} corresponding to {key}"
 msgstr "Entrez un/une {value_descr} corresponant/e à {key}"
 
@@ -100,7 +100,7 @@ msgstr "Singine"
 msgid "Veveyse"
 msgstr "Veveyse"
 
-#: src/emsapp/const.py:40
+#: src/emsapp/const.py:44
 msgid "{dt.day} {dt:%b} {dt.year}"
 msgstr ""
 
@@ -158,31 +158,31 @@ msgstr "Personnes en isolement"
 msgid "Period in question"
 msgstr "Période touchée"
 
-#: src/emsapp/plotting/plotter.py:213
+#: src/emsapp/plotting/plotter.py:215
 msgid "{days} d."
 msgstr "{days} j."
 
-#: src/emsapp/plotting/plotter.py:214
+#: src/emsapp/plotting/plotter.py:216
 msgid "{ppl} p."
 msgstr "{ppl} p."
 
-#: src/emsapp/plotting/plotter.py:222
+#: src/emsapp/plotting/plotter.py:224
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} jour"
 msgstr[1] "{} jours"
 
-#: src/emsapp/plotting/plotter.py:223
+#: src/emsapp/plotting/plotter.py:225
 msgid "{} person"
 msgid_plural "{} people"
 msgstr[0] "{} personne"
 msgstr[1] "{} personnes"
 
-#: src/emsapp/widgets/common.py:196
+#: src/emsapp/widgets/common.py:197
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:197
+#: src/emsapp/widgets/common.py:198
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -224,83 +224,107 @@ msgstr "Données du graphe"
 msgid "Copied !"
 msgstr "Copié !"
 
-#: src/emsapp/widgets/main_window.py:39
-msgid "opening database..."
-msgstr "ouverture de la base de donnée..."
-
-#: src/emsapp/widgets/main_window.py:71
-msgid "Select data to preview"
-msgstr "Sélectionner les donnée à prévisualiser"
-
-#: src/emsapp/widgets/main_window.py:74
+#: src/emsapp/widgets/main_window.py:34
 msgid "show_periods_info"
 msgstr "afficher les infos des périodes"
 
-#: src/emsapp/widgets/main_window.py:75
+#: src/emsapp/widgets/main_window.py:37
+msgid "Display duration and number of affected people on the plot"
+msgstr "Montrer la durée et le nombre de personnes affectées de chaque période"
+
+#: src/emsapp/widgets/main_window.py:40
 msgid "legend_loc"
 msgstr "placement de la légende"
 
-#: src/emsapp/widgets/main_window.py:97
+#: src/emsapp/widgets/main_window.py:43
+msgid "Choose where to display the legend"
+msgstr "Choisir où placer la légende du graphe"
+
+#: src/emsapp/widgets/main_window.py:46
+msgid "plot_width"
+msgstr "Largeur du graphe"
+
+#: src/emsapp/widgets/main_window.py:51
+msgid "Specify the width of the plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:55
+msgid "plot_height"
+msgstr "Hauteur du graphe"
+
+#: src/emsapp/widgets/main_window.py:60
+msgid "Specify the height of the plot"
+msgstr ""
+
+#: src/emsapp/widgets/main_window.py:73
+msgid "opening database..."
+msgstr "ouverture de la base de donnée..."
+
+#: src/emsapp/widgets/main_window.py:106
+msgid "Select data to preview"
+msgstr "Sélectionner les donnée à prévisualiser"
+
+#: src/emsapp/widgets/main_window.py:129
 msgid "&File"
 msgstr "&Fichier"
 
-#: src/emsapp/widgets/main_window.py:98
+#: src/emsapp/widgets/main_window.py:130
 msgid "&Data"
 msgstr "&Données"
 
-#: src/emsapp/widgets/main_window.py:100
+#: src/emsapp/widgets/main_window.py:132
 msgid "&Open..."
 msgstr "&Ouvrir..."
 
-#: src/emsapp/widgets/main_window.py:101
+#: src/emsapp/widgets/main_window.py:133
 msgid "Open a database"
 msgstr "Ouvrir une base de donnée"
 
-#: src/emsapp/widgets/main_window.py:103
+#: src/emsapp/widgets/main_window.py:135
 msgid "&Copy plot"
 msgstr "&Copier le graphe"
 
-#: src/emsapp/widgets/main_window.py:104
+#: src/emsapp/widgets/main_window.py:136
 msgid "Copy current plot to clip board"
 msgstr "Copier le graphe actuelle dans le presse-papier"
 
-#: src/emsapp/widgets/main_window.py:105
+#: src/emsapp/widgets/main_window.py:137
 msgid "&Show data"
 msgstr "&Afficher les données"
 
-#: src/emsapp/widgets/main_window.py:106
+#: src/emsapp/widgets/main_window.py:138
 msgid "Show current data as text"
 msgstr "Afficher les données actuelles en tant que texte"
 
-#: src/emsapp/widgets/main_window.py:111
+#: src/emsapp/widgets/main_window.py:143
 msgid "&Options"
 msgstr "&Options"
 
-#: src/emsapp/widgets/main_window.py:112
+#: src/emsapp/widgets/main_window.py:144
 msgid "&Language"
 msgstr "&Langue"
 
-#: src/emsapp/widgets/main_window.py:115
+#: src/emsapp/widgets/main_window.py:147
 msgid "Change the current language to {lang}"
 msgstr "Changer la langue vers {lang}"
 
-#: src/emsapp/widgets/main_window.py:142
+#: src/emsapp/widgets/main_window.py:175
 msgid "data loaded"
 msgstr "données chargées"
 
-#: src/emsapp/widgets/main_window.py:146
+#: src/emsapp/widgets/main_window.py:179
 msgid "couldn't load {path}"
 msgstr "impossible de charger {path}"
 
-#: src/emsapp/widgets/main_window.py:152
+#: src/emsapp/widgets/main_window.py:185
 msgid "data processed"
 msgstr "données traitées"
 
-#: src/emsapp/widgets/main_window.py:174
+#: src/emsapp/widgets/main_window.py:207
 msgid "Could not copy plot"
 msgstr "Impossible de copier le graphe"
 
-#: src/emsapp/widgets/main_window.py:179
+#: src/emsapp/widgets/main_window.py:212
 msgid "Plot copied !"
 msgstr "Graphe copié !"
 

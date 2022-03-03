@@ -1,14 +1,14 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import numpy as np
 from emsapp.config import TransformerConfig
-
 from emsapp.data import DataType, FinalData
 from emsapp.data.loading import Entries, Entry
-from emsapp.i18n import _
+from emsapp.i18n import N_, _
 from emsapp.validators import register_valid
 
 
@@ -66,7 +66,7 @@ class NewTransformer(Transformer):
             np.array(x),
             np.array(y),
             DataType.BAR,
-            description=_("New cases"),
+            description=N_("New cases"),
             report=report,
         )
 
@@ -99,7 +99,7 @@ class CumulativeTransformer(Transformer):
             np.array(x),
             np.array(y),
             DataType.LINE,
-            description=_("People in confinment"),
+            description=N_("People in confinment"),
             report=report,
         )
 
@@ -120,7 +120,7 @@ class PeriodTransformer(Transformer):
         start = sorted_entries[0].date_start
         curr_end = start + dur
         entry_list = [sorted_entries[0]]
-        for entry in sorted_entries:
+        for entry in sorted_entries[1:]:
             if entry.date_start <= curr_end:
                 entry_list.append(entry)
                 curr_end = entry.date_start + dur
@@ -142,7 +142,7 @@ class PeriodTransformer(Transformer):
             np.array(x),
             np.array(y),
             DataType.PERIOD,
-            description=_("Period in question"),
+            description=N_("Period in question"),
             report=report,
         )
 
