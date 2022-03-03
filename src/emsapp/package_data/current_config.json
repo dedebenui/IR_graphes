@@ -13,7 +13,8 @@
             "%x",
             "%d.%m.%Y",
             "%d/%m/%Y"
-        ]
+        ],
+        "last_selected": "institutions, Homes m\u00e9d. de la Broye / EMS Les Fauvettes Montagny-la-Ville, Soignant"
     },
     "plugins": {
         "data_loader": [
@@ -23,6 +24,8 @@
     },
     "plot": {
         "show_periods_info": true,
-        "legend_loc": "top"
+        "legend_loc": "top",
+        "plot_height": 10.2,
+        "plot_width": 24.3
     }
 }

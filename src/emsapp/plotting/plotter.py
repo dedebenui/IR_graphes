@@ -3,14 +3,15 @@ import io
 import itertools
 from collections import defaultdict
 from enum import Enum
-from emsapp.const import COLORS, DATE_OUTPUT_FMT
+
+import matplotlib.dates as mdates
+from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 from emsapp.config import Config, LegendLoc
+from emsapp.const import COLORS, DATE_OUTPUT_FMT
 from emsapp.data import DataSet, DataType, FinalData
 from emsapp.i18n import _, ngettext
-from matplotlib import pyplot as plt
-import matplotlib.dates as mdates
-import matplotlib.text as mtext
 
 
 class PlotType(Enum):
@@ -78,6 +79,8 @@ class Plotter:
             elif tpe == DataType.PERIOD:
                 self.plot_periods(datas)
         self.legend(Config().plot.legend_loc)
+        if self.plot_type is not PlotType.PERIOD:
+            self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.ax.relim()
         self.ax.autoscale()
         self.fmt_xaxis()

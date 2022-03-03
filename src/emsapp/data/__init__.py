@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, fields
 import datetime
+from dataclasses import dataclass, field, fields
 from enum import Enum
 from pydoc import describe
 from typing import Any, Iterator, Optional, Union
-from dataclasses import field
+
 import numpy as np
 
 from emsapp.config import Config
+from emsapp.i18n import N_, _
 from emsapp.validators import district_validator
-from emsapp.i18n import _, N_
 
 
 class DataType(Enum):

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Iterable, Optional, TypeVar
 
-from emsapp import i18n
-from emsapp.i18n import _
 from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.QtWidgets import (
@@ -19,6 +17,9 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from emsapp import i18n
+from emsapp.i18n import _
 
 T = TypeVar("T")
 
@@ -142,7 +143,9 @@ class ValuesSelector(QWidgetWithHelp):
     def index(self) -> str:
         return self.box.currentIndex()
 
-    def update_values(self, values: list[str], selection: str = None):
+    def update_values(
+        self, values: list[str], selection: str = None, always_emit=False
+    ):
         """update the possible values in the dropdown box
 
         Parameters
@@ -151,12 +154,15 @@ class ValuesSelector(QWidgetWithHelp):
             list of possible values. Will override any existing ones
         selection : str, optional
             if given, selects this value
+        always_emit : bool, optional
+            if the current selection is present in the new list of values, sig_selection_changed
+            will not emit unless this flag is set to True
         """
         selected = selection or self.box.currentText()
         self.values = values
         if selected in self.values:
             new_index = self.values.index(selected)
-            must_emit = False
+            must_emit = always_emit
         else:
             new_index = 0
             must_emit = True

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+
 from emsapp.config import FilterConfig
 from emsapp.data import Entry, parse_date
-from emsapp.validators import register_valid
 from emsapp.i18n import _
+from emsapp.validators import register_valid
 
 
 class Filter(ABC):

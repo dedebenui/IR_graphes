@@ -1,19 +1,21 @@
 from __future__ import annotations
+
 from enum import Enum
 from typing import Any, Callable, Iterable, Optional, TypeVar, Union
+
+from PyQt5.QtCore import QSortFilterProxyModel, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal, QTimer
 from PyQt5.QtWidgets import (
-    QGridLayout,
-    QPushButton,
-    QLabel,
-    QDialog,
-    QTextEdit,
     QApplication,
+    QDialog,
+    QGridLayout,
+    QLabel,
+    QPushButton,
+    QTextEdit,
 )
 
-from emsapp.i18n import _
 from emsapp.const import MSG_DURATION
+from emsapp.i18n import _
 from emsapp.logging import get_logger
 
 logger = get_logger(__name__)

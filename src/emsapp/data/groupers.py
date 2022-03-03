@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from emsapp.config import GrouperConfig
 
+from emsapp.config import GrouperConfig
 from emsapp.data import DataReport, DataSet, FinalData
 from emsapp.i18n import _
 from emsapp.validators import register_valid
@@ -43,8 +44,8 @@ class StepNameGrouper(Grouper):
 
     def __init__(self, conf: GrouperConfig):
         super().__init__(conf)
-        self.splitters = set(conf.splitters)
-        self.transformers = set(conf.transformers or [])
+        self.splitters = sorted(conf.splitters)
+        self.transformers = sorted(conf.transformers or [])
 
     def __call__(self, data: list[FinalData]) -> list[DataSet]:
         out: dict[str, list[FinalData]] = defaultdict(list)

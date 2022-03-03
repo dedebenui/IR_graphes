@@ -1,17 +1,17 @@
 from __future__ import annotations
-from dataclasses import dataclass
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Generic, TypeVar, Union
 
 from numpy import dtype
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtWidgets import QCheckBox, QFormLayout, QLabel, QLineEdit, QWidget
 
 from emsapp import i18n
 from emsapp.i18n import _
 from emsapp.widgets.common import TranslatableComboBox
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QCheckBox, QFormLayout, QLabel, QWidget, QLineEdit
 
 T = TypeVar("T")
 

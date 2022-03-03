@@ -1,32 +1,31 @@
 from typing import Any, Optional
+
+import pkg_resources
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QImage, QShowEvent
 from PyQt5.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QGridLayout,
     QApplication,
+    QGridLayout,
+    QMainWindow,
     QMessageBox,
     QPushButton,
+    QWidget,
 )
-from PyQt5.QtGui import QShowEvent, QImage
-from PyQt5.QtCore import pyqtSignal
-import pkg_resources
-from emsapp import data
 
+from emsapp import data, i18n
 from emsapp.config import Config, LegendLoc
 from emsapp.const import PLOT_MAX_WIDTH, PLOT_MIN_WIDTH
 from emsapp.data import DataSet
 from emsapp.data.loading import Entries, load_data
 from emsapp.data.process import Process
-from emsapp import i18n
 from emsapp.i18n import N_, _
 from emsapp.logging import get_logger
 from emsapp.plotting.plotter import Plotter
-from emsapp.widgets.importation import configure_db
-from emsapp.widgets.preview import PlotPreview
 from emsapp.widgets.common import ExtendedComboBox, ValuesSelector
 from emsapp.widgets.config_form import ConfigForm, ControlSpecs
+from emsapp.widgets.importation import configure_db
 from emsapp.widgets.info_box import InfoBox
-
+from emsapp.widgets.preview import PlotPreview
 
 logger = get_logger()
 
@@ -113,11 +112,6 @@ class MainWindow(QMainWindow):
         self.b_copy_plot = QPushButton()
         self.b_show_data = QPushButton()
 
-        self.data_selector.sig_selection_changed.connect(self.update_preview)
-        self.p_config_options.sig_value_changed.connect(self.plot_config_changed)
-        self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
-        self.b_show_data.clicked.connect(self.a_show_data.trigger)
-
         layout.addWidget(self.data_selector, 0, 0, 1, 1)
         layout.addWidget(self.preview, 1, 0, 2, 1)
         layout.addWidget(self.p_config_options, 0, 1, 2, 2)
@@ -128,6 +122,15 @@ class MainWindow(QMainWindow):
         # self.resize(1000, 700)
 
         i18n.register(self)
+
+        self.process = Process.from_config()
+        self.load_and_process()
+        self.update_preview()
+
+        self.data_selector.sig_selection_changed.connect(self.update_preview)
+        self.p_config_options.sig_value_changed.connect(self.plot_config_changed)
+        self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
+        self.b_show_data.clicked.connect(self.a_show_data.trigger)
 
     def update_text(self):
         self.m_file.setTitle(_("&File"))
@@ -167,8 +170,6 @@ class MainWindow(QMainWindow):
 
     def showEvent(self, a0: QShowEvent) -> None:
         super().showEvent(a0)
-        self.process = Process.from_config()
-        self.load_and_process()
 
     def load_new_database(self) -> Entries:
         configure_db(self)
@@ -189,14 +190,17 @@ class MainWindow(QMainWindow):
         for ds in self.process(entries):
             self.processed_data[ds.title] = ds
         self.sig_loading_event.emit(_("data processed"))
-
-        self.data_selector.update_values(sorted(self.processed_data), Config().data.last_selected)
+        print(f"about to set values : {Config().data.last_selected = }")
+        self.data_selector.update_values(
+            sorted(self.processed_data), Config().data.last_selected
+        )
 
     def get_selected_data(self) -> Optional[DataSet]:
         """returns an optional dataset representing the current user selection"""
         if not self.data_selector.valid:
             return
         selected = self.data_selector.value
+        print(f"about to update selection : {Config().data.last_selected = }")
         Config().data.last_selected = selected
         return self.processed_data.get(selected)
 
@@ -205,6 +209,8 @@ class MainWindow(QMainWindow):
         dataset = self.get_selected_data()
         if not dataset:
             return
+        print(f"about to save : {Config().data.last_selected = }")
+        Config().save()
         self.preview.plot(dataset)
 
     def copy_plot(self) -> bool:

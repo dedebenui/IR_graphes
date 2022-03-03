@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import Callable, TypeVar
+
 from emsapp.const import ALL_COLUMNS, DISTRICTS
 from emsapp.i18n import _
 

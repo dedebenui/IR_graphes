@@ -1,6 +1,7 @@
-import pkg_resources
-from PyQt5 import QtWidgets, QtGui
 import sys
+
+import pkg_resources
+from PyQt5 import QtGui, QtWidgets
 
 
 def main():
@@ -13,9 +14,9 @@ def main():
     app.processEvents()
 
     from emsapp import startup
+    from emsapp.i18n import _
     from emsapp.widgets import exception_hook
     from emsapp.widgets.main_window import MainWindow
-    from emsapp.i18n import _
 
     splash.showMessage(_("Loading data..."))
 

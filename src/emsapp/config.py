@@ -1,31 +1,31 @@
 from __future__ import annotations
 
 import collections.abc
-from ctypes import Union
-from dataclasses import dataclass
-from enum import Enum
 import json
 import os
 from collections import defaultdict
 from contextlib import contextmanager
+from ctypes import Union
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
 from pydantic import BaseModel, PrivateAttr, confloat
+
 from emsapp.const import (
     PLOT_MAX_HEIGHT,
     PLOT_MAX_WIDTH,
     PLOT_MIN_HEIGHT,
     PLOT_MIN_WIDTH,
 )
-from emsapp.validators import column_validator, validate
-
 from emsapp.i18n import N_, _
 from emsapp.logging import get_logger
+from emsapp.utils import AutoList, auto_repr
+from emsapp.validators import column_validator, validate
 from emsapp.widgets.common import get_user_input
-from emsapp.utils import auto_repr, AutoList
 
 logger = get_logger()
 T = TypeVar("T")
@@ -50,7 +50,7 @@ class DataConfig(BaseModel):
 
     date_formats: list[str]
 
-    last_selected:str
+    last_selected: str
 
     @property
     def columns(self) -> list[str]:

@@ -1,9 +1,9 @@
-from PyQt5 import QtWidgets
+from matplotlib.axes import Axes
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-from emsapp.config import Config
+from PyQt5 import QtWidgets
 
+from emsapp.config import Config
 from emsapp.data import DataSet
 from emsapp.plotting.plotter import Plotter
 

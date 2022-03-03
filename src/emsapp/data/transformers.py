@@ -5,6 +5,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 import numpy as np
+
 from emsapp.config import TransformerConfig
 from emsapp.data import DataType, FinalData
 from emsapp.data.loading import Entries, Entry

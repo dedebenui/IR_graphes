@@ -1,9 +1,10 @@
 import matplotlib
-from matplotlib.pyplot import style
 import pkg_resources
-from emsapp.plugin import load_all_plugins
-from emsapp.data import process
 import PyQt5
+from matplotlib.pyplot import style
+
+from emsapp.data import process
+from emsapp.plugin import load_all_plugins
 
 load_all_plugins()
 matplotlib.set_loglevel("info")

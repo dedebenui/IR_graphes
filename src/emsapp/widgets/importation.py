@@ -1,15 +1,16 @@
-import re
-from emsapp.data.loading import Entry, RawData, DataLoader, DataLoaderFactory
 import os
-from PyQt5 import QtWidgets, QtCore, QtGui
-from pathlib import Path
+import re
 import sys
+from pathlib import Path
 
-from emsapp.config import Config
-from emsapp.widgets.common import ValuesSelector, AcceptCancel
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 from emsapp import const
+from emsapp.config import Config
+from emsapp.data.loading import DataLoader, DataLoaderFactory, Entry, RawData
 from emsapp.i18n import _, ngettext
 from emsapp.logging import get_logger
+from emsapp.widgets.common import AcceptCancel, ValuesSelector
 
 logger = get_logger()
 
