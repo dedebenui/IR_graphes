@@ -87,7 +87,7 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
     elif specs.dtype is bool:
         control = QCheckBox()
         control.setChecked(specs.default)
-        control.stateChanged.connect(callback)
+        control.stateChanged.connect(lambda state: callback(specs.dtype(state)))
     elif issubclass(specs.dtype, Enum):
         vals = list(specs.dtype._value2member_map_)
         dft_index = vals.index(specs.default.value)
