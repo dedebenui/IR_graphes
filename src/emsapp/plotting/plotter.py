@@ -88,6 +88,9 @@ class Plotter:
             )
         self.ax.relim()
         self.ax.autoscale()
+        left, right = Config().plot.date_start, Config().plot.date_end
+        if right > left:
+            self.ax.set_xlim(left, right)
         self.fmt_xaxis()
 
     def legend(self, loc: LegendLoc):

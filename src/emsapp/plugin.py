@@ -8,7 +8,7 @@ from typing import Callable, Generic, TypeVar, Union
 
 from emsapp.config import Config
 from emsapp.data.loading import DataLoaderFactory
-from emsapp.logging import get_logger
+from emsapp.utils import get_logger
 
 logger = get_logger(__name__)
 

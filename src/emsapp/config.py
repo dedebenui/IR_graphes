@@ -5,15 +5,15 @@ import json
 import os
 from collections import defaultdict
 from contextlib import contextmanager
-from ctypes import Union
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Literal, Optional, TypeVar
 
 import pkg_resources
 import tomli
-from pydantic import BaseModel, PrivateAttr, confloat
+from pydantic import BaseModel, PrivateAttr, confloat, root_validator
 
 from emsapp.const import (
     PLOT_MAX_HEIGHT,
@@ -22,8 +22,7 @@ from emsapp.const import (
     PLOT_MIN_WIDTH,
 )
 from emsapp.i18n import N_, _
-from emsapp.logging import get_logger
-from emsapp.utils import AutoList, auto_repr
+from emsapp.utils import AutoList, auto_repr, get_logger
 from emsapp.validators import column_validator, validate
 from emsapp.widgets.common import get_user_input
 
@@ -80,10 +79,22 @@ class PlotConfig(BaseModel):
     legend_loc: LegendLoc
     plot_height: confloat(ge=PLOT_MIN_HEIGHT, le=PLOT_MAX_HEIGHT)
     plot_width: confloat(ge=PLOT_MIN_WIDTH, le=PLOT_MAX_WIDTH)
+    date_start: Optional[datetime]
+    date_end: Optional[datetime]
 
     @property
     def figsize(self) -> tuple[float, float]:
         return self.plot_width / 2.54, self.plot_height / 2.54
+
+    @root_validator
+    def validate_dates(cls, values):
+        if values.get("date_start") is None or values.get("date_end") is None:
+            return values
+        today = datetime.today()
+        values["date_end"] = datetime(today.year, today.month, today.day)
+        if values["date_start"] >= values["date_end"]:
+            values["date_start"] = values["date_end"] - timedelta(1)
+        return values
 
 
 @auto_repr
@@ -371,6 +382,7 @@ class RootConfig(BaseModel):
 
 class Config:
     __current: RootConfig = None
+    __default: RootConfig = None
 
     def __new__(cls) -> RootConfig:
         if cls.__current is None:
@@ -388,6 +400,12 @@ class Config:
         d = default_config_dict()
         d = deep_update(d, current_config_dict())
         cls.__current = RootConfig(**d)
+
+    @classmethod
+    def default(cls) -> RootConfig:
+        if cls.__default is None:
+            cls.__default = RootConfig(**default_config_dict())
+        return cls.__default
 
 
 def default_config_dict() -> dict[str, Any]:

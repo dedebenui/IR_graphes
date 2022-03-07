@@ -1,2 +1,2 @@
-recursive-include src/emsapp/package_data
-recursive-include src/emsapp/locale
+recursive-include src/emsapp/package_data *
+recursive-include src/emsapp/locale *

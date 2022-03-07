@@ -1,13 +1,14 @@
+import datetime
 from typing import Any, Optional
 
 import pkg_resources
-from PyQt5.QtCore import pyqtSignal, QTimer
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QShowEvent
 from PyQt5.QtWidgets import (
     QApplication,
     QGridLayout,
+    QLabel,
     QMainWindow,
-    QMessageBox,
     QPushButton,
     QWidget,
 )
@@ -19,8 +20,8 @@ from emsapp.data import DataSet
 from emsapp.data.loading import Entries, load_data
 from emsapp.data.process import Process
 from emsapp.i18n import N_, _
-from emsapp.logging import get_logger
 from emsapp.plotting.plotter import Plotter
+from emsapp.utils import get_logger
 from emsapp.widgets.common import ExtendedComboBox, ValuesSelector
 from emsapp.widgets.config_form import ConfigForm, ControlSpecs
 from emsapp.widgets.importation import configure_db
@@ -66,6 +67,18 @@ config_specs = [
         tooltip=N_("Height of the plot when exported"),
         needs_refresh=False,
     ),
+    ControlSpecs(
+        name=N_("date_start"),
+        dtype=datetime.datetime,
+        default=Config().plot.date_start,
+        tooltip=N_("choose on which day the plot starts"),
+    ),
+    ControlSpecs(
+        name=N_("date_end"),
+        dtype=datetime.datetime,
+        default=Config().plot.date_end,
+        tooltip=N_("choose on which day the plot ends"),
+    ),
 ]
 
 
@@ -83,8 +96,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(mw)
 
         self.status_bar = self.statusBar()
-        self.config_specs = {c.name: c for c in config_specs}
-
+        self.config_specs: dict[str, ControlSpecs] = {c.name: c for c in config_specs}
+        self.reset_buttons: dict[str, tuple[QLabel, QPushButton]] = dict(
+            date_start=(QLabel(), QPushButton()), date_end=(QLabel(), QPushButton())
+        )
 
         menu_bar = self.menuBar()
         self.m_file = menu_bar.addMenu("")
@@ -115,7 +130,13 @@ class MainWindow(QMainWindow):
         )
         self.b_copy_plot = QPushButton()
         self.b_show_data = QPushButton()
-        self.p_config_options = ConfigForm(*self.config_specs.values())
+
+        config_form = []
+        for name, specs in self.config_specs.items():
+            config_form.append(specs)
+            if name in self.reset_buttons:
+                config_form.append(self.reset_buttons[name])
+        self.p_config_options = ConfigForm(*config_form)
 
         layout.addWidget(self.data_selector, 0, 0, 1, 1)
         layout.addWidget(self.preview, 1, 0, 2, 1)
@@ -141,8 +162,16 @@ class MainWindow(QMainWindow):
         self.a_show_data.triggered.connect(self.show_data)
         self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
         self.b_show_data.clicked.connect(self.a_show_data.trigger)
+        for name, (__, button) in self.reset_buttons.items():
+            button.clicked.connect(self.reset_config_callback(name))
+
+        self.focusWidget()
 
     def update_text(self):
+        self.setWindowTitle(
+            _("emsapp - Plots of the Covid-19 in retirement homes - Fribourg")
+        )
+
         self.m_file.setTitle(_("&File"))
         self.m_plot.setTitle(_("&Plot"))
 
@@ -168,6 +197,9 @@ class MainWindow(QMainWindow):
                 _("Change the current language to {lang}").format(lang=lang)
             )
 
+        for label, button in self.reset_buttons.values():
+            label.setText(_("Reset"))
+
     def plot_config_changed(self, config_name: str, value: Any):
         setattr(Config().plot, config_name, value)
         if self.config_specs[config_name].needs_refresh:
@@ -179,6 +211,12 @@ class MainWindow(QMainWindow):
             self.update_preview()
 
         return change_lang
+
+    def reset_config_callback(self, name: str):
+        def reset():
+            setattr(Config().plot, name, getattr(Config.default().plot, name))
+
+        return reset
 
     def showEvent(self, a0: QShowEvent) -> None:
         super().showEvent(a0)

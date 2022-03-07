@@ -4,7 +4,7 @@ import traceback
 from PyQt5 import QtCore, QtWidgets
 
 from emsapp.i18n import _
-from emsapp.logging import get_logger
+from emsapp.utils import get_logger
 
 logger = get_logger(__name__)
 

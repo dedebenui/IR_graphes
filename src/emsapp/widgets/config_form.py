@@ -1,12 +1,20 @@
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Generic, TypeVar, Union
+from typing import Any, Callable, Generic, Protocol, TypeVar, Union
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtWidgets import QCheckBox, QFormLayout, QLabel, QLineEdit, QWidget
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QDateEdit,
+    QFormLayout,
+    QLabel,
+    QLineEdit,
+    QWidget,
+)
 
 from emsapp import i18n
 from emsapp.i18n import _
@@ -21,14 +29,18 @@ class ConfigForm(QWidget):
     controls: dict[str, QWidget]
     tooltip = None
 
-    def __init__(self, *specs: Union[QWidget, ControlSpecs]):
+    def __init__(self, *specs: Union[QWidget, tuple[QLabel, QWidget], ControlSpecs]):
         super().__init__()
         layout = QFormLayout()
         self.setLayout(layout)
         self.labels = {}
         self.controls = {}
         for spec in specs:
-            if isinstance(spec, QWidget):
+            if (
+                isinstance(spec, QWidget)
+                or isinstance(spec, tuple)
+                and isinstance(spec[0], QLabel)
+            ):
                 layout.addRow(spec)
                 continue
             qlabel = QLabel("")
@@ -83,7 +95,16 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
             validator.setBottom(specs.min)
         control.setValidator(validator)
         control.setText(str(specs.default) or "")
-        control.editingFinished.connect(lambda : callback(specs.dtype(control.text())))
+        control.editingFinished.connect(lambda: callback(specs.dtype(control.text())))
+    elif specs.dtype is datetime.datetime:
+        control = QDateEdit()
+        control.setCalendarPopup(True)
+        control.setDate(specs.default)
+        control.dateChanged.connect(
+            lambda date: callback(
+                datetime.datetime(date.year(), date.month(), date.day())
+            )
+        )
     elif specs.dtype is bool:
         control = QCheckBox()
         control.setChecked(specs.default)

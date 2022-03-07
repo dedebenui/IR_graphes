@@ -1,1 +1,0 @@
-nuitka --standalone --include-plugin-directory=src/emsapp/data/loaders --include-package-data=emsapp --plugin-enable=pyqt5 --plugin-enable=numpy src/emsapp/emsapp.py

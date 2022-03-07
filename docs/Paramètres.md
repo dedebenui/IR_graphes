@@ -62,3 +62,9 @@ plot_height : entre 5.0 et 30.0
 
 plot_width : entre 5.0 et 40.0
     largeur du graphe en cm
+
+date_start : datetime
+    date limite du début du graphe
+
+date_end : datetime
+    date limite de la fin du graphe

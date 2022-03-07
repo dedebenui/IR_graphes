@@ -7,7 +7,7 @@ from typing import Protocol, Union
 from emsapp.config import Config, ConfigurationValueError, DataConfig
 from emsapp.data import DataReport, Entries, Entry, RawData
 from emsapp.i18n import _
-from emsapp.logging import get_logger
+from emsapp.utils import get_logger
 
 logger = get_logger()
 

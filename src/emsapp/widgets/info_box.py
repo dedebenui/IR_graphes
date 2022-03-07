@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 
 from emsapp.const import MSG_DURATION
 from emsapp.i18n import _
-from emsapp.logging import get_logger
+from emsapp.utils import get_logger
 
 logger = get_logger(__name__)
 

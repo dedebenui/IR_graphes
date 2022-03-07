@@ -5,7 +5,8 @@ testing/testing_data/
 *.cmd
 *.docx
 *.log.[0-9]
-
+~*
+*.tar.gz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

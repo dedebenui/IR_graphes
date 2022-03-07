@@ -1,12 +1,15 @@
-# EMS app
+EMS app
+-------
 
 Le but de cette application est de créer des graphiques représentant l'évolution du COVID-19 dans les EMS du canton de Fribourg.
 
-# Protection des données
+Protection des données
+----------------------
 
 Bien que le code de cette application soit public, aucune donnée, même anonymisée, n'est rendue public sur ce repo.
 
-# Objectifs
+Objectifs
+---------
 
 - Prendre le relais des graphes de monitoring
 - Être facile à utiliser et à configurer
@@ -27,7 +30,9 @@ Bien que le code de cette application soit public, aucune donnée, même anonymi
         - Options de combiner différentes données sur un même graphe, sur plusieurs graphe dans le même document ou dans plusieurs documents
     - Proposer différents formats d'images
 
-# Scénarios
+Scénarios
+---------
+
 1. Utilisation quotidienne
     - Ouvrir l'application
     - Cliquer sur un bouton du genre "générer les graphes par défaut"
