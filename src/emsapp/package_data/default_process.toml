@@ -10,11 +10,6 @@ type = "exclude"
 column = "role"
 value = "Collaborateur autre"
 
-[filter.recent_only] # Rejète les entrées trop vieilles
-type = "date_after"
-column = "date_start"
-value = "2021-10-01"
-
 # SÉPARATEURS -----------------------------------------------------------------
 [splitter.district] # Sépare les entrées en fonction du district
 type = "value"

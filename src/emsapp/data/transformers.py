@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import datetime
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from datetime import datetime, timedelta
 
 import numpy as np
 
@@ -48,8 +48,8 @@ class NewTransformer(Transformer):
         """
         cases = defaultdict(int)
 
-        min_date = datetime.today()
-        max_date = datetime.today()
+        min_date = datetime.date.today()
+        max_date = datetime.date.today()
 
         for entry in entries:
             date = entry.date_start
@@ -57,7 +57,10 @@ class NewTransformer(Transformer):
             max_date = max(max_date, date)
             cases[date] += 1
 
-        x = [min_date + timedelta(d) for d in range((max_date - min_date).days + 1)]
+        x = [
+            min_date + datetime.timedelta(d)
+            for d in range((max_date - min_date).days + 1)
+        ]
         y = [cases[d] for d in x]
 
         report = entries.report.copy()
@@ -79,8 +82,8 @@ class CumulativeTransformer(Transformer):
         """
         cases = defaultdict(int)
 
-        min_date = datetime.today()
-        max_date = datetime.today()
+        min_date = datetime.date.today()
+        max_date = datetime.date.today()
 
         for entry in entries:
             start = entry.date_start
@@ -88,9 +91,12 @@ class CumulativeTransformer(Transformer):
             min_date = min(min_date, start)
             max_date = max(max_date, end)
             for d in range((end - start).days + 1):
-                cases[start + timedelta(d)] += 1
+                cases[start + datetime.timedelta(d)] += 1
 
-        x = [min_date + timedelta(d) for d in range((max_date - min_date).days + 1)]
+        x = [
+            min_date + datetime.timedelta(d)
+            for d in range((max_date - min_date).days + 1)
+        ]
         y = [cases[d] for d in x]
 
         report = entries.report.copy()
@@ -110,7 +116,7 @@ class PeriodTransformer(Transformer):
         """
         Tranforms entries into data representing periods of outbreaks.
         """
-        dur = timedelta(9)
+        dur = datetime.timedelta(9)
 
         sorted_entries = sorted(entries.l, key=lambda en: en.date_start)
         x = []

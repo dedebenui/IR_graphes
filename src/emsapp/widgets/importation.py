@@ -55,7 +55,6 @@ class TableSelector(ValuesSelector):
 
     def update_values(self, values: list[str], selection: str = None):
         super().update_values(values, selection)
-        Config().dump()
         if not self.valid:
             self.tool_tip_txt = _(
                 "No table found in {path}. Please ensure tables are defined in this file."
@@ -189,46 +188,5 @@ def configure_db(parent: QtWidgets.QWidget = None) -> DataLoader:
             Config().commit()
     if parent:
         parent.activateWindow()
-    Config().dump()
     if import_win.did_accept:
         return import_win.data_loader
-
-
-def main():
-    class MainWindow(QtWidgets.QMainWindow):
-        def __init__(self):
-            super().__init__()
-            menu_bar = self.menuBar()
-
-            file_menu = menu_bar.addMenu("&File")
-            open_action = file_menu.addAction("&Open...")
-            open_action.setShortcut("Ctrl+O")
-            open_action.setStatusTip("Open a database")
-            open_action.triggered.connect(self.open_db)
-
-            self.button = QtWidgets.QPushButton(open_action.text())
-            self.button.clicked.connect(open_action.trigger)
-
-            self.setCentralWidget(self.button)
-
-        def open_db(self) -> DataLoader:
-            with Config().hold():
-                import_win = ImportWindow()
-                import_win.exec_()
-                if import_win.did_accept:
-                    Config().commit()
-            self.activateWindow()
-            Config().dump()
-
-    app = QtWidgets.QApplication(sys.argv)
-    win = MainWindow()
-    win.show()
-    try:
-        app.exec()
-    except Exception:
-        print(Config().json(indent=2))
-        raise
-
-
-if __name__ == "__main__":
-    main()

@@ -21,6 +21,9 @@ show_today = false
 legend_loc = "top"
 plot_height = 10.2
 plot_width = 24.3
+show_everything = true
+date_start = "2021-10-01"
+date_end = "2022-04-01"
 
 [plugins]
 data_loader = [

@@ -96,14 +96,12 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
         control.setValidator(validator)
         control.setText(str(specs.default) or "")
         control.editingFinished.connect(lambda: callback(specs.dtype(control.text())))
-    elif specs.dtype is datetime.datetime:
+    elif specs.dtype is datetime.date:
         control = QDateEdit()
         control.setCalendarPopup(True)
         control.setDate(specs.default)
         control.dateChanged.connect(
-            lambda date: callback(
-                datetime.datetime(date.year(), date.month(), date.day())
-            )
+            lambda date: callback(datetime.date(date.year(), date.month(), date.day()))
         )
     elif specs.dtype is bool:
         control = QCheckBox()
@@ -118,3 +116,19 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
     else:
         raise TypeError(f"No available control for type {specs.dtype}")
     return control
+
+
+def set_value(control: QWidget, value):
+    if isinstance(control, QLineEdit):
+        control.setText(str(value))
+    elif isinstance(control, QDateEdit):
+        control.setDate(value)
+    elif isinstance(control, QCheckBox):
+        control.setChecked(bool(value))
+    elif isinstance(control, TranslatableComboBox):
+        if isinstance(value, Enum):
+            vals = list(value.__class__._value2member_map_)
+            value = vals.index(value.value)
+        elif isinstance(value, str):
+            value = control.raw_values.index(value)
+        control.setCurrentIndex(value)

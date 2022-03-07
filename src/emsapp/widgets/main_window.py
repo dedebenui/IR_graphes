@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 from emsapp import data, i18n
-from emsapp.config import Config, LegendLoc
+from emsapp.config import Config, LegendLoc, PlotConfig
 from emsapp.const import PLOT_MAX_WIDTH, PLOT_MIN_WIDTH
 from emsapp.data import DataSet
 from emsapp.data.loading import Entries, load_data
@@ -23,7 +23,7 @@ from emsapp.i18n import N_, _
 from emsapp.plotting.plotter import Plotter
 from emsapp.utils import get_logger
 from emsapp.widgets.common import ExtendedComboBox, ValuesSelector
-from emsapp.widgets.config_form import ConfigForm, ControlSpecs
+from emsapp.widgets.config_form import ConfigForm, ControlSpecs, set_value
 from emsapp.widgets.importation import configure_db
 from emsapp.widgets.info_box import InfoBox
 from emsapp.widgets.preview import PlotPreview
@@ -68,14 +68,23 @@ config_specs = [
         needs_refresh=False,
     ),
     ControlSpecs(
+        name=N_("show_everything"),
+        dtype=bool,
+        default=Config().plot.show_everything,
+        tooltip=N_(
+            "Show every data point possible. If this is unchecked, the "
+            "dates specified below will be used to limit the plot area"
+        ),
+    ),
+    ControlSpecs(
         name=N_("date_start"),
-        dtype=datetime.datetime,
+        dtype=datetime.date,
         default=Config().plot.date_start,
         tooltip=N_("choose on which day the plot starts"),
     ),
     ControlSpecs(
         name=N_("date_end"),
-        dtype=datetime.datetime,
+        dtype=datetime.date,
         default=Config().plot.date_end,
         tooltip=N_("choose on which day the plot ends"),
     ),
@@ -97,9 +106,6 @@ class MainWindow(QMainWindow):
 
         self.status_bar = self.statusBar()
         self.config_specs: dict[str, ControlSpecs] = {c.name: c for c in config_specs}
-        self.reset_buttons: dict[str, tuple[QLabel, QPushButton]] = dict(
-            date_start=(QLabel(), QPushButton()), date_end=(QLabel(), QPushButton())
-        )
 
         menu_bar = self.menuBar()
         self.m_file = menu_bar.addMenu("")
@@ -130,13 +136,10 @@ class MainWindow(QMainWindow):
         )
         self.b_copy_plot = QPushButton()
         self.b_show_data = QPushButton()
-
-        config_form = []
-        for name, specs in self.config_specs.items():
-            config_form.append(specs)
-            if name in self.reset_buttons:
-                config_form.append(self.reset_buttons[name])
-        self.p_config_options = ConfigForm(*config_form)
+        self.b_reset_config = QPushButton()
+        self.p_config_options = ConfigForm(
+            *self.config_specs.values(), self.b_reset_config
+        )
 
         layout.addWidget(self.data_selector, 0, 0, 1, 1)
         layout.addWidget(self.preview, 1, 0, 2, 1)
@@ -154,16 +157,15 @@ class MainWindow(QMainWindow):
 
         self.process = Process.from_config()
         self.load_and_process()
-        self.update_preview()
+        self.update_ui()
 
-        self.data_selector.sig_selection_changed.connect(self.update_preview)
+        self.data_selector.sig_selection_changed.connect(self.update_ui)
         self.p_config_options.sig_value_changed.connect(self.plot_config_changed)
         self.a_copy_plot.triggered.connect(self.copy_plot)
         self.a_show_data.triggered.connect(self.show_data)
         self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
         self.b_show_data.clicked.connect(self.a_show_data.trigger)
-        for name, (__, button) in self.reset_buttons.items():
-            button.clicked.connect(self.reset_config_callback(name))
+        self.b_reset_config.clicked.connect(self.reset_plot_config)
 
         self.focusWidget()
 
@@ -189,6 +191,7 @@ class MainWindow(QMainWindow):
         self.b_copy_plot.setToolTip(self.a_copy_plot.toolTip())
         self.b_show_data.setText(self.a_show_data.text())
         self.b_show_data.setToolTip(self.a_show_data.toolTip())
+        self.b_reset_config.setText(_("reset plot config"))
 
         self.m_option.setTitle(_("&Options"))
         self.m_lang.setTitle(_("&Language"))
@@ -197,26 +200,17 @@ class MainWindow(QMainWindow):
                 _("Change the current language to {lang}").format(lang=lang)
             )
 
-        for label, button in self.reset_buttons.values():
-            label.setText(_("Reset"))
-
     def plot_config_changed(self, config_name: str, value: Any):
         setattr(Config().plot, config_name, value)
         if self.config_specs[config_name].needs_refresh:
-            self.update_preview()
+            self.update_ui()
 
     def change_language_callback(self, lang: str):
         def change_lang():
             i18n.set_lang(lang)
-            self.update_preview()
+            self.update_ui()
 
         return change_lang
-
-    def reset_config_callback(self, name: str):
-        def reset():
-            setattr(Config().plot, name, getattr(Config.default().plot, name))
-
-        return reset
 
     def showEvent(self, a0: QShowEvent) -> None:
         super().showEvent(a0)
@@ -240,7 +234,6 @@ class MainWindow(QMainWindow):
         for ds in self.process(entries):
             self.processed_data[ds.title] = ds
         self.sig_loading_event.emit(_("data processed"))
-        print(f"about to set values : {Config().data.last_selected = }")
         self.data_selector.update_values(
             sorted(self.processed_data), Config().data.last_selected
         )
@@ -250,18 +243,31 @@ class MainWindow(QMainWindow):
         if not self.data_selector.valid:
             return
         selected = self.data_selector.value
-        print(f"about to update selection : {Config().data.last_selected = }")
         Config().data.last_selected = selected
         return self.processed_data.get(selected)
+
+    def update_ui(self):
+        self.p_config_options.controls["date_start"].setDisabled(
+            Config().plot.show_everything
+        )
+        self.p_config_options.controls["date_end"].setDisabled(
+            Config().plot.show_everything
+        )
+        self.update_preview()
 
     def update_preview(self):
         """refreshes the plot based on the current user selection"""
         dataset = self.get_selected_data()
         if not dataset:
             return
-        print(f"about to save : {Config().data.last_selected = }")
         Config().save()
         self.preview.plot(dataset)
+
+    def reset_plot_config(self):
+        Config().plot = PlotConfig(**Config.default().plot.dict())
+        for name, control in self.p_config_options.controls.items():
+            set_value(control, getattr(Config().plot, name))
+        self.update_ui()
 
     def copy_plot(self) -> bool:
         """Puts the currently displayed plot in the clipboard as a png image"""

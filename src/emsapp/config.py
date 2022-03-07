@@ -6,7 +6,7 @@ import os
 from collections import defaultdict
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Literal, Optional, TypeVar
@@ -77,10 +77,13 @@ class PlotConfig(BaseModel):
     show_periods_info: bool
     show_today: bool
     legend_loc: LegendLoc
+
     plot_height: confloat(ge=PLOT_MIN_HEIGHT, le=PLOT_MAX_HEIGHT)
     plot_width: confloat(ge=PLOT_MIN_WIDTH, le=PLOT_MAX_WIDTH)
-    date_start: Optional[datetime]
-    date_end: Optional[datetime]
+
+    show_everything: bool
+    date_start: date
+    date_end: date
 
     @property
     def figsize(self) -> tuple[float, float]:
@@ -90,8 +93,7 @@ class PlotConfig(BaseModel):
     def validate_dates(cls, values):
         if values.get("date_start") is None or values.get("date_end") is None:
             return values
-        today = datetime.today()
-        values["date_end"] = datetime(today.year, today.month, today.day)
+        values["date_end"] = date.today()
         if values["date_start"] >= values["date_end"]:
             values["date_start"] = values["date_end"] - timedelta(1)
         return values

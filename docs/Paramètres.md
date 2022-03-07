@@ -63,6 +63,9 @@ plot_height : entre 5.0 et 30.0
 plot_width : entre 5.0 et 40.0
     largeur du graphe en cm
 
+show_everything : bool
+    montrer toutes les données disponibles. Si cette case n'est pas cochée, alors les limites spécifiées ci-dessous seront utilisées pour restreindre la zone de dessin.
+
 date_start : datetime
     date limite du début du graphe
 

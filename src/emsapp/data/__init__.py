@@ -50,8 +50,8 @@ class DataReport:
 
 @dataclass
 class Entry:
-    date_start: datetime.datetime
-    date_end: datetime.datetime
+    date_start: datetime.date
+    date_end: datetime.date
     role: str
     institution: str
     institution_type: str
@@ -66,11 +66,8 @@ class Entry:
                     ).format(f=f, entry=self)
                 )
 
-        if not isinstance(self.date_start, datetime.datetime):
-            self.date_start = parse_date(self.date_start)
-
-        if not isinstance(self.date_end, datetime.datetime):
-            self.date_end = parse_date(self.date_end)
+        self.date_start = parse_date(self.date_start)
+        self.date_end = parse_date(self.date_end)
 
     @classmethod
     def fields(cls) -> list[str]:
@@ -115,45 +112,43 @@ class DataSet:
         yield from self.data
 
 
-def parse_date(
-    s: Union[int, str, datetime.datetime, datetime.date]
-) -> datetime.datetime:
+def parse_date(s: Union[int, str, datetime.date, datetime.datetime]) -> datetime.date:
     """Returns a datetime object, parsed from a variety of different sources
 
     Parameters
     ----------
-    s : Union[int, str, datetime.datetime, datetime.date, datetime.time]
+    s : Union[int, str, datetime.date, datetime.datetime]
         input
 
     Returns
     -------
-    datetime.datetime
+    datetime.date
         parsed datetime
     """
 
-    if not isinstance(s, (int, str, datetime.datetime, datetime.date)):
+    if not isinstance(s, (int, str, datetime.date, datetime.datetime)):
         raise ValueError(_("{0!r} cannot be interpreted as a date").format(s))
 
     if isinstance(s, datetime.datetime):
+        return s.date()
+    elif isinstance(s, datetime.date):
         return s
-    if isinstance(s, datetime.date):
-        return datetime.datetime.combine(s, datetime.time(0))
-    if isinstance(s, int):
+    elif isinstance(s, int):
         if s > 40177 and s < 47482:
-            return datetime.datetime(
+            return datetime.date(
                 Config().data.excel_start_date, 1, 1
             ) + datetime.timedelta(s - 1)
 
     s = s.strip()
 
     try:
-        return datetime.datetime.fromisoformat(s)
+        return datetime.date.fromisoformat(s)
     except ValueError:
         pass
 
     for fmt in Config().data.date_formats:
         try:
-            return datetime.datetime.strptime(s, fmt)
+            return datetime.date.strptime(s, fmt)
         except ValueError:
             pass
     raise ValueError(_("{0!r} cannot be interpreted as a date").format(s))

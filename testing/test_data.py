@@ -1,6 +1,6 @@
 from emsapp.config import Config
 from emsapp.data.loading import Entries, DataLoaderFactory, RawData
-from datetime import datetime
+from datetime import date
 
 
 def test_access():
@@ -8,7 +8,7 @@ def test_access():
     data = RawData(*importer.load_data(Config().data))
     assert data.headers[0] == "id"
     assert data.headers[-1] == "typetest"
-    assert isinstance(data.rows[0][1], datetime)
+    assert isinstance(data.rows[0][1], date)
 
 
 def test_entries():

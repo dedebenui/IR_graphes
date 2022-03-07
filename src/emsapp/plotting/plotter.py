@@ -3,8 +3,10 @@ import io
 import itertools
 from collections import defaultdict
 from enum import Enum
+from typing import Optional
 
 import matplotlib.dates as mdates
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
@@ -32,6 +34,7 @@ class Plotter:
     plot_type: PlotType
     legend_handles: list[plt.Artist]
     legend_labels: list[str]
+    lims: Optional[tuple[datetime.date, datetime.date]]
     _extra_info: list[str]
     _sec_ax = None
 
@@ -40,6 +43,7 @@ class Plotter:
         self.legend_handles = []
         self.legend_labels = []
         self._extra_info = []
+        self.update_lims()
         if ax:
             self.ax = ax
             self.fig = self.ax.get_figure()
@@ -56,6 +60,13 @@ class Plotter:
             self.plot_type = PlotType(tpe)
         self.plot()
 
+    def update_lims(self):
+        self.lims = (
+            None
+            if Config().plot.show_everything
+            else (Config().plot.date_start, Config().plot.date_end)
+        )
+
     @property
     def extra_info(self) -> str:
         return "\n".join(self._extra_info)
@@ -71,6 +82,7 @@ class Plotter:
             return buffer.getvalue()
 
     def plot(self):
+        self.update_lims()
         for tpe, datas in self.data.items():
             if tpe == DataType.LINE:
                 self.plot_lines(datas)
@@ -82,15 +94,11 @@ class Plotter:
         if self.plot_type is not PlotType.PERIOD:
             self.ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         if Config().plot.show_today:
-            today = datetime.date.today()
-            self.ax.axvline(
-                datetime.datetime(today.year, today.month, today.day), c="r", lw=2
-            )
+            self.ax.axvline(datetime.date.today(), c="r", lw=2)
         self.ax.relim()
         self.ax.autoscale()
-        left, right = Config().plot.date_start, Config().plot.date_end
-        if right > left:
-            self.ax.set_xlim(left, right)
+        if self.lims:
+            self.ax.set_xlim(*self.lims)
         self.fmt_xaxis()
 
     def legend(self, loc: LegendLoc):
@@ -149,8 +157,9 @@ class Plotter:
         offset = total_width / n
         start = 0.5 * (-total_width + offset)
         for i, data in enumerate(data_list):
+            x = np.array([datetime.datetime(d.year, d.month, d.day) for d in data.x])
             cont = self.ax.bar(
-                data.x + start + i * offset,
+                x + start + i * offset,
                 data.y,
                 offset,
                 color=next(self.color_cycle),
@@ -186,11 +195,14 @@ class Plotter:
         tr = self.ax.get_xaxis_transform()
         all_periods_s = []
         h = 0.7
+        line = None
         for start, end, ppl in zip(data.x[::2], data.x[1::2], data.y[::2]):
+            if self.lims and (start > self.lims[1] or end < self.lims[0]):
+                continue
             s = fmt_period_short(start, end, ppl)
             all_periods_s.append((end, h, s))
             self._extra_info.append(fmt_period_long(start, end, ppl))
-            (l,) = self.ax.plot(
+            (line,) = self.ax.plot(
                 [start, end],
                 [h, h],
                 transform=tr,
@@ -203,10 +215,13 @@ class Plotter:
         if Config().plot.show_periods_info:
             for x, y, per in all_periods_s:
                 self.period_info(per, x, y)
-        self.legend_handles.append(l)
-        self.legend_labels.append(_(data.description))
+        if line:
+            self.legend_handles.append(line)
+            self.legend_labels.append(_(data.description))
 
-    def period_info(self, s: str, x: datetime.datetime, y: float = 0.7):
+    def period_info(self, s: str, x: datetime.date, y: float = 0.7):
+        if self.lims:
+            x = max(min(self.lims[1], x), self.lims[0])
         self.ax.text(
             x,
             y - 0.05,
@@ -219,9 +234,7 @@ class Plotter:
         )
 
 
-def fmt_period_short(
-    start: datetime.datetime, end: datetime.datetime, people: int
-) -> str:
+def fmt_period_short(start: datetime.date, end: datetime.date, people: int) -> str:
     num_days = (end - start).days + 1
     days = _("{days} d.").format(days=num_days)
     ppl = _("{ppl} p.").format(ppl=people)
@@ -229,7 +242,7 @@ def fmt_period_short(
 
 
 def fmt_period_long(
-    start: datetime.datetime, end: datetime.datetime, people: int, wrap=False
+    start: datetime.date, end: datetime.date, people: int, wrap=False
 ) -> str:
     num_days = (end - start).days + 1
     days = ngettext("{} day", "{} days", num_days).format(num_days)
