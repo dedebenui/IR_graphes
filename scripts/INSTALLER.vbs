@@ -2,7 +2,7 @@ Set wShell=CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 sDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
-sTarBall = objFSO.BuildPath(sDir, "emsapp-0.4.tar.gz")
+sTarBall = objFSO.BuildPath(sDir, "emsapp-0.5.tar.gz")
 
 wShell.CurrentDirectory = sDir
 nExitCode = wShell.Run("cmd /k create_env.bat """ & sTarBall & """", 1, True)
