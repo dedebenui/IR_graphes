@@ -76,7 +76,7 @@ class ColumnSelector(QtWidgets.QWidget):
         super().__init__()
 
         headers = headers or []
-        layout = QtWidgets.QVBoxLayout()
+        layout = QtWidgets.QFormLayout()
         self.setLayout(layout)
         self.selectors = [
             ValuesSelector(key, headers, getattr(Config().data, f"col_{key}"))
@@ -84,7 +84,7 @@ class ColumnSelector(QtWidgets.QWidget):
         ]
         self.did_change = False
         for selector in self.selectors:
-            layout.addWidget(selector)
+            layout.addRow(selector.label, selector.box)
             selector.sig_selection_changed.connect(
                 self.column_changed_callback(selector)
             )
@@ -180,13 +180,13 @@ class ImportWindow(QtWidgets.QDialog):
         self.close()
 
 
-def configure_db(parent: QtWidgets.QWidget = None) -> DataLoader:
+def configure_db(parent: QtWidgets.QWidget = None) -> bool:
     with Config().hold():
         import_win = ImportWindow()
-        import_win.exec_()
+        import_win.setModal(True)
+        import_win.exec()
         if import_win.did_accept:
             Config().commit()
     if parent:
         parent.activateWindow()
-    if import_win.did_accept:
-        return import_win.data_loader
+    return import_win.did_accept

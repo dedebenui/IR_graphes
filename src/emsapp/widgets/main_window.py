@@ -6,7 +6,9 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QShowEvent
 from PyQt5.QtWidgets import (
     QApplication,
+    QComboBox,
     QGridLayout,
+    QHBoxLayout,
     QLabel,
     QMainWindow,
     QPushButton,
@@ -104,6 +106,10 @@ class MainWindow(QMainWindow):
         mw.setLayout(layout)
         self.setCentralWidget(mw)
 
+        select_layout = QHBoxLayout()
+        w_selection = QWidget()
+        w_selection.setLayout(select_layout)
+
         self.status_bar = self.statusBar()
         self.config_specs: dict[str, ControlSpecs] = {c.name: c for c in config_specs}
 
@@ -121,6 +127,8 @@ class MainWindow(QMainWindow):
         self.a_copy_plot.setShortcut("Ctrl+C")
 
         self.a_show_data = self.m_plot.addAction("")
+        self.a_next_plot = self.m_plot.addAction("")
+        self.a_prev_plot = self.m_plot.addAction("")
 
         self.m_option = menu_bar.addMenu("")
         self.m_lang = self.m_option.addMenu("")
@@ -137,11 +145,20 @@ class MainWindow(QMainWindow):
         self.b_copy_plot = QPushButton()
         self.b_show_data = QPushButton()
         self.b_reset_config = QPushButton()
+        self.b_next_plot = QPushButton(">")
+        self.b_prev_plot = QPushButton("<")
         self.p_config_options = ConfigForm(
             *self.config_specs.values(), self.b_reset_config
         )
 
-        layout.addWidget(self.data_selector, 0, 0, 1, 1)
+        select_layout.addWidget(self.data_selector)
+        select_layout.addWidget(self.b_prev_plot)
+        select_layout.addWidget(self.b_next_plot)
+        select_layout.setStretchFactor(self.data_selector, 1)
+        select_layout.setStretchFactor(self.b_next_plot, 0)
+        select_layout.setStretchFactor(self.b_prev_plot, 0)
+
+        layout.addWidget(w_selection, 0, 0, 1, 1)
         layout.addWidget(self.preview, 1, 0, 2, 1)
         layout.addWidget(self.p_config_options, 0, 1, 2, 2)
         layout.addWidget(self.b_copy_plot, 2, 1, 1, 1)
@@ -156,8 +173,6 @@ class MainWindow(QMainWindow):
         i18n.register(self)
 
         self.process = Process.from_config()
-        self.load_and_process()
-        self.update_ui()
 
         self.data_selector.sig_selection_changed.connect(self.update_ui)
         self.p_config_options.sig_value_changed.connect(self.plot_config_changed)
@@ -166,6 +181,10 @@ class MainWindow(QMainWindow):
         self.b_copy_plot.clicked.connect(self.a_copy_plot.trigger)
         self.b_show_data.clicked.connect(self.a_show_data.trigger)
         self.b_reset_config.clicked.connect(self.reset_plot_config)
+        self.a_next_plot.triggered.connect(self.show_next)
+        self.b_next_plot.clicked.connect(self.a_next_plot.trigger)
+        self.a_prev_plot.triggered.connect(self.show_prev)
+        self.b_prev_plot.clicked.connect(self.a_prev_plot.trigger)
 
         self.focusWidget()
 
@@ -186,12 +205,18 @@ class MainWindow(QMainWindow):
         self.a_copy_plot.setToolTip(_("Copy current plot to clip board"))
         self.a_show_data.setText(_("&Show data"))
         self.a_show_data.setToolTip(_("Show current data as text"))
+        self.a_next_plot.setText(_("&Next"))
+        self.a_next_plot.setToolTip(_("Show next plot"))
+        self.a_prev_plot.setText(_("&Previous"))
+        self.a_prev_plot.setToolTip(_("Show previous plot"))
 
         self.b_copy_plot.setText(self.a_copy_plot.text())
         self.b_copy_plot.setToolTip(self.a_copy_plot.toolTip())
         self.b_show_data.setText(self.a_show_data.text())
         self.b_show_data.setToolTip(self.a_show_data.toolTip())
         self.b_reset_config.setText(_("reset plot config"))
+        self.b_next_plot.setToolTip(self.a_next_plot.toolTip())
+        self.b_prev_plot.setToolTip(self.a_prev_plot.toolTip())
 
         self.m_option.setTitle(_("&Options"))
         self.m_lang.setTitle(_("&Language"))
@@ -216,8 +241,8 @@ class MainWindow(QMainWindow):
         super().showEvent(a0)
 
     def load_new_database(self) -> Entries:
-        configure_db(self)
-        self.load_and_process()
+       if configure_db(self):
+            self.load_and_process()
 
     def load_and_process(self):
         while True:
@@ -229,7 +254,9 @@ class MainWindow(QMainWindow):
                 logger.info(
                     _("couldn't load {path}").format(path=Config().data.db_path)
                 )
-                configure_db(self)
+                if not configure_db(self):
+                    self.close()
+                    return
         self.processed_data = {}
         for ds in self.process(entries):
             self.processed_data[ds.title] = ds
@@ -237,6 +264,7 @@ class MainWindow(QMainWindow):
         self.data_selector.update_values(
             sorted(self.processed_data), Config().data.last_selected
         )
+        self.update_ui()
 
     def get_selected_data(self) -> Optional[DataSet]:
         """returns an optional dataset representing the current user selection"""
@@ -295,3 +323,15 @@ class MainWindow(QMainWindow):
         )
         msg.exec()
         self.focusWidget()
+
+    def show_next(self):
+        """Show the next plot in the list"""
+        i = self.data_selector.box.currentIndex() + 1
+        if i < len(self.data_selector.values):
+            self.data_selector.box.setCurrentIndex(i)
+
+    def show_prev(self):
+        """Show the next plot in the list"""
+        i = self.data_selector.box.currentIndex() - 1
+        if i >= 0:
+            self.data_selector.box.setCurrentIndex(i)

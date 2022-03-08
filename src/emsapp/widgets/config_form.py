@@ -29,18 +29,14 @@ class ConfigForm(QWidget):
     controls: dict[str, QWidget]
     tooltip = None
 
-    def __init__(self, *specs: Union[QWidget, tuple[QLabel, QWidget], ControlSpecs]):
+    def __init__(self, *specs: Union[QWidget, ControlSpecs]):
         super().__init__()
         layout = QFormLayout()
         self.setLayout(layout)
         self.labels = {}
         self.controls = {}
         for spec in specs:
-            if (
-                isinstance(spec, QWidget)
-                or isinstance(spec, tuple)
-                and isinstance(spec[0], QLabel)
-            ):
+            if isinstance(spec, QWidget):
                 layout.addRow(spec)
                 continue
             qlabel = QLabel("")
@@ -118,7 +114,17 @@ def create_control(specs: ControlSpecs, callback: Callable[[T], None]) -> QWidge
     return control
 
 
-def set_value(control: QWidget, value):
+def set_value(control: QWidget, value: Any):
+    """sets the value of a QWidget created through create_control
+
+
+    Parameters
+    ----------
+    control : QWidget
+        widget to manipulate
+    value : Any
+        value to assign to the widget. The corresponding signal will be emitted.
+    """
     if isinstance(control, QLineEdit):
         control.setText(str(value))
     elif isinstance(control, QDateEdit):

@@ -61,11 +61,10 @@ class Plotter:
         self.plot()
 
     def update_lims(self):
-        self.lims = (
-            None
-            if Config().plot.show_everything
-            else (Config().plot.date_start, Config().plot.date_end)
-        )
+        if Config().plot.show_everything:
+            self.lims = None
+            return
+        self.lims = (Config().plot.date_start, Config().plot.date_end)
 
     @property
     def extra_info(self) -> str:
@@ -98,7 +97,12 @@ class Plotter:
         self.ax.relim()
         self.ax.autoscale()
         if self.lims:
-            self.ax.set_xlim(*self.lims)
+            l, r = self.lims
+            hd = datetime.timedelta(0.5)
+            self.ax.set_xlim(
+                datetime.datetime(l.year, l.month, l.day) - hd,
+                datetime.datetime(r.year, r.month, r.day) + hd,
+            )
         self.fmt_xaxis()
 
     def legend(self, loc: LegendLoc):

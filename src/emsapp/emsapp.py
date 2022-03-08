@@ -1,7 +1,7 @@
 import sys
 
 import pkg_resources
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 
 def main():
@@ -24,6 +24,7 @@ def main():
     win.sig_loading_event.connect(splash.showMessage)
     win.show()
     splash.finish(win)
+    QtCore.QTimer.singleShot(0, win.load_and_process)
     sys.exit(app.exec())
 
 

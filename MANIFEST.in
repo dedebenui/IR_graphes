@@ -1,2 +1,3 @@
 recursive-include src/emsapp/package_data *
 recursive-include src/emsapp/locale *
+exclude src/emsapp/package_data/current_config.json

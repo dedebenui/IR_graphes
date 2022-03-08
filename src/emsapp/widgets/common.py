@@ -115,6 +115,7 @@ class ValuesSelector(QWidgetWithHelp):
     values: list[str]
     sig_selection_changed = pyqtSignal(str)
     valid: bool = False
+    box: QComboBox
 
     def __init__(
         self,
