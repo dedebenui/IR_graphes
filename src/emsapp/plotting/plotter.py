@@ -37,6 +37,7 @@ class Plotter:
     lims: Optional[tuple[datetime.date, datetime.date]]
     _extra_info: list[str]
     _sec_ax = None
+    _ymax = None
 
     def __init__(self, data_set: DataSet, ax: plt.Axes = None):
         self.indices: dict[DataType, int] = defaultdict(int)
@@ -65,6 +66,13 @@ class Plotter:
             self.lims = None
             return
         self.lims = (Config().plot.date_start, Config().plot.date_end)
+
+    def update_ymax(self, xs, ys):
+        if self.lims:
+            self._ymax = max(
+                self._ymax or 1,
+                max(y for x, y in zip(xs, ys) if self.lims[0] <= x <= self.lims[1]),
+            )
 
     @property
     def extra_info(self) -> str:
@@ -103,6 +111,8 @@ class Plotter:
                 datetime.datetime(l.year, l.month, l.day) - hd,
                 datetime.datetime(r.year, r.month, r.day) + hd,
             )
+            if self._ymax:
+                self.ax.set_ylim(0, self._ymax+0.5)
         self.fmt_xaxis()
 
     def legend(self, loc: LegendLoc):
@@ -141,6 +151,7 @@ class Plotter:
             data as returned by a Transformer
         """
         for data in data_list:
+            self.update_ymax(data.x, data.y)
             (l,) = self.ax.plot(data.x, data.y, color=next(self.color_cycle))
             self.legend_handles.append(l)
             if self.plot_type == PlotType.MIXED:
@@ -161,6 +172,7 @@ class Plotter:
         offset = total_width / n
         start = 0.5 * (-total_width + offset)
         for i, data in enumerate(data_list):
+            self.update_ymax(data.x, data.y)
             x = np.array([datetime.datetime(d.year, d.month, d.day) for d in data.x])
             cont = self.ax.bar(
                 x + start + i * offset,
@@ -213,8 +225,8 @@ class Plotter:
                 label=data.description,
                 c="k",
             )
-            self.ax.plot([start, start], [h - 0.05, h + 0.05], c="k", transform=tr)
-            self.ax.plot([end, end], [h - 0.05, h + 0.05], c="k", transform=tr)
+            self.ax.plot([start, start], [h - 0.02, h + 0.02], c="k", transform=tr)
+            self.ax.plot([end, end], [h - 0.02, h + 0.02], c="k", transform=tr)
 
         if Config().plot.show_periods_info:
             for x, y, per in all_periods_s:

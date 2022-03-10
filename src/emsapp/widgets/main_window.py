@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 import pkg_resources
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QImage, QShowEvent
+from PyQt5.QtGui import QImage, QShowEvent, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QComboBox,
@@ -101,6 +101,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.sig_loading_event.emit(_("opening database..."))
+        self.setWindowIcon(
+            QIcon(
+                pkg_resources.resource_filename(
+                    "emsapp", "package_data/building_icon.png"
+                )
+            )
+        )
         layout = QGridLayout()
         mw = QWidget(self)
         mw.setLayout(layout)
@@ -189,9 +196,7 @@ class MainWindow(QMainWindow):
         self.focusWidget()
 
     def update_text(self):
-        self.setWindowTitle(
-            _("emsapp - Plots of the Covid-19 in retirement homes - Fribourg")
-        )
+        self.set_title()
 
         self.m_file.setTitle(_("&File"))
         self.m_plot.setTitle(_("&Plot"))
@@ -225,6 +230,16 @@ class MainWindow(QMainWindow):
                 _("Change the current language to {lang}").format(lang=lang)
             )
 
+    def set_title(self):
+        if self.processed_data:
+            self.setWindowTitle(
+                _("emsapp - Plots of the Covid-19 in retirement homes - Fribourg")
+            )
+        else:
+            self.setWindowTitle(
+                _("emsapp - Loading...")
+            )
+
     def plot_config_changed(self, config_name: str, value: Any):
         setattr(Config().plot, config_name, value)
         if self.config_specs[config_name].needs_refresh:
@@ -241,7 +256,7 @@ class MainWindow(QMainWindow):
         super().showEvent(a0)
 
     def load_new_database(self) -> Entries:
-       if configure_db(self):
+        if configure_db(self):
             self.load_and_process()
 
     def load_and_process(self):
@@ -282,6 +297,7 @@ class MainWindow(QMainWindow):
             Config().plot.show_everything
         )
         self.update_preview()
+        self.set_title()
 
     def update_preview(self):
         """refreshes the plot based on the current user selection"""
