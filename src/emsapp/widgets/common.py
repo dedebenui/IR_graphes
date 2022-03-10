@@ -94,7 +94,6 @@ class ExtendedComboBox(QComboBox):
         self.lineEdit().textEdited.connect(self.pFilterModel.setFilterFixedString)
         self._completer.activated.connect(self.on_completer_activated)
 
-
     # on selection of an item from the completer, select the corresponding item from combobox
     def on_completer_activated(self, text):
         if text:

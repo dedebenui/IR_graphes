@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-03-10 15:23+0100\n"
+"POT-Creation-Date: 2022-03-10 16:04+0100\n"
 "PO-Revision-Date: 2022-02-14 13:37+0100\n"
 "Last-Translator: BENOIT SIERRO <BENOIT.SIERRO@BLUEWIN.CH>\n"
 "Language: fr\n"
@@ -166,23 +166,31 @@ msgstr "{days} j."
 msgid "{ppl} p."
 msgstr "{ppl} p."
 
-#: src/emsapp/plotting/plotter.py:280
+#: src/emsapp/plotting/plotter.py:274
+msgid ""
+"\n"
+"Running"
+msgstr ""
+"\n"
+"En cours"
+
+#: src/emsapp/plotting/plotter.py:281
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} jour"
 msgstr[1] "{} jours"
 
-#: src/emsapp/plotting/plotter.py:281
+#: src/emsapp/plotting/plotter.py:282
 msgid "{} person"
 msgid_plural "{} people"
 msgstr[0] "{} personne"
 msgstr[1] "{} personnes"
 
-#: src/emsapp/widgets/common.py:208
+#: src/emsapp/widgets/common.py:207
 msgid "Ok"
 msgstr "Ok"
 
-#: src/emsapp/widgets/common.py:209
+#: src/emsapp/widgets/common.py:208
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -365,26 +373,27 @@ msgstr "emsapp - Graphes de la situation Covid-19 en EMS - Fribourg"
 msgid "emsapp - Loading..."
 msgstr "emsapp - Chargement en cours"
 
-#: src/emsapp/widgets/main_window.py:266
+#: src/emsapp/widgets/main_window.py:268
 msgid "data loaded"
 msgstr "données chargées"
 
-#: src/emsapp/widgets/main_window.py:270
+#: src/emsapp/widgets/main_window.py:272
 msgid "couldn't load {path}"
 msgstr "impossible de charger {path}"
 
-#: src/emsapp/widgets/main_window.py:278
+#: src/emsapp/widgets/main_window.py:280
 msgid "data processed"
 msgstr "données traitées"
 
-#: src/emsapp/widgets/main_window.py:320
+#: src/emsapp/widgets/main_window.py:322
 msgid "Could not copy plot"
 msgstr "Impossible de copier le graphe"
 
-#: src/emsapp/widgets/main_window.py:325
+#: src/emsapp/widgets/main_window.py:327
 msgid "Plot copied !"
 msgstr "Graphe copié !"
 
-#: src/emsapp/widgets/main_window.py:337
+#: src/emsapp/widgets/main_window.py:339
 msgid "Most recent logs"
 msgstr "Journaux récents"
+

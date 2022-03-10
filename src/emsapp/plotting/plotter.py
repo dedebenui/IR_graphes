@@ -270,7 +270,8 @@ def fmt_period_short(start: datetime.date, end: datetime.date, people: int) -> s
     num_days = (end - start).days + 1
     days = _("{days} d.").format(days=num_days)
     ppl = _("{ppl} p.").format(ppl=people)
-    return f"{days} / {ppl}"
+    running = start <= datetime.date.today() <= end
+    return f"{days} / {ppl}" + (_("\nRunning") if running else "")
 
 
 def fmt_period_long(
