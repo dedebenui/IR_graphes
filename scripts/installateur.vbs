@@ -32,7 +32,7 @@ sLinkFile = objFSO.BuildPath(oShell.SpecialFolders("Desktop"), "EMSapp.LNK")
 If NOT objFSO.FileExists(sLinkFile) Then
     Set oLink = oShell.CreateShortcut(sLinkFile)
         oLink.TargetPath = "%windir%\System32\cmd.exe"
-        oLink.IconLocation = objFSO.BuildPath(sDir, "EMSapp\src\package_data\building_icon.ico")
+        oLink.IconLocation = objFSO.BuildPath(sMiniconda, "envs\emsapp\Lib\site-packages\emsapp\package_data\building_icon.ico")
         oLink.Arguments = "/c %userprofile%\Miniconda3\Scripts\activate.bat emsapp && start pythonw -m emsapp"
     oLink.Save
 End IF
