@@ -39,10 +39,14 @@ type = "periods"
 [grouper.institutions] # Crée un graphe par institution et rôle
 splitter = ["instit", "role"]
 
-[grouper.periodes] # Crée un seul graphe pour toutes les périodes du canton
-splitter = "role"
+[grouper.periodes_disctricts] # Crée un seul graphe pour toutes les périodes d'un district
+splitter = ["role", "district"]
 transformer = "periods"
 
-[grouper.districts]
-splitter = "district"
+[grouper.periodes_canton] # Crée un seul graphe pour toutes les périodes d'un district
+splitter = ["role"]
+transformer = "periods"
+
+[grouper.districts] # évolution du nombre d'isolement par rôle et par district
+splitter = ["role", "district"]
 transformer = "cumulative"

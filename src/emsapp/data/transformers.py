@@ -93,10 +93,14 @@ class CumulativeTransformer(Transformer):
             for d in range((end - start).days + 1):
                 cases[start + datetime.timedelta(d)] += 1
 
-        x = [
-            min_date + datetime.timedelta(d)
-            for d in range((max_date - min_date).days + 1)
-        ]
+        x = (
+            [min_date - datetime.timedelta(1)]
+            + [
+                min_date + datetime.timedelta(d)
+                for d in range((max_date - min_date).days + 1)
+            ]
+            + [max_date + datetime.timedelta(1)]
+        )
         y = [cases[d] for d in x]
 
         report = entries.report.copy()

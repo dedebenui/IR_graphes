@@ -15,7 +15,7 @@ class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, parent=None):
         w, h = Config().plot.figsize
-        self.fig = Figure(figsize=(w, h))
+        self.fig = Figure(figsize=(w, h), tight_layout=True)
         dpi = self.fig.dpi
         self.ax = self.fig.add_subplot(111)
         self.fig_size = QtCore.QSize(int(self.fig.dpi * w), int(self.fig.dpi * h))

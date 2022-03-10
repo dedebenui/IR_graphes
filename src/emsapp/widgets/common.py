@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import Iterable, Optional, TypeVar
 
-from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal
-from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtCore import QSortFilterProxyModel, Qt, pyqtSignal, QObject, QEvent
+from PyQt5.QtGui import QMouseEvent, QShowEvent, QKeyEvent
 from PyQt5.QtWidgets import (
+    QApplication,
     QComboBox,
     QCompleter,
     QDialog,
@@ -82,14 +83,17 @@ class ExtendedComboBox(QComboBox):
         self.pFilterModel.setSourceModel(self.model())
 
         # add a completer, which uses the filter model
-        self.completer = QCompleter(self.pFilterModel, self)
-        # always show all (filtered) completions
-        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-        self.setCompleter(self.completer)
+        self._completer = QCompleter(self.pFilterModel, self)
+        self._completer.popup().installEventFilter(self)
+        self.lineEdit().setCompleter(self._completer)
+        # # always show all (filtered) completions
+        self._completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self._completer)
 
-        # connect signals
+        # # connect signals
         self.lineEdit().textEdited.connect(self.pFilterModel.setFilterFixedString)
-        self.completer.activated.connect(self.on_completer_activated)
+        self._completer.activated.connect(self.on_completer_activated)
+
 
     # on selection of an item from the completer, select the corresponding item from combobox
     def on_completer_activated(self, text):
@@ -102,11 +106,11 @@ class ExtendedComboBox(QComboBox):
     def setModel(self, model):
         super(ExtendedComboBox, self).setModel(model)
         self.pFilterModel.setSourceModel(model)
-        self.completer.setModel(self.pFilterModel)
+        self._completer.setModel(self.pFilterModel)
 
     # on model column change, update the model column of the filter and completer as well
     def setModelColumn(self, column):
-        self.completer.setCompletionColumn(column)
+        self._completer.setCompletionColumn(column)
         self.pFilterModel.setFilterKeyColumn(column)
         super(ExtendedComboBox, self).setModelColumn(column)
 
@@ -232,6 +236,7 @@ class UserInput(QDialog):
         layout.addWidget(label)
         layout.addWidget(self.line_edit)
         layout.addWidget(finish_button)
+        self.setWindowTitle("EMSapp")
 
     def finish(self, accept: bool):
         if accept:

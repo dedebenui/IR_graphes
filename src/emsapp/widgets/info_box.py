@@ -52,7 +52,7 @@ class InfoBox(QDialog):
         layout.setRowStretch(2, 0)
 
         self.resize(800, 600)
-        self.setWindowTitle(_("Plot data"))
+        self.setWindowTitle(header)
 
     def copy(self):
         QApplication.clipboard().setText(self.msg)

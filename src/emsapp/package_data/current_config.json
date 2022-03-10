@@ -14,7 +14,7 @@
             "%d.%m.%Y",
             "%d/%m/%Y"
         ],
-        "last_selected": "institutions, EMS La Providence Fribourg, B\u00e9n\u00e9ficiaire"
+        "last_selected": "institutions, EMS d'Humilimont Marsens, B\u00e9n\u00e9ficiaire"
     },
     "plugins": {
         "data_loader": [
@@ -24,12 +24,12 @@
     },
     "plot": {
         "show_periods_info": true,
-        "show_today": true,
+        "show_today": false,
         "legend_loc": "top",
         "plot_height": 10.2,
         "plot_width": 24.3,
         "show_everything": false,
-        "date_start": "2021-10-01",
-        "date_end": "2022-03-09"
+        "date_start": "2021-12-01",
+        "date_end": "2022-03-10"
     }
 }

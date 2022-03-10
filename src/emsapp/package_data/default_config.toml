@@ -7,7 +7,7 @@ excel_start_year = 1900
 col_date_start = "dtest"
 col_date_end = "dfinisol"
 col_role = "role"
-col_institution = "instit_nom"
+col_institution = "instit_fullid"
 col_institution_type = "instit_type"
 col_location = "instit_loc"
 

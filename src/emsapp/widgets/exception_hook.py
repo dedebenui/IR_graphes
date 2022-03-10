@@ -5,6 +5,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from emsapp.i18n import _
 from emsapp.utils import get_logger
+from emsapp.widgets.info_box import InfoBox
 
 logger = get_logger(__name__)
 
@@ -14,9 +15,8 @@ def show_exception_box(log_msg):
     If unavailable (non-console application), log an additional notice.
     """
     if QtWidgets.QApplication.instance() is not None:
-        errorbox = QtWidgets.QMessageBox()
-        errorbox.setText(_("Oops. An unexpected error occured:\n{0}").format(log_msg))
-        errorbox.exec_()
+        errorbox = InfoBox(_("Oops. An unexpected error occured:"), log_msg)
+        errorbox.exec()
     else:
         logger.debug("No QApplication instance available.")
 

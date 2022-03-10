@@ -50,7 +50,6 @@ class Plotter:
             self.fig = self.ax.get_figure()
         else:
             self.fig, self.ax = plt.subplots(figsize=Config().plot.figsize)
-        self.color_cycle = itertools.cycle(COLORS)
         self.title = data_set.title
         self.data = defaultdict(list)
         tpe = self.plot_type = PlotType.MIXED
@@ -59,7 +58,19 @@ class Plotter:
             tpe = data.data_type.value
         if len(self.data) == 1:
             self.plot_type = PlotType(tpe)
+        self.update_styles()
         self.plot()
+
+    def update_styles(self):
+        if self.plot_type is PlotType.MIXED:
+            n = len(COLORS[::2])
+            self.line_colors = itertools.cycle(COLORS[::2])
+            self.bar_colors = itertools.cycle(COLORS[1::2])
+        else:
+            n = len(COLORS)
+            self.line_colors = itertools.cycle(COLORS)
+            self.bar_colors = itertools.cycle(COLORS)
+        self.line_styles = itertools.cycle(["-"] * n + ["--"] * n)
 
     def update_lims(self):
         if Config().plot.show_everything:
@@ -68,20 +79,18 @@ class Plotter:
         self.lims = (Config().plot.date_start, Config().plot.date_end)
 
     def update_ymax(self, xs, ys):
-        if self.lims:
+        if self.lims and len(xs) > 0:
             self._ymax = max(
                 self._ymax or 1,
-                max(y for x, y in zip(xs, ys) if self.lims[0] <= x <= self.lims[1]),
+                max(
+                    [y for x, y in zip(xs, ys) if self.lims[0] <= x <= self.lims[1]]
+                    or [1]
+                ),
             )
 
     @property
     def extra_info(self) -> str:
         return "\n".join(self._extra_info)
-
-    def secondary_axis(self) -> plt.Axes:
-        if not self._sec_ax:
-            self._sec_ax = self.ax.secondary_xaxis("top")
-        return self._sec_ax
 
     def as_bytes(self) -> bytes:
         with io.BytesIO() as buffer:
@@ -112,15 +121,17 @@ class Plotter:
                 datetime.datetime(r.year, r.month, r.day) + hd,
             )
             if self._ymax:
-                self.ax.set_ylim(0, self._ymax+0.5)
+                self.ax.set_ylim(0, self._ymax + 0.5)
         self.fmt_xaxis()
 
     def legend(self, loc: LegendLoc):
+        if not self.legend_handles:
+            return
         if loc == LegendLoc.ABOVE:
             self.ax.legend(
                 self.legend_handles,
                 self.legend_labels,
-                bbox_to_anchor=(0, 1.02, 1, 0.2),
+                bbox_to_anchor=(0, 1.02, 1, 0.6),
                 ncol=3,
                 loc="lower left",
                 mode="expand",
@@ -133,7 +144,10 @@ class Plotter:
         duration = (mdates.num2date(end) - mdates.num2date(start)).days + 1
         formatter = DateFormatter()
         monday_loc = mdates.WeekdayLocator(byweekday=mdates.MONDAY)
-        if duration > 180:
+        if duration > 365:
+            self.ax.xaxis.set_major_locator(mdates.MonthLocator(bymonthday=(1,)))
+            self.ax.xaxis.set_major_formatter(formatter)
+        elif duration > 180:
             self.ax.xaxis.set_major_locator(mdates.MonthLocator(bymonthday=(1, 15)))
             self.ax.xaxis.set_major_formatter(formatter)
         else:
@@ -152,7 +166,9 @@ class Plotter:
         """
         for data in data_list:
             self.update_ymax(data.x, data.y)
-            (l,) = self.ax.plot(data.x, data.y, color=next(self.color_cycle))
+            (l,) = self.ax.plot(
+                data.x, data.y, color=next(self.line_colors), ls=next(self.line_styles)
+            )
             self.legend_handles.append(l)
             if self.plot_type == PlotType.MIXED:
                 self.legend_labels.append(_(data.description))
@@ -178,7 +194,7 @@ class Plotter:
                 x + start + i * offset,
                 data.y,
                 offset,
-                color=next(self.color_cycle),
+                color=next(self.bar_colors),
             )
             self.legend_handles.append(cont.patches[0])
             self.legend_labels.append(_(data.description))

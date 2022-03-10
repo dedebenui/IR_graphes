@@ -3,19 +3,17 @@ from typing import Any, Optional
 
 import pkg_resources
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QImage, QShowEvent, QIcon
+from PyQt5.QtGui import QImage, QShowEvent, QIcon, QCloseEvent
 from PyQt5.QtWidgets import (
     QApplication,
-    QComboBox,
     QGridLayout,
     QHBoxLayout,
-    QLabel,
     QMainWindow,
     QPushButton,
     QWidget,
 )
 
-from emsapp import data, i18n
+from emsapp import i18n
 from emsapp.config import Config, LegendLoc, PlotConfig
 from emsapp.const import PLOT_MAX_WIDTH, PLOT_MIN_WIDTH
 from emsapp.data import DataSet
@@ -32,7 +30,7 @@ from emsapp.widgets.preview import PlotPreview
 
 logger = get_logger()
 
-config_specs = [
+CONFIG_SPECS = [
     ControlSpecs(
         name=N_("show_periods_info"),
         dtype=bool,
@@ -118,7 +116,7 @@ class MainWindow(QMainWindow):
         w_selection.setLayout(select_layout)
 
         self.status_bar = self.statusBar()
-        self.config_specs: dict[str, ControlSpecs] = {c.name: c for c in config_specs}
+        self.config_specs: dict[str, ControlSpecs] = {c.name: c for c in CONFIG_SPECS}
 
         menu_bar = self.menuBar()
         self.m_file = menu_bar.addMenu("")
@@ -236,9 +234,7 @@ class MainWindow(QMainWindow):
                 _("emsapp - Plots of the Covid-19 in retirement homes - Fribourg")
             )
         else:
-            self.setWindowTitle(
-                _("emsapp - Loading...")
-            )
+            self.setWindowTitle(_("emsapp - Loading..."))
 
     def plot_config_changed(self, config_name: str, value: Any):
         setattr(Config().plot, config_name, value)
@@ -255,8 +251,14 @@ class MainWindow(QMainWindow):
     def showEvent(self, a0: QShowEvent) -> None:
         super().showEvent(a0)
 
+    def closeEvent(self, a0: QCloseEvent) -> None:
+        Config().save()
+        return super().closeEvent(a0)
+
     def load_new_database(self) -> Entries:
         if configure_db(self):
+            self.processed_data = None
+            self.set_title()
             self.load_and_process()
 
     def load_and_process(self):
